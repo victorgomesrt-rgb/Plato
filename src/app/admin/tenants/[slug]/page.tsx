@@ -52,9 +52,14 @@ export default async function ManageTenantPage({
             {tenant.published_at ? " · live" : ""}
           </p>
         </div>
-        <Link href={`/${tenant.slug}`} className="text-sm text-accent underline">
-          Preview
-        </Link>
+        <div className="flex items-center gap-3 text-sm">
+          <Link href={`/admin/tenants/${tenant.slug}/qr`} className="font-medium text-accent">
+            QR codes
+          </Link>
+          <Link href={`/${tenant.slug}`} className="text-accent underline">
+            Preview
+          </Link>
+        </div>
       </div>
 
       <MenuEditor
