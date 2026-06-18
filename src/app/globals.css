@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+/*
+  Plato design tokens — see docs/design.md §2.
+  Tailwind v4 reads @theme to generate utilities (bg-accent, text-ink, rounded-card, …).
+  Each tenant overrides --color-accent at runtime via an inline style on their page root.
+*/
+
+@theme {
+  /* Brand */
+  --color-accent: #fb6a1a; /* Plato Orange */
+  --color-accent-deep: #e2540f; /* hover / pressed */
+  --color-ink: #16110e; /* near-black, P body + dark surfaces */
+  --color-surface: #ffffff;
+  --color-muted: #6b6660;
+  --color-line: #ece7e1;
+
+  /* Secondary Caribbean accents */
+  --color-sea: #0e5b5b;
+  --color-citrus: #f4b740;
+
+  /* Map default bg/fg to brand */
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-ink);
+
+  /* Type — Bricolage Grotesque (display), Inter (UI/data) */
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Radius — design.md §2 */
+  --radius-btn: 12px;
+  --radius-card: 16px;
+
+  /* Spacing scale 4/8/12/16/24/32/48 is the Tailwind default; no override needed */
+}
+
+body {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Respect reduced motion globally — design.md §9, video loops pause elsewhere in JS */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

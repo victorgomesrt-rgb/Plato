@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plato · Reel Template</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+tailwind.config = { theme:{ extend:{
+  colors:{ ink:'#16110E', warm:'#FBF8F4', ember:'#FB6A1A', emberdeep:'#E2540F', sea:'#0E5B5B', seabright:'#18A999', citrus:'#F4B740', line:'#ECE7E1', muted:'#6B6660' },
+  fontFamily:{ display:['"Bricolage Grotesque"','sans-serif'], sans:['Inter','sans-serif'] }
+}}}
+</script>
+<style>
+  body{font-family:Inter,sans-serif;background:#16110E;color:#fff}
+  .display{font-family:"Bricolage Grotesque",sans-serif}
+  .feed{scroll-snap-type:y mandatory;overflow-y:scroll;scrollbar-width:none}
+  .feed::-webkit-scrollbar{display:none}
+  .slide{scroll-snap-align:start}
+  .grad{background:linear-gradient(135deg,#FB6A1A,#F4B740 55%,#0E5B5B)}
+  .shade{background:linear-gradient(to top,rgba(0,0,0,.78) 0%,rgba(0,0,0,.25) 38%,rgba(0,0,0,0) 60%)}
+  .glass{background:rgba(0,0,0,.32);backdrop-filter:blur(6px)}
+  .seg{height:3px;border-radius:9px;background:rgba(255,255,255,.3);overflow:hidden;flex:1}
+  .seg>span{display:block;height:100%;width:0;background:#fff;transition:width .2s}
+</style>
+</head>
+<body class="min-h-screen flex justify-center">
+
+<!-- phone frame -->
+<div class="relative w-full max-w-[420px] h-screen sm:h-[860px] sm:max-h-[94vh] sm:my-[3vh] sm:rounded-[2.4rem] overflow-hidden bg-black sm:border-[7px] sm:border-ink shadow-2xl">
+
+  <!-- top overlay: segments + header -->
+  <div class="absolute top-0 inset-x-0 z-30 px-4 pt-4">
+    <div id="segs" class="flex gap-1.5"></div>
+    <div class="flex items-center gap-2 mt-3">
+      <span class="grid place-items-center w-7 h-7 rounded-lg bg-ember shrink-0"><svg width="10" height="10" viewBox="0 0 12 12" fill="white"><path d="M3 2l6.5 4-6.5 4z"/></svg></span>
+      <span class="display font-extrabold text-sm drop-shadow">Hungry Paradise</span>
+      <div class="ml-auto flex items-center gap-1.5 text-[11px] font-semibold">
+        <button class="glass rounded-full px-2.5 py-1">EN</button>
+        <button class="glass rounded-full px-2.5 py-1">USD</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- feed -->
+  <div id="feed" class="feed h-full"></div>
+
+  <!-- scroll hint -->
+  <div id="hint" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 text-[11px] text-white/70 flex flex-col items-center gap-1 pointer-events-none">
+    <span>Swipe up</span><span class="text-lg leading-none animate-bounce">⌃</span>
+  </div>
+</div>
+
+<script>
+  const dishes = [
+    {name:'Catch of the Day', cat:'From the grill', desc:'Fresh local catch, grilled over coals, citrus butter, island salad.', price:'28.00', tags:['Popular','Gluten free'], tag:'grilled,fish,plate', lock:31},
+    {name:'Keshi Yena', cat:'Aruban classic', desc:'Spiced chicken baked inside melted Gouda. The taste of the island.', price:'22.50', tags:['Local favorite'], tag:'cheese,baked,caribbean', lock:32},
+    {name:'Coconut Shrimp', cat:'Starters', desc:'Crispy coconut shrimp, mango chili dip, lime.', price:'19.00', tags:['New','Spicy'], tag:'shrimp,coconut,fried', lock:33},
+    {name:'Pan Bati Stack', cat:'Sweet', desc:'Warm island pancakes, syrup, fresh fruit, whipped cream.', price:'12.00', tags:['Sweet'], tag:'pancake,fruit,dessert', lock:34},
+  ];
+
+  const feed = document.getElementById('feed');
+  feed.innerHTML = dishes.map((d,i)=>`
+    <section class="slide relative h-full w-full grad overflow-hidden">
+      <img src="https://loremflickr.com/600/1100/${encodeURIComponent(d.tag)}?lock=${d.lock}" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
+      <div class="absolute inset-0 shade"></div>
+
+      <!-- right action rail -->
+      <div class="absolute right-3 bottom-40 z-20 flex flex-col items-center gap-4">
+        <button class="flex flex-col items-center gap-1"><span class="glass w-11 h-11 rounded-full grid place-items-center text-lg">🧭</span><span class="text-[10px] font-medium">Directions</span></button>
+        <button class="flex flex-col items-center gap-1"><span class="glass w-11 h-11 rounded-full grid place-items-center text-lg">📞</span><span class="text-[10px] font-medium">Call</span></button>
+        <button class="flex flex-col items-center gap-1"><span class="glass w-11 h-11 rounded-full grid place-items-center text-lg">🔗</span><span class="text-[10px] font-medium">Share</span></button>
+      </div>
+
+      <!-- bottom info -->
+      <div class="absolute inset-x-0 bottom-0 z-10 p-5 pb-7 pr-20">
+        <div class="text-[12px] uppercase tracking-wider text-white/70 font-semibold">${d.cat}</div>
+        <h2 class="display text-3xl font-extrabold leading-tight mt-1 drop-shadow">${d.name}</h2>
+        <p class="text-sm text-white/80 mt-1.5 max-w-xs">${d.desc}</p>
+        <div class="flex flex-wrap items-center gap-2 mt-3">
+          <span class="bg-ember text-white font-bold rounded-full px-3 py-1 text-sm tnum">$ ${d.price}</span>
+          ${d.tags.map(t=>`<span class="glass rounded-full px-2.5 py-1 text-[11px] font-medium">${t}</span>`).join('')}
+        </div>
+      </div>
+    </section>`).join('');
+
+  // segment bars
+  const segs = document.getElementById('segs');
+  segs.innerHTML = dishes.map(()=>'<div class="seg"><span></span></div>').join('');
+  const bars = [...segs.querySelectorAll('.seg>span')];
+  function setActive(i){ bars.forEach((b,k)=> b.style.width = k<i?'100%':(k===i?'100%':'0')); }
+  setActive(0);
+
+  let idx=0;
+  feed.addEventListener('scroll', ()=>{
+    const i = Math.round(feed.scrollTop / feed.clientHeight);
+    if(i!==idx){ idx=i; setActive(i); }
+    document.getElementById('hint').style.opacity = feed.scrollTop>40 ? '0':'1';
+  });
+</script>
+</body>
+</html>
