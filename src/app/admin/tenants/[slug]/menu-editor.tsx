@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useSyncExternalStore } from "react";
 import {
   DndContext,
   closestCenter,
@@ -85,6 +85,13 @@ export function MenuEditor({
   }
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // dnd-kit generates non-deterministic aria ids; render the drag tree only after
+  // hydration so server and client markup match. false on server + first client render.
+  const hydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const run = (p: Promise<{ ok: boolean; error?: string }>) =>
     startTransition(async () => {
       const r = await p;
@@ -115,6 +122,10 @@ export function MenuEditor({
   }
 
   const total = its.length;
+
+  if (!hydrated) {
+    return <p className="mt-6 text-sm text-muted">Loading editor…</p>;
+  }
 
   return (
     <div className="mt-6">
