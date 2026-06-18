@@ -10,7 +10,9 @@
     "db:push": "supabase db push",
     "db:seed": "node --env-file=.env.local scripts/db-seed.mjs",
     "db:check": "node --env-file=.env.local scripts/db-check.mjs",
-    "db:test-guards": "node --env-file=.env.local scripts/db-test-guards.mjs"
+    "db:test-guards": "node --env-file=.env.local scripts/db-test-guards.mjs",
+    "db:test-provision": "node --env-file=.env.local scripts/db-test-provision.mjs",
+    "set-admin": "node --env-file=.env.local scripts/set-admin.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
