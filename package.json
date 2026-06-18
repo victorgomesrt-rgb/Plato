@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:push": "supabase db push",
+    "db:seed": "node --env-file=.env.local scripts/db-seed.mjs",
+    "db:check": "node --env-file=.env.local scripts/db-check.mjs",
+    "db:test-guards": "node --env-file=.env.local scripts/db-test-guards.mjs"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -16,10 +20,12 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "pg": "^8.21.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
