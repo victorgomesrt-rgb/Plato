@@ -7,11 +7,15 @@ import {
   type Tenant,
 } from "@/lib/tenant";
 import { getMenu } from "@/lib/menu";
+import { arubaNow } from "@/lib/hours";
+import { DinerPage } from "@/components/diner/diner-page";
 
 type Props = { params: Promise<{ slug: string }> };
 
-// Public pages are cached and revalidated on menu edits (M5). Short window for now.
-export const revalidate = 60;
+// ISR — revalidated on menu/branding edits via revalidatePath (M4 actions).
+export const revalidate = 300;
+
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -19,22 +23,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!tenant || publicState(tenant) !== "ok") {
     return { title: "Menu", robots: { index: false } };
   }
+  const url = `${SITE}/${tenant.slug}`;
   return {
     title: tenant.name,
-    description: tenant.description ?? undefined,
-    alternates: { canonical: `/${tenant.slug}` },
+    description: tenant.description ?? `Video menu for ${tenant.name}.`,
+    alternates: { canonical: url },
     openGraph: {
+      type: "website",
       title: tenant.name,
       description: tenant.description ?? undefined,
-      images: tenant.cover_url ? [tenant.cover_url] : undefined,
+      url,
     },
   };
-}
-
-function priceLabel(item: { price: number | null; price_text: string | null }) {
-  if (item.price_text) return item.price_text;
-  if (item.price != null) return `$${item.price.toFixed(2)}`;
-  return "";
 }
 
 function Unavailable() {
@@ -52,7 +52,6 @@ export default async function TenantPage({ params }: Props) {
   const { slug } = await params;
   const tenant = await getTenantBySlug(slug);
 
-  // 301 from an old slug to the current one (docs/architecture.md §21).
   if (!tenant) {
     const renamed = await getTenantByPreviousSlug(slug);
     if (renamed) redirect(`/${renamed.slug}`);
@@ -64,66 +63,59 @@ export default async function TenantPage({ params }: Props) {
 
   const t = tenant as Tenant;
   const { categories, items } = await getMenu(t.id);
-  const accent = t.accent_color ?? "#FB6A1A";
+  const url = `${SITE}/${t.slug}`;
 
-  // NOTE: minimal render to prove the data path + publish gate. The full Grid
-  // template, action bar, currency/language toggles, and video come in M5.
+  // schema.org Restaurant + Menu (architecture §14) — default-locale strings.
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "Restaurant",
+    "@id": url,
+    url,
+    name: t.name,
+    description: t.description ?? undefined,
+    image: t.cover_url ?? undefined,
+    telephone: t.phone ?? undefined,
+    address: t.address
+      ? { "@type": "PostalAddress", streetAddress: t.address, addressCountry: "AW" }
+      : undefined,
+    geo:
+      t.lat != null && t.lng != null
+        ? { "@type": "GeoCoordinates", latitude: t.lat, longitude: t.lng }
+        : undefined,
+    hasMenu: {
+      "@type": "Menu",
+      hasMenuSection: categories.map((c) => ({
+        "@type": "MenuSection",
+        name: c.name,
+        hasMenuItem: items
+          .filter((i) => i.category_id === c.id)
+          .map((i) => ({
+            "@type": "MenuItem",
+            name: i.name,
+            description: i.description ?? undefined,
+            offers:
+              i.price != null
+                ? { "@type": "Offer", price: i.price, priceCurrency: t.base_currency }
+                : undefined,
+          })),
+      })),
+    },
+  };
+
   return (
-    <main
-      className="mx-auto w-full max-w-2xl px-5 pb-16"
-      style={{ "--color-accent": accent } as React.CSSProperties}
-    >
-      <header className="py-8">
-        <h1 className="font-display text-3xl font-semibold text-ink">{t.name}</h1>
-        {t.description && <p className="mt-2 text-muted">{t.description}</p>}
-      </header>
-
-      {categories.map((cat) => {
-        const catItems = items.filter((i) => i.category_id === cat.id);
-        if (catItems.length === 0) return null;
-        return (
-          <section key={cat.id} className="mb-8">
-            <h2 className="font-display text-lg font-semibold text-ink">{cat.name}</h2>
-            <ul className="mt-3 divide-y divide-line">
-              {catItems.map((item) => (
-                <li
-                  key={item.id}
-                  className={`flex items-start gap-3 py-3 ${
-                    item.is_available ? "" : "opacity-40"
-                  }`}
-                >
-                  {(item.image_url || item.video_thumb_url) && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={(item.image_url ?? item.video_thumb_url)!}
-                      alt=""
-                      className="h-16 w-16 shrink-0 rounded-md object-cover"
-                    />
-                  )}
-                  <div className="flex-1">
-                    <p className="font-medium text-ink">
-                      {item.name}
-                      {!item.is_available && (
-                        <span className="ml-2 text-xs text-muted">Sold out</span>
-                      )}
-                    </p>
-                    {item.description && (
-                      <p className="text-sm text-muted">{item.description}</p>
-                    )}
-                  </div>
-                  <span className="shrink-0 font-medium" style={{ color: accent }}>
-                    {priceLabel(item)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
-      })}
-
-      <footer className="border-t border-line pt-6 text-center text-sm text-muted">
-        Powered by Plato
-      </footer>
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+      />
+      <DinerPage
+        tenant={t}
+        categories={categories}
+        items={items}
+        cdnHost={process.env.BUNNY_CDN_HOSTNAME ?? ""}
+        shareUrl={url}
+        todayKey={arubaNow().day}
+      />
+    </>
   );
 }

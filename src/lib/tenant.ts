@@ -20,10 +20,26 @@ export type Tenant = {
   status: string;
   published_at: string | null;
   previous_slug: string | null;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+  phone: string | null;
+  whatsapp: string | null;
+  hours: Record<string, [string, string] | null> | null;
+  links: TenantLink[] | null;
+};
+
+export type TenantLink = {
+  type: string;
+  url?: string;
+  enabled?: boolean;
+  label?: string;
+  ssid?: string;
+  password?: string;
 };
 
 const TENANT_COLS =
-  "id, slug, name, description, logo_url, cover_url, accent_color, custom_domain, base_currency, fx_rate, dual_currency, template, default_locale, locales, status, published_at, previous_slug";
+  "id, slug, name, description, logo_url, cover_url, accent_color, custom_domain, base_currency, fx_rate, dual_currency, template, default_locale, locales, status, published_at, previous_slug, address, lat, lng, phone, whatsapp, hours, links";
 
 export async function getTenantBySlug(slug: string): Promise<Tenant | null> {
   const admin = createAdminClient();
