@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname),
   },
+  // Native / heavy modules used only on the server — don't bundle them.
+  serverExternalPackages: ["sharp", "heic-convert"],
   images: {
     // Bunny poster frames + Supabase Storage images are remote.
     remotePatterns: [

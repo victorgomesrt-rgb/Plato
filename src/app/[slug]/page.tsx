@@ -88,11 +88,19 @@ export default async function TenantPage({ params }: Props) {
               {catItems.map((item) => (
                 <li
                   key={item.id}
-                  className={`flex items-baseline justify-between gap-4 py-3 ${
+                  className={`flex items-start gap-3 py-3 ${
                     item.is_available ? "" : "opacity-40"
                   }`}
                 >
-                  <div>
+                  {(item.image_url || item.video_thumb_url) && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={(item.image_url ?? item.video_thumb_url)!}
+                      alt=""
+                      className="h-16 w-16 shrink-0 rounded-md object-cover"
+                    />
+                  )}
+                  <div className="flex-1">
                     <p className="font-medium text-ink">
                       {item.name}
                       {!item.is_available && (

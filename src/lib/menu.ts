@@ -20,6 +20,9 @@ export type Item = {
   is_featured: boolean;
   featured_rank: number | null;
   sort_order: number;
+  image_url: string | null;
+  video_status: string;
+  video_thumb_url: string | null;
 };
 
 // Visible categories + available-and-unavailable items for a published tenant.
@@ -36,7 +39,7 @@ export async function getMenu(tenantId: string) {
     admin
       .from("menu_items")
       .select(
-        "id, category_id, name, description, price, price_text, tags, is_available, is_featured, featured_rank, sort_order"
+        "id, category_id, name, description, price, price_text, tags, is_available, is_featured, featured_rank, sort_order, image_url, video_status, video_thumb_url"
       )
       .eq("tenant_id", tenantId)
       .order("sort_order"),

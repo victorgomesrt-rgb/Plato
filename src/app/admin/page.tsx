@@ -51,9 +51,14 @@ export default async function AdminPage() {
                 {t.published_at ? " · live" : ""}
               </p>
             </div>
-            <Link href={`/${t.slug}`} className="text-sm text-muted underline hover:text-ink">
-              View
-            </Link>
+            <div className="flex items-center gap-3 text-sm">
+              <Link href={`/admin/tenants/${t.slug}`} className="font-medium text-accent">
+                Manage
+              </Link>
+              <Link href={`/${t.slug}`} className="text-muted underline hover:text-ink">
+                View
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
