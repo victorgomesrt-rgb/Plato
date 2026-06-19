@@ -312,3 +312,23 @@ export async function reorderItems(
     return { ok: false, error: (e as Error).message };
   }
 }
+
+const TEMPLATES = ["grid", "reel", "classic", "spotlight"];
+
+// template is not a privileged column, so RLS (member or admin) permits the update.
+export async function setTemplate(
+  tenantId: string,
+  template: string
+): Promise<ActionResult> {
+  try {
+    const t = await assertTenant(tenantId);
+    if (!TEMPLATES.includes(template)) return { ok: false, error: "Invalid template" };
+    const supabase = await createClient();
+    const { error } = await supabase.from("tenants").update({ template }).eq("id", tenantId);
+    if (error) return { ok: false, error: error.message };
+    revalidateTenant(t.slug);
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}

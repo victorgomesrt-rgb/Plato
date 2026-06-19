@@ -5,6 +5,7 @@ import { currentAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { itemCap } from "@/lib/plans";
 import { MenuEditor } from "./menu-editor";
+import { TemplatePicker } from "./template-picker";
 
 export const metadata: Metadata = { title: "Manage menu", robots: { index: false } };
 
@@ -19,7 +20,7 @@ export default async function ManageTenantPage({
   const supabase = await createClient();
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate")
+    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template")
     .eq("slug", slug)
     .maybeSingle();
   if (!tenant) notFound();
@@ -60,6 +61,10 @@ export default async function ManageTenantPage({
             Preview
           </Link>
         </div>
+      </div>
+
+      <div className="mt-3">
+        <TemplatePicker tenantId={tenant.id} current={tenant.template ?? "grid"} />
       </div>
 
       <MenuEditor

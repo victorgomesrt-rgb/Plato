@@ -9,7 +9,9 @@ import { track } from "@/lib/track-client";
 import { priceLabel, type DisplayCurrency } from "@/lib/currency";
 import { isOpenNow, DAY_KEYS, type DayKey } from "@/lib/hours";
 import { ActionBar } from "./action-bar";
-import { VideoTile } from "./video-tile";
+import { CardMedia } from "./card-media";
+import { ReelView } from "./reel-view";
+import { GridList, ClassicList, SpotlightList, type SectionView } from "./menu-sections";
 
 // Hydration-safe per-session persistence (no setState-in-effect).
 function useSessionState(key: string, fallback: string) {
@@ -44,32 +46,6 @@ type Props = {
 const DAY_LABEL: Record<DayKey, string> = {
   sun: "Sun", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat",
 };
-
-// Card media: looping video when ready, else photo, else accent placeholder.
-function CardMedia({
-  it,
-  className,
-  cdnHost,
-  accent,
-  onPlay,
-}: {
-  it: Item;
-  className: string;
-  cdnHost: string;
-  accent: string;
-  onPlay?: () => void;
-}) {
-  const poster = it.video_thumb_url ?? it.image_url ?? null;
-  const mp4 =
-    it.video_status === "ready" && it.video_id
-      ? `https://${cdnHost}/${it.video_id}/play_480p.mp4`
-      : null;
-  if (mp4) return <VideoTile poster={poster} mp4Url={mp4} className={className} onPlay={onPlay} />;
-  if (it.image_url)
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={it.image_url} alt="" className={className} />;
-  return <div className={className} style={{ background: `${accent}14` }} />;
-}
 
 export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayKey }: Props) {
   const accent = tenant.accent_color ?? "#FB6A1A";
@@ -135,6 +111,49 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
   function openItem(it: Item) {
     setSelected(it);
     track(tenant.id, "item_view", it.id);
+  }
+
+  const template = tenant.template || "grid";
+  const localizeCat = (c: Category) => l(c.name, (c.name_i18n as Record<string, string> | null) ?? null);
+  const catNameById = new Map(categories.map((c) => [c.id, localizeCat(c)]));
+  const categoryName = (it: Item) => (it.category_id ? catNameById.get(it.category_id) ?? "" : "");
+
+  // Shared item-layout props for Grid / Classic / Spotlight.
+  const view: SectionView = {
+    cdnHost,
+    accent,
+    soldOut: t(locale, "soldOut"),
+    l,
+    price,
+    onOpen: openItem,
+    onPlay: (it) => track(tenant.id, "video_play", it.id),
+  };
+
+  // Reel is a full-screen feed, not the scrollable shell — featured dishes lead.
+  if (template === "reel") {
+    const reelDishes = [...featured, ...items.filter((i) => !featured.some((f) => f.id === i.id))];
+    return (
+      <ReelView
+        dishes={reelDishes}
+        tenant={{ name: tenant.name, lat: tenant.lat, lng: tenant.lng, phone: tenant.phone, logo_url: tenant.logo_url }}
+        accent={accent}
+        cdnHost={cdnHost}
+        locale={locale}
+        setLocale={setLocale}
+        activeLocales={activeLocales}
+        cur={cur}
+        setCurrency={setCurrency}
+        dualCurrency={tenant.dual_currency}
+        shareUrl={shareUrl}
+        categoryName={categoryName}
+        l={l}
+        price={price}
+        onPlay={(it) => track(tenant.id, "video_play", it.id)}
+        onLinkClick={(type) =>
+          track(tenant.id, type === "directions" ? "directions_click" : type === "call" ? "call_click" : "link_click")
+        }
+      />
+    );
   }
 
   return (
@@ -285,39 +304,15 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                 className="scroll-mt-14 pt-6"
               >
                 <h2 className="font-display text-lg font-semibold text-ink">
-                  {l(c.name, c.name_i18n as Record<string, string> | null)}
+                  {localizeCat(c)}
                 </h2>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  {catItems.map((it) => (
-                    <button
-                      key={it.id}
-                      onClick={() => openItem(it)}
-                      className={`overflow-hidden rounded-card border border-line text-left ${
-                        it.is_available ? "" : "opacity-50"
-                      }`}
-                    >
-                      <CardMedia it={it} cdnHost={cdnHost} accent={accent} onPlay={() => track(tenant.id, "video_play", it.id)} className="aspect-square w-full object-cover" />
-                      <div className="p-2">
-                        <div className="flex items-start justify-between gap-1">
-                          <p className="text-sm font-medium text-ink">{l(it.name, it.name_i18n)}</p>
-                        </div>
-                        <p className="text-sm font-semibold" style={{ color: accent }}>
-                          {price(it)}
-                        </p>
-                        {!it.is_available && (
-                          <p className="text-xs text-muted">{t(locale, "soldOut")}</p>
-                        )}
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {(it.tags ?? []).map((tag) => (
-                            <span key={tag} className="rounded-full bg-line px-1.5 py-0.5 text-[9px] uppercase text-muted">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                {template === "classic" ? (
+                  <ClassicList items={catItems} v={view} />
+                ) : template === "spotlight" ? (
+                  <SpotlightList items={catItems} v={view} />
+                ) : (
+                  <GridList items={catItems} v={view} />
+                )}
               </section>
             );
           })}
