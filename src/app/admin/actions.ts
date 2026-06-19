@@ -9,6 +9,7 @@ const PLANS = ["starter", "growth", "premium"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type SlugCheck = { available: boolean; reason?: string };
+export type ActionResult = { ok: true } | { ok: false; error: string };
 
 export async function checkSlug(raw: string): Promise<SlugCheck> {
   if (!(await currentAdmin())) return { available: false, reason: "Not authorized" };
@@ -101,4 +102,40 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
 
   revalidatePath("/admin");
   return { ok: true, slug, ownerExisted };
+}
+
+/* ---------- Tenant management (admin console) ---------- */
+
+const STATUSES = ["building", "trialing", "active", "past_due", "suspended", "canceled"];
+
+// Status + plan are privileged columns; written via the service role after the admin gate
+// (the column guard allows admin / no-auth-session writes). docs/architecture.md §6.
+export async function setTenantStatus(
+  tenantId: string,
+  slug: string,
+  status: string
+): Promise<ActionResult> {
+  if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+  if (!STATUSES.includes(status)) return { ok: false, error: "Invalid status" };
+  const svc = createAdminClient();
+  const { error } = await svc.from("tenants").update({ status }).eq("id", tenantId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin");
+  revalidatePath(`/${slug}`); // status affects the public publish gate
+  return { ok: true };
+}
+
+export async function changeTenantPlan(
+  tenantId: string,
+  plan: string
+): Promise<ActionResult> {
+  if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+  if (!PLANS.includes(plan)) return { ok: false, error: "Invalid plan" };
+  const svc = createAdminClient();
+  const { error } = await svc.from("tenants").update({ plan }).eq("id", tenantId);
+  if (error) return { ok: false, error: error.message };
+  // Keep the subscription mirror in step so feature gates change immediately.
+  await svc.from("subscriptions").update({ plan }).eq("tenant_id", tenantId);
+  revalidatePath("/admin");
+  return { ok: true };
 }
