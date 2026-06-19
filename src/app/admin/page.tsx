@@ -26,12 +26,18 @@ export default async function AdminPage() {
       </div>
       <p className="mt-1 text-sm text-muted">{admin.email}</p>
 
-      <div className="mt-6">
+      <div className="mt-6 flex items-center gap-3">
         <Link
           href="/admin/new-client"
           className="inline-block rounded-btn bg-accent px-4 py-2.5 text-sm font-medium text-white"
         >
           + New client
+        </Link>
+        <Link
+          href="/admin/billing"
+          className="inline-block rounded-btn border border-line px-4 py-2.5 text-sm font-medium text-ink"
+        >
+          Billing
         </Link>
       </div>
 

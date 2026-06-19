@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -28,6 +29,21 @@ export default async function DashboardPage() {
         <SignOutButton />
       </div>
       <p className="mt-1 text-sm text-muted">{user.email}</p>
+
+      {memberships?.some((m) => m.tenants?.status === "past_due") && (
+        <div className="mt-4 rounded-card border border-accent/40 bg-accent/10 p-4 text-sm text-ink">
+          Your payment didn’t go through. Update it to keep your page online.{" "}
+          <Link href="/dashboard/billing" className="font-medium text-accent-deep underline">
+            View billing
+          </Link>
+        </div>
+      )}
+
+      <div className="mt-4">
+        <Link href="/dashboard/billing" className="text-sm font-medium text-accent">
+          Billing &amp; invoices →
+        </Link>
+      </div>
 
       <h2 className="mt-8 font-display text-lg font-semibold text-ink">Your menus</h2>
       {!memberships || memberships.length === 0 ? (
