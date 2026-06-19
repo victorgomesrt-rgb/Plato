@@ -6,7 +6,14 @@ import {
   Camera, ThumbsUp, Star, FileText, Wifi, Share2, Music2, type LucideIcon,
 } from "lucide-react";
 import { t } from "@/lib/i18n";
+import { track } from "@/lib/track-client";
 import type { TenantLink } from "@/lib/tenant";
+
+function eventFor(type: string): string {
+  if (type === "directions") return "directions_click";
+  if (type === "call") return "call_click";
+  return "link_click";
+}
 
 // lucide dropped trademarked brand glyphs, so social uses neutral icons; the label
 // text still names the network.
@@ -50,6 +57,7 @@ const BTN = "flex min-w-[64px] flex-col items-center gap-1 rounded-btn px-3 py-2
 function ActionButton({
   link,
   tenant,
+  tenantId,
   locale,
   accent,
   onWifi,
@@ -57,6 +65,7 @@ function ActionButton({
 }: {
   link: TenantLink;
   tenant: TenantBits;
+  tenantId: string;
   locale: string;
   accent: string;
   onWifi: () => void;
@@ -73,13 +82,13 @@ function ActionButton({
 
   if (link.type === "wifi")
     return (
-      <button className={BTN} onClick={onWifi}>
+      <button className={BTN} onClick={() => { track(tenantId, "link_click"); onWifi(); }}>
         {inner}
       </button>
     );
   if (link.type === "share")
     return (
-      <button className={BTN} onClick={onShare}>
+      <button className={BTN} onClick={() => { track(tenantId, "link_click"); onShare(); }}>
         {inner}
       </button>
     );
@@ -87,7 +96,13 @@ function ActionButton({
   const href = hrefFor(link, tenant);
   if (!href) return null;
   return (
-    <a className={BTN} href={href} target="_blank" rel="noopener noreferrer">
+    <a
+      className={BTN}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={() => track(tenantId, eventFor(link.type))}
+    >
       {inner}
     </a>
   );
@@ -96,12 +111,14 @@ function ActionButton({
 export function ActionBar({
   links,
   tenant,
+  tenantId,
   locale,
   shareUrl,
   accent,
 }: {
   links: TenantLink[];
   tenant: TenantBits;
+  tenantId: string;
   locale: string;
   shareUrl: string;
   accent: string;
@@ -135,6 +152,7 @@ export function ActionBar({
             key={`${l.type}-${i}`}
             link={l}
             tenant={tenant}
+            tenantId={tenantId}
             locale={locale}
             accent={accent}
             onWifi={() => setWifiFor((cur) => (cur ? null : wifiLink))}

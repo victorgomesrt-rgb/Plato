@@ -21,12 +21,15 @@ export function VideoTile({
   poster,
   mp4Url,
   className,
+  onPlay,
 }: {
   poster: string | null;
   mp4Url: string | null;
   className?: string;
+  onPlay?: () => void;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const played = useRef(false);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -35,14 +38,24 @@ export function VideoTile({
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) el.play().catch(() => {});
-        else el.pause();
+        if (entry.isIntersecting) {
+          el.play()
+            .then(() => {
+              if (!played.current) {
+                played.current = true;
+                onPlay?.();
+              }
+            })
+            .catch(() => {});
+        } else {
+          el.pause();
+        }
       },
       { threshold: 0.5 }
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [reduced, mp4Url]);
+  }, [reduced, mp4Url, onPlay]);
 
   if (reduced || !mp4Url) {
     // eslint-disable-next-line @next/next/no-img-element

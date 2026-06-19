@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import type { Tenant } from "@/lib/tenant";
 import type { Category, Item } from "@/lib/menu";
 import { localized, t, LOCALE_LABELS } from "@/lib/i18n";
+import { track } from "@/lib/track-client";
 import { priceLabel, type DisplayCurrency } from "@/lib/currency";
 import { isOpenNow, DAY_KEYS, type DayKey } from "@/lib/hours";
 import { ActionBar } from "./action-bar";
@@ -50,18 +51,20 @@ function CardMedia({
   className,
   cdnHost,
   accent,
+  onPlay,
 }: {
   it: Item;
   className: string;
   cdnHost: string;
   accent: string;
+  onPlay?: () => void;
 }) {
   const poster = it.video_thumb_url ?? it.image_url ?? null;
   const mp4 =
     it.video_status === "ready" && it.video_id
       ? `https://${cdnHost}/${it.video_id}/play_480p.mp4`
       : null;
-  if (mp4) return <VideoTile poster={poster} mp4Url={mp4} className={className} />;
+  if (mp4) return <VideoTile poster={poster} mp4Url={mp4} className={className} onPlay={onPlay} />;
   if (it.image_url)
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={it.image_url} alt="" className={className} />;
@@ -110,6 +113,11 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
     return () => io.disconnect();
   }, [categories.length]);
 
+  // Cookieless page_view once per load.
+  useEffect(() => {
+    track(tenant.id, "page_view");
+  }, [tenant.id]);
+
   const l = (base: string | null, i18n: Record<string, string> | null) =>
     localized(base, i18n, locale, defaultLocale);
   const price = (it: Item) =>
@@ -122,6 +130,11 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
   function jumpTo(catId: string) {
     sectionRefs.current[catId]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function openItem(it: Item) {
+    setSelected(it);
+    track(tenant.id, "item_view", it.id);
   }
 
   return (
@@ -203,6 +216,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           {tenant.links && tenant.links.length > 0 && (
             <div className="mt-4">
               <ActionBar
+                tenantId={tenant.id}
                 links={tenant.links}
                 tenant={{
                   name: tenant.name,
@@ -227,10 +241,10 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                 {featured.map((it) => (
                   <button
                     key={it.id}
-                    onClick={() => setSelected(it)}
+                    onClick={() => openItem(it)}
                     className="w-36 shrink-0 text-left"
                   >
-                    <CardMedia it={it} cdnHost={cdnHost} accent={accent} className="aspect-[4/5] w-full rounded-card object-cover" />
+                    <CardMedia it={it} cdnHost={cdnHost} accent={accent} onPlay={() => track(tenant.id, "video_play", it.id)} className="aspect-[4/5] w-full rounded-card object-cover" />
                     <p className="mt-1 truncate text-sm font-medium text-ink">{l(it.name, it.name_i18n)}</p>
                     <p className="text-sm" style={{ color: accent }}>{price(it)}</p>
                   </button>
@@ -277,12 +291,12 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                   {catItems.map((it) => (
                     <button
                       key={it.id}
-                      onClick={() => setSelected(it)}
+                      onClick={() => openItem(it)}
                       className={`overflow-hidden rounded-card border border-line text-left ${
                         it.is_available ? "" : "opacity-50"
                       }`}
                     >
-                      <CardMedia it={it} cdnHost={cdnHost} accent={accent} className="aspect-square w-full object-cover" />
+                      <CardMedia it={it} cdnHost={cdnHost} accent={accent} onPlay={() => track(tenant.id, "video_play", it.id)} className="aspect-square w-full object-cover" />
                       <div className="p-2">
                         <div className="flex items-start justify-between gap-1">
                           <p className="text-sm font-medium text-ink">{l(it.name, it.name_i18n)}</p>

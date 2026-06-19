@@ -39,7 +39,10 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="mt-4">
+      <div className="mt-4 flex gap-4">
+        <Link href="/dashboard/analytics" className="text-sm font-medium text-accent">
+          Analytics →
+        </Link>
         <Link href="/dashboard/billing" className="text-sm font-medium text-accent">
           Billing &amp; invoices →
         </Link>
