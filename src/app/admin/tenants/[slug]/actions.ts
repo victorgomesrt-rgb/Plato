@@ -332,3 +332,26 @@ export async function setTemplate(
     return { ok: false, error: (e as Error).message };
   }
 }
+
+/* ---------- Auto-translate (Claude API) ---------- */
+
+export type TranslateResult =
+  | { ok: true; nameEs: string; descriptionEs: string }
+  | { ok: false; error: string };
+
+// Fills a Spanish DRAFT for an item from its English text. Never publishes — the
+// editor drops the result into the ES fields for the team to review (architecture §28).
+export async function translateItemDraft(
+  tenantId: string,
+  name: string,
+  description: string
+): Promise<TranslateResult> {
+  try {
+    await assertTenant(tenantId);
+    const { translateToEs } = await import("@/lib/translate");
+    const out = await translateToEs(name, description);
+    return { ok: true, ...out };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}

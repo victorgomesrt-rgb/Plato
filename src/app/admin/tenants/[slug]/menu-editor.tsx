@@ -27,6 +27,7 @@ import {
   setAvailability,
   setFeatured,
   reorderItems,
+  translateItemDraft,
   type ItemInput,
 } from "./actions";
 import { ItemMedia } from "./item-media";
@@ -137,6 +138,24 @@ export function MenuEditor({
       </div>
       {err && <p className="mt-2 rounded-btn bg-accent/10 px-3 py-2 text-sm text-accent-deep">{err}</p>}
 
+      {cats.length === 0 && (
+        <div className="mt-4 rounded-card border border-dashed border-line p-6 text-center">
+          <p className="font-medium text-ink">Group your menu</p>
+          <p className="mt-1 text-sm text-muted">Start with a few common categories, then add dishes.</p>
+          <div className="mt-3 flex flex-wrap justify-center gap-2">
+            {["Starters", "Mains", "Drinks", "Desserts"].map((c) => (
+              <button
+                key={c}
+                onClick={() => run(createCategory(tenant.id, c))}
+                className="rounded-btn border border-line px-3 py-1.5 text-sm font-medium text-ink hover:bg-line"
+              >
+                + {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onCatDragEnd}>
         <SortableContext items={cats.map((c) => c.id)} strategy={verticalListSortingStrategy}>
           <div className="mt-4 space-y-4">
@@ -235,6 +254,7 @@ function CategoryBlock({
 
       {adding ? (
         <ItemForm
+          tenantId={tenant.id}
           onCancel={() => setAdding(false)}
           onSubmit={(input) => { run(createItem(tenant.id, { ...input, categoryId: cat.id })); setAdding(false); }}
         />
@@ -312,6 +332,7 @@ function ItemRow({
 
       {editing && (
         <ItemForm
+          tenantId={tenant.id}
           initial={item}
           onCancel={() => setEditing(false)}
           onSubmit={(input) => { run(updateItem(tenant.id, item.id, input)); setEditing(false); }}
@@ -324,10 +345,12 @@ function ItemRow({
 /* ---------- Item form (add/edit) ---------- */
 
 function ItemForm({
+  tenantId,
   initial,
   onSubmit,
   onCancel,
 }: {
+  tenantId: string;
   initial?: Item;
   onSubmit: (input: ItemInput) => void;
   onCancel: () => void;
@@ -339,6 +362,21 @@ function ItemForm({
   const [price, setPrice] = useState(initial?.price != null ? String(initial.price) : "");
   const [priceText, setPriceText] = useState(initial?.price_text ?? "");
   const [tags, setTags] = useState<string[]>(initial?.tags ?? []);
+  const [translating, setTranslating] = useState(false);
+  const [tErr, setTErr] = useState<string | null>(null);
+
+  async function autoTranslate() {
+    setTErr(null);
+    setTranslating(true);
+    const r = await translateItemDraft(tenantId, name, description);
+    setTranslating(false);
+    if (r.ok) {
+      setNameEs(r.nameEs);
+      setDescriptionEs(r.descriptionEs);
+    } else {
+      setTErr(r.error);
+    }
+  }
 
   const field = "w-full rounded-btn border border-line px-2 py-1.5 text-sm outline-none focus:border-accent";
 
@@ -351,6 +389,17 @@ function ItemForm({
         <textarea className={field} value={descriptionEs} onChange={(e) => setDescriptionEs(e.target.value)} placeholder="Descripción (ES)" rows={2} />
         <input className={field} value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Price (e.g. 12.50)" inputMode="decimal" />
         <input className={field} value={priceText} onChange={(e) => setPriceText(e.target.value)} placeholder="Or price text (e.g. Market price)" />
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={autoTranslate}
+          disabled={translating || !name.trim()}
+          className="text-xs font-medium text-accent disabled:opacity-50"
+        >
+          {translating ? "Translating…" : "✦ Auto-translate to ES (draft)"}
+        </button>
+        {tErr && <span className="text-xs text-accent-deep">{tErr}</span>}
       </div>
       <div className="flex flex-wrap gap-2">
         {TAGS.map((t) => (

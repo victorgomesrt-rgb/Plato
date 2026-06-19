@@ -17,10 +17,31 @@ export default async function DashboardPage() {
   // RLS limits this to the tenants the user is a member of.
   const { data: memberships } = await supabase
     .from("tenant_members")
-    .select("role, tenants(slug, name, status, published_at)")
+    .select("role, tenants(slug, name, status, published_at, trial_ends_at)")
     .returns<
-      { role: string; tenants: { slug: string; name: string; status: string; published_at: string | null } | null }[]
+      {
+        role: string;
+        tenants: {
+          slug: string;
+          name: string;
+          status: string;
+          published_at: string | null;
+          trial_ends_at: string | null;
+        } | null;
+      }[]
     >();
+
+  // Trial ending within 3 days? (design.md §7). Server render time — pure here.
+  // eslint-disable-next-line react-hooks/purity
+  const nowMs = Date.now();
+  const trialDaysLeft = (() => {
+    const ends = memberships
+      ?.map((m) => m.tenants?.trial_ends_at)
+      .filter((d): d is string => !!d)
+      .map((d) => Math.ceil((new Date(d).getTime() - nowMs) / 86_400_000))
+      .filter((n) => n >= 0 && n <= 3);
+    return ends && ends.length ? Math.min(...ends) : null;
+  })();
 
   return (
     <main className="mx-auto w-full max-w-3xl px-6 py-10">
@@ -29,6 +50,19 @@ export default async function DashboardPage() {
         <SignOutButton />
       </div>
       <p className="mt-1 text-sm text-muted">{user.email}</p>
+
+      {trialDaysLeft != null && (
+        <div className="mt-4 rounded-card border border-citrus/50 bg-citrus/10 p-4 text-sm text-ink">
+          {trialDaysLeft === 0
+            ? "Your trial ends today."
+            : `${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} left in your trial.`}{" "}
+          Keep your menu live —{" "}
+          <Link href="/dashboard/billing" className="font-medium text-accent-deep underline">
+            choose a plan
+          </Link>
+          .
+        </div>
+      )}
 
       {memberships?.some((m) => m.tenants?.status === "past_due") && (
         <div className="mt-4 rounded-card border border-accent/40 bg-accent/10 p-4 text-sm text-ink">
