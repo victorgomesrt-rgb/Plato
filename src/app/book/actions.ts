@@ -11,6 +11,8 @@ export type BookingInput = {
   email: string;
   menuSize: string;
   plan: string;
+  timing: string;
+  notes: string;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,6 +36,8 @@ export async function submitBooking(
     ["Email", email],
     ["Menu size", input.menuSize || "—"],
     ["Interested plan", input.plan || "—"],
+    ["Shoot timing", input.timing || "—"],
+    ["Notes", input.notes || "—"],
   ];
 
   const { error } = await sendEmail({
