@@ -22,6 +22,15 @@ export const metadata: Metadata = {
   },
   description:
     "A fast, mobile-first video menu for every restaurant. Scan, watch the food, decide.",
+  openGraph: {
+    type: "website",
+    siteName: "Plato",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Plato — turn every table into a video menu" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({
