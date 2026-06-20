@@ -22,7 +22,7 @@ function useHydrated() {
   return useSyncExternalStore(() => () => {}, () => true, () => false);
 }
 
-const DEMO = "mailto:hello@platodigital.io?subject=Add%20my%20restaurant%20to%20Plato";
+const DEMO = "/book";
 
 function Card({ t, hydrated }: { t: DiscoverCard; hydrated: boolean }) {
   const accent = t.accent_color ?? "#FB6A1A";

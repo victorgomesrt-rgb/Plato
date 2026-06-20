@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -72,6 +73,11 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full rounded-btn border border-line px-3 py-2.5 text-ink outline-none focus:border-accent"
           />
+          <div className="text-right">
+            <Link href="/forgot" className="text-sm font-medium text-accent hover:text-accent-deep">
+              Forgot password?
+            </Link>
+          </div>
           <button
             type="submit"
             disabled={busy}

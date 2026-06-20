@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "We come to your restaurant, film your food, and build a fast video menu where the dishes actually move. Diners scan, watch, and decide.",
 };
 
-const DEMO = "mailto:hello@platodigital.io?subject=Plato%20demo&body=Hi%20Plato%2C%20I%27d%20like%20to%20book%20a%20demo%20for%20my%20restaurant.";
+const DEMO = "/book";
 
 const features = [
   { icon: Video, title: "Dishes that move", body: "A short, silent looping clip for every dish. People order what they can see." },
