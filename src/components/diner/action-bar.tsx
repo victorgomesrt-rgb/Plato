@@ -1,28 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import {
-  MapPin, Phone, MessageCircle, Globe, CalendarCheck, ShoppingBag, Mail,
-  Camera, ThumbsUp, Star, FileText, Wifi, Share2, Music2, type LucideIcon,
+  MapPin, Phone, Globe, CalendarCheck, ShoppingBag, Mail, Star, FileText, Wifi, Share2,
 } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { track } from "@/lib/track-client";
+import { WhatsAppIcon, InstagramIcon, FacebookIcon, TikTokIcon } from "./brand-icons";
 import type { TenantLink } from "@/lib/tenant";
+
+type Icon = ComponentType<{ className?: string }>;
+
+const ICONS: Record<string, Icon> = {
+  directions: MapPin, call: Phone, whatsapp: WhatsAppIcon, website: Globe,
+  reserve: CalendarCheck, order: ShoppingBag, email: Mail, instagram: InstagramIcon,
+  tiktok: TikTokIcon, facebook: FacebookIcon, reviews: Star, menu_pdf: FileText,
+  wifi: Wifi, share: Share2,
+};
 
 function eventFor(type: string): string {
   if (type === "directions") return "directions_click";
   if (type === "call") return "call_click";
   return "link_click";
 }
-
-// lucide dropped trademarked brand glyphs, so social uses neutral icons; the label
-// text still names the network.
-const ICONS: Record<string, LucideIcon> = {
-  directions: MapPin, call: Phone, whatsapp: MessageCircle, website: Globe,
-  reserve: CalendarCheck, order: ShoppingBag, email: Mail, instagram: Camera,
-  tiktok: Music2, facebook: ThumbsUp, reviews: Star, menu_pdf: FileText,
-  wifi: Wifi, share: Share2,
-};
 
 type TenantBits = {
   name: string;
@@ -52,16 +52,21 @@ function hrefFor(link: TenantLink, tn: TenantBits): string | null {
   }
 }
 
-const BTN = "flex min-w-[64px] flex-col items-center gap-1 rounded-btn px-3 py-2 text-xs font-medium text-ink";
+const WRAP = "flex min-w-[60px] shrink-0 flex-col items-center gap-1.5";
+
+function Circle({ Icon, primary, accent }: { Icon: Icon; primary: boolean; accent: string }) {
+  return (
+    <span
+      className={`grid h-12 w-12 place-items-center rounded-full transition ${primary ? "text-white" : "bg-line text-ink"}`}
+      style={primary ? { background: accent } : undefined}
+    >
+      <Icon className="h-[22px] w-[22px]" />
+    </span>
+  );
+}
 
 function ActionButton({
-  link,
-  tenant,
-  tenantId,
-  locale,
-  accent,
-  onWifi,
-  onShare,
+  link, tenant, tenantId, locale, accent, onWifi, onShare,
 }: {
   link: TenantLink;
   tenant: TenantBits;
@@ -73,22 +78,23 @@ function ActionButton({
 }) {
   const Icon = ICONS[link.type];
   const label = link.label || t(locale, link.type);
+  const primary = link.type === "directions";
   const inner = (
     <>
-      <Icon className="h-5 w-5" style={{ color: accent }} aria-hidden />
-      <span>{label}</span>
+      <Circle Icon={Icon} primary={primary} accent={accent} />
+      <span className="text-[11px] font-medium text-ink">{label}</span>
     </>
   );
 
   if (link.type === "wifi")
     return (
-      <button className={BTN} onClick={() => { track(tenantId, "link_click"); onWifi(); }}>
+      <button className={WRAP} onClick={() => { track(tenantId, "link_click"); onWifi(); }}>
         {inner}
       </button>
     );
   if (link.type === "share")
     return (
-      <button className={BTN} onClick={() => { track(tenantId, "link_click"); onShare(); }}>
+      <button className={WRAP} onClick={() => { track(tenantId, "link_click"); onShare(); }}>
         {inner}
       </button>
     );
@@ -96,25 +102,14 @@ function ActionButton({
   const href = hrefFor(link, tenant);
   if (!href) return null;
   return (
-    <a
-      className={BTN}
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => track(tenantId, eventFor(link.type))}
-    >
+    <a className={WRAP} href={href} target="_blank" rel="noopener noreferrer" onClick={() => track(tenantId, eventFor(link.type))}>
       {inner}
     </a>
   );
 }
 
 export function ActionBar({
-  links,
-  tenant,
-  tenantId,
-  locale,
-  shareUrl,
-  accent,
+  links, tenant, tenantId, locale, shareUrl, accent,
 }: {
   links: TenantLink[];
   tenant: TenantBits;
@@ -146,7 +141,7 @@ export function ActionBar({
 
   return (
     <div className="relative">
-      <div className="flex gap-1 overflow-x-auto pb-1">
+      <div className="flex gap-3 overflow-x-auto pb-1">
         {enabled.map((l, i) => (
           <ActionButton
             key={`${l.type}-${i}`}
@@ -165,13 +160,9 @@ export function ActionBar({
         <div className="mt-2 rounded-card border border-line bg-surface p-3 text-sm">
           {wifiFor.ssid ? (
             <>
-              <p className="text-ink">
-                <span className="text-muted">Network:</span> {wifiFor.ssid}
-              </p>
+              <p className="text-ink"><span className="text-muted">Network:</span> {wifiFor.ssid}</p>
               {wifiFor.password && (
-                <p className="text-ink">
-                  <span className="text-muted">Password:</span> {wifiFor.password}
-                </p>
+                <p className="text-ink"><span className="text-muted">Password:</span> {wifiFor.password}</p>
               )}
             </>
           ) : (

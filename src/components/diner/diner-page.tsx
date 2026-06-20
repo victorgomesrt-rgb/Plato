@@ -187,13 +187,21 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           ) : (
             <div className="h-full w-full" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}99)` }} />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 flex items-end gap-3 p-4">
-            {tenant.logo_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={tenant.logo_url} alt="" className="h-12 w-12 rounded-card object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-ink/75 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 p-4">
+            {hydrated && tenant.hours && (
+              <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: isOpenNow(tenant.hours) ? "#18A999" : "#cbb9aa" }} />
+                {isOpenNow(tenant.hours) ? t(locale, "openNow") : t(locale, "closed")}
+              </span>
             )}
-            <h1 className="font-display text-2xl font-semibold text-white drop-shadow">{tenant.name}</h1>
+            <div className="flex items-end gap-3">
+              {tenant.logo_url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={tenant.logo_url} alt="" className="h-12 w-12 rounded-card object-cover" />
+              )}
+              <h1 className="font-display text-2xl font-semibold text-white drop-shadow">{tenant.name}</h1>
+            </div>
           </div>
           {/* Toggles */}
           <div className="absolute right-3 top-3 flex gap-2">
@@ -261,11 +269,16 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                   <button
                     key={it.id}
                     onClick={() => openItem(it)}
-                    className="w-36 shrink-0 text-left"
+                    className="relative w-36 shrink-0 overflow-hidden rounded-card text-left"
                   >
-                    <CardMedia it={it} cdnHost={cdnHost} accent={accent} onPlay={() => track(tenant.id, "video_play", it.id)} className="aspect-[4/5] w-full rounded-card object-cover" />
-                    <p className="mt-1 truncate text-sm font-medium text-ink">{l(it.name, it.name_i18n)}</p>
-                    <p className="text-sm" style={{ color: accent }}>{price(it)}</p>
+                    <CardMedia it={it} cdnHost={cdnHost} accent={accent} onPlay={() => track(tenant.id, "video_play", it.id)} className="aspect-[4/5] w-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-2.5">
+                      <p className="truncate text-sm font-semibold text-white drop-shadow">{l(it.name, it.name_i18n)}</p>
+                      <span className="mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-bold text-white" style={{ background: accent }}>
+                        {price(it)}
+                      </span>
+                    </div>
                   </button>
                 ))}
               </div>
