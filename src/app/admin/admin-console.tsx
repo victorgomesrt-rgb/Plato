@@ -17,15 +17,6 @@ export type TenantRow = {
   updated_at: string;
 };
 
-type Overview = {
-  mrr: number;
-  active: number;
-  pastDue: number;
-  building: number;
-  newThisMonth: number;
-  churnThisMonth: number;
-};
-
 const STATUSES = ["building", "trialing", "active", "past_due", "suspended", "canceled"];
 const PLANS = ["starter", "growth", "premium"];
 const usd = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
@@ -41,7 +32,7 @@ const STATUS_STYLE: Record<string, string> = {
   trialing: "bg-line text-ink",
 };
 
-export function AdminConsole({ overview, tenants }: { overview: Overview; tenants: TenantRow[] }) {
+export function AdminConsole({ tenants }: { tenants: TenantRow[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [err, setErr] = useState<string | null>(null);
@@ -64,29 +55,11 @@ export function AdminConsole({ overview, tenants }: { overview: Overview; tenant
     );
   }, [tenants, q, status]);
 
-  const cards = [
-    { label: "MRR", value: usd(overview.mrr) },
-    { label: "Active", value: overview.active },
-    { label: "Past due", value: overview.pastDue },
-    { label: "Building", value: overview.building },
-    { label: "New this month", value: overview.newThisMonth },
-    { label: "Churn this month", value: overview.churnThisMonth },
-  ];
-
   return (
     <div className="mt-6">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {cards.map((c) => (
-          <div key={c.label} className="rounded-card border border-line p-4">
-            <p className="text-2xl font-semibold text-ink">{c.value}</p>
-            <p className="text-xs text-muted">{c.label}</p>
-          </div>
-        ))}
-      </div>
+      {err && <p className="mb-4 rounded-btn bg-accent/10 px-3 py-2 text-sm text-accent-deep">{err}</p>}
 
-      {err && <p className="mt-4 rounded-btn bg-accent/10 px-3 py-2 text-sm text-accent-deep">{err}</p>}
-
-      <div className="mt-8 flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}

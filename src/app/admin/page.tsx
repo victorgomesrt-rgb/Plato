@@ -1,61 +1,172 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { Eye, MessageSquare, DollarSign, AlertTriangle, Package } from "lucide-react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { planPrice } from "@/lib/plans";
-import { SignOutButton } from "@/components/sign-out-button";
-import { AdminConsole, type TenantRow } from "./admin-console";
+import { AreaTrend, Donut } from "@/components/charts";
 
-export const metadata: Metadata = { title: "Admin", robots: { index: false } };
+export const metadata: Metadata = { title: "Admin · Overview", robots: { index: false } };
 
+const usd = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
 const arubaMonth = (d: string) =>
-  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba", year: "numeric", month: "2-digit" }).format(
-    new Date(d)
-  );
+  new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba", year: "numeric", month: "2-digit" }).format(new Date(d));
 
-export default async function AdminPage() {
+type Tenant = { id: string; name: string; slug: string; plan: string; status: string; created_at: string; updated_at: string; published_at: string | null };
+type Inv = { amount: number; paid_at: string | null; tenants: { name: string } | null };
+
+function relTime(ts: string, now: number) {
+  const m = Math.floor((now - new Date(ts).getTime()) / 60000);
+  if (m < 60) return `${Math.max(1, m)}m`;
+  if (m < 1440) return `${Math.floor(m / 60)}h`;
+  return `${Math.floor(m / 1440)}d`;
+}
+
+export default async function AdminOverviewPage() {
   const admin = await currentAdmin();
-  if (!admin) notFound();
-
   const svc = createAdminClient();
-  const { data } = await svc
-    .from("tenants")
-    .select("id, name, slug, plan, status, created_at, updated_at")
-    .order("created_at", { ascending: false })
-    .returns<TenantRow[]>();
-  const tenants = data ?? [];
 
-  const thisMonth = arubaMonth(new Date().toISOString());
-  const overview = {
-    mrr: tenants.filter((t) => t.status === "active").reduce((a, t) => a + planPrice(t.plan), 0),
-    active: tenants.filter((t) => t.status === "active").length,
-    pastDue: tenants.filter((t) => t.status === "past_due").length,
-    building: tenants.filter((t) => t.status === "building").length,
-    newThisMonth: tenants.filter((t) => arubaMonth(t.created_at) === thisMonth).length,
-    churnThisMonth: tenants.filter(
-      (t) => t.status === "canceled" && arubaMonth(t.updated_at) === thisMonth
-    ).length,
-  };
+  const [{ data: tData }, { data: iData }] = await Promise.all([
+    svc.from("tenants").select("id, name, slug, plan, status, created_at, updated_at, published_at").order("created_at", { ascending: false }).returns<Tenant[]>(),
+    svc.from("invoices").select("amount, paid_at, tenants(name)").not("paid_at", "is", null).order("paid_at", { ascending: false }).limit(5).returns<Inv[]>(),
+  ]);
+  const tenants = tData ?? [];
+  // Server render time — read the clock once (pure for the rest of render).
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
+  const nowD = new Date(now);
+  const thisMonth = arubaMonth(nowD.toISOString());
+
+  const active = tenants.filter((t) => t.status === "active");
+  const mrr = active.reduce((a, t) => a + planPrice(t.plan), 0);
+  const pastDue = tenants.filter((t) => t.status === "past_due").length;
+  const churn = tenants.filter((t) => t.status === "canceled" && arubaMonth(t.updated_at) === thisMonth).length;
+  const newThis = tenants.filter((t) => arubaMonth(t.created_at) === thisMonth).length;
+
+  // MRR trailing 12 months (cumulative by signup, excluding canceled).
+  const months = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(Date.UTC(nowD.getUTCFullYear(), nowD.getUTCMonth() - (11 - i) + 1, 0));
+    return { label: new Intl.DateTimeFormat("en-US", { month: "short", timeZone: "UTC" }).format(d), end: d };
+  });
+  const mrrTrend = months.map((m) => ({
+    label: m.label,
+    value: tenants.filter((t) => new Date(t.created_at) <= m.end && t.status !== "canceled").reduce((a, t) => a + planPrice(t.plan), 0),
+  }));
+  const last = mrrTrend[11].value, prev = mrrTrend[10].value;
+  const momPct = prev > 0 ? Math.round(((last - prev) / prev) * 1000) / 10 : 0;
+
+  const planMix = [
+    { name: "Starter", value: active.filter((t) => t.plan === "starter").length, color: "#CFC8BF" },
+    { name: "Growth", value: active.filter((t) => t.plan === "growth").length, color: "#0E5B5B" },
+    { name: "Premium", value: active.filter((t) => t.plan === "premium").length, color: "#FB6A1A" },
+  ];
+
+  const onboarding = tenants
+    .filter((t) => ["building", "trialing"].includes(t.status))
+    .slice(0, 4)
+    .map((t) => ({ name: t.name, label: t.status === "building" ? "Building menu" : "Ready to publish", pct: t.status === "building" ? 55 : 90 }));
+
+  type Act = { icon: "pay" | "live"; title: string; sub: string; ts: string };
+  const activity: Act[] = [
+    ...(iData ?? []).filter((i) => i.paid_at).map((i): Act => ({ icon: "pay", title: `Payment received — ${i.tenants?.name ?? "—"}`, sub: usd(Number(i.amount)), ts: i.paid_at! })),
+    ...tenants.filter((t) => t.published_at).slice(0, 3).map((t): Act => ({ icon: "live", title: `${t.name} went live`, sub: t.plan, ts: t.published_at! })),
+  ].sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime()).slice(0, 6);
+
+  const cards = [
+    { label: "MRR", value: usd(mrr), icon: DollarSign, foot: `${momPct >= 0 ? "▲" : "▼"} ${Math.abs(momPct)}% MoM`, good: momPct >= 0 },
+    { label: "Active tenants", value: active.length, icon: Eye, foot: "live pages" },
+    { label: "Past due", value: pastDue, icon: AlertTriangle, foot: "needs follow-up" },
+    { label: "Churn", value: churn, icon: MessageSquare, foot: "this month" },
+    { label: "New this month", value: newThis, icon: Package, foot: "provisioned" },
+  ];
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 py-10">
-      <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-ink">Plato Admin</h1>
-        <SignOutButton />
-      </div>
-      <p className="mt-1 text-sm text-muted">{admin.email}</p>
-
-      <div className="mt-6 flex items-center gap-3">
-        <Link href="/admin/new-client" className="rounded-btn bg-accent px-4 py-2.5 text-sm font-medium text-white">
-          + New client
-        </Link>
-        <Link href="/admin/billing" className="rounded-btn border border-line px-4 py-2.5 text-sm font-medium text-ink">
-          Billing
-        </Link>
+    <main className="mx-auto max-w-6xl px-5 py-6 lg:px-8 lg:py-8">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold text-ink">Overview</h1>
+          <p className="text-sm text-muted">Across all {tenants.length} menu {tenants.length === 1 ? "page" : "pages"}</p>
+        </div>
+        <Link href="/admin/new-client" className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white">+ New client</Link>
       </div>
 
-      <AdminConsole overview={overview} tenants={tenants} />
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        {cards.map((c) => (
+          <div key={c.label} className="rounded-card border border-line bg-surface p-4">
+            <div className="flex items-center justify-between text-muted">
+              <span className="text-xs">{c.label}</span>
+              <c.icon className="h-4 w-4 text-accent" />
+            </div>
+            <p className="mt-2 font-display text-2xl font-bold text-ink">{c.value}</p>
+            <p className={`mt-1 text-xs ${c.good === undefined ? "text-muted" : c.good ? "text-emerald-600" : "text-accent-deep"}`}>{c.foot}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+        <section className="rounded-card border border-line bg-surface p-5">
+          <div className="flex items-baseline justify-between">
+            <div>
+              <h2 className="font-display text-base font-semibold text-ink">Monthly recurring revenue</h2>
+              <p className="text-xs text-muted">Trailing 12 months</p>
+            </div>
+            <p className="font-display text-xl font-bold text-ink">{usd(mrr)}</p>
+          </div>
+          <div className="mt-3"><AreaTrend data={mrrTrend} gradId="mrr" height={210} suffix="" /></div>
+        </section>
+
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Plan mix</h2>
+          <p className="text-xs text-muted">{active.length} active menu pages</p>
+          <div className="mt-4"><Donut data={planMix} centerValue={active.length} centerLabel="pages" height={150} /></div>
+        </section>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <section className="rounded-card border border-line bg-surface p-5">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-base font-semibold text-ink">Onboarding in progress</h2>
+            <span className="text-xs text-muted">{onboarding.length} being built</span>
+          </div>
+          <div className="mt-4 space-y-4">
+            {onboarding.length === 0 ? (
+              <p className="text-sm text-muted">Nothing in the pipeline right now.</p>
+            ) : onboarding.map((o) => (
+              <div key={o.name}>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-ink">{o.name}</span>
+                  <span className="text-muted">{o.label}</span>
+                </div>
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
+                  <div className="h-full rounded-full bg-accent" style={{ width: `${o.pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Recent activity</h2>
+          <ul className="mt-4 space-y-3">
+            {activity.length === 0 ? (
+              <li className="text-sm text-muted">No activity yet.</li>
+            ) : activity.map((a, i) => (
+              <li key={i} className="flex items-center gap-3">
+                <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${a.icon === "pay" ? "bg-sea/10 text-sea" : "bg-accent/10 text-accent"}`}>
+                  {a.icon === "pay" ? <DollarSign className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-ink">{a.title}</p>
+                  <p className="truncate text-xs text-muted">{a.sub}</p>
+                </div>
+                <span className="text-xs text-muted">{relTime(a.ts, now)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <p className="mt-6 text-xs text-muted">Signed in as {admin?.email}</p>
     </main>
   );
 }
