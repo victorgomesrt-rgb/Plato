@@ -159,9 +159,9 @@ export default function Landing() {
   const year = new Date().getFullYear();
   return (
     <div className="bg-ink text-white">
-      {/* Nav */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/80 backdrop-blur">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
+      {/* Nav — floating pill (fixed, centered, blurred) like the mockup */}
+      <header className="fixed left-1/2 top-4 z-50 w-[calc(100%-32px)] max-w-[1080px] -translate-x-1/2 rounded-full border border-white/10 bg-ink/[0.62] px-5 py-[11px] shadow-[0_14px_40px_-20px_rgba(0,0,0,0.7)] backdrop-blur-[18px]">
+        <nav className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2"><PlatoMark className="h-7 w-auto" onDark /><span className="font-display text-lg font-extrabold tracking-tight">Plato</span></Link>
           <div className="hidden items-center gap-7 text-sm text-white/70 md:flex">
             <a href="#how" className="hover:text-white">How it works</a>
@@ -169,7 +169,7 @@ export default function Landing() {
             <a href="#features" className="hover:text-white">Features</a>
             <a href="#pricing" className="hover:text-white">Pricing</a>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             <Link href="/login" className="px-3 py-1.5 text-sm font-medium text-white/80 hover:text-white">Log in</Link>
             <a href={WAITLIST} className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">Get started</a>
           </div>
@@ -179,10 +179,10 @@ export default function Landing() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -right-32 -top-40 h-[40rem] w-[40rem] rounded-full bg-accent/25 blur-[130px]" />
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 md:grid-cols-2 md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-28 md:grid-cols-2 md:pb-24 md:pt-36">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Digital menus for Aruba’s restaurants
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-blink 1.6s ease-in-out infinite" }} /> Digital menus for Aruba’s restaurants
             </span>
             <h1 className="mt-5 font-display text-hero font-extrabold leading-[0.96] tracking-tight">
               People eat with their <span className="text-accent">eyes.</span>
@@ -218,43 +218,47 @@ export default function Landing() {
 
       {/* Why it works */}
       <section id="how" className="bg-surface text-ink">
-        <Reveal className="mx-auto max-w-6xl px-5 py-20">
-          <Eyebrow>Why it works</Eyebrow>
-          <h2 className="mt-3 max-w-2xl font-display text-section font-extrabold leading-tight">A paper menu can’t show how good it tastes.</h2>
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Reveal>
+            <Eyebrow>Why it works</Eyebrow>
+            <h2 className="mt-3 max-w-2xl font-display text-section font-extrabold leading-tight">A paper menu can’t show how good it tastes.</h2>
+          </Reveal>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {why.map((c) => (
-              <div key={c.title} className="rounded-card border border-line bg-white p-6 shadow-sm">
+              <Reveal key={c.title} className="rounded-card border border-line bg-white p-6 shadow-sm">
                 <span className={`grid h-11 w-11 place-items-center rounded-xl ${c.tint}`}><c.icon className="h-5 w-5" /></span>
                 <h3 className="mt-4 font-display text-lg font-bold">{c.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">{c.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* Templates */}
       <section id="templates" className="relative overflow-hidden">
         <div className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-accent/15 blur-[120px]" />
-        <Reveal className="mx-auto max-w-6xl px-5 py-20">
-          <div className="text-center">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Reveal className="text-center">
             <Eyebrow>Four templates, one shoot</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">Pick the look that fits your room.</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/65">Same dishes, four presentations. From TikTok-style full-screen reels to a calm fine-dining list — switch anytime, no re-shoot needed.</p>
-          </div>
+          </Reveal>
           <TemplateSwitcher />
-        </Reveal>
+        </div>
       </section>
 
       {/* Features + dashboard */}
       <section id="features" className="bg-surface text-ink">
-        <Reveal className="mx-auto max-w-6xl px-5 py-20">
-          <Eyebrow>Everything included</Eyebrow>
-          <h2 className="mt-3 font-display text-section font-extrabold">Built for diners on the island.</h2>
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Reveal>
+            <Eyebrow>Everything included</Eyebrow>
+            <h2 className="mt-3 font-display text-section font-extrabold">Built for diners on the island.</h2>
+          </Reveal>
 
           <div className="mt-10 grid items-stretch gap-5 lg:grid-cols-[1.1fr_1fr]">
             {/* Dashboard preview */}
-            <div className="rounded-card bg-ink p-6 text-white shadow-lg">
+            <Reveal className="rounded-card bg-ink p-6 text-white shadow-lg">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><BarChart3 className="h-5 w-5" /></span>
               <h3 className="mt-4 font-display text-xl font-bold">Know what they crave.</h3>
               <p className="mt-1.5 text-sm text-white/65">Views, top dishes, video plays, QR scans, directions and calls — all in one dashboard. We even email you a monthly recap so the value stays visible.</p>
@@ -276,40 +280,40 @@ export default function Landing() {
                   ))}
                 </div>
               </div>
-            </div>
+            </Reveal>
             {/* Feature grid */}
             <div className="grid gap-4 sm:grid-cols-2">
               {features.map((f) => (
-                <div key={f.title} className="rounded-card border border-line bg-white p-5">
+                <Reveal key={f.title} className="rounded-card border border-line bg-white p-5">
                   <f.icon className="h-6 w-6 text-accent" />
                   <h3 className="mt-3 font-semibold">{f.title}</h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{f.body}</p>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* Steps */}
       <section className="relative overflow-hidden">
-        <Reveal className="mx-auto max-w-6xl px-5 py-20">
-          <div className="text-center">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Reveal className="text-center">
             <Eyebrow>Done for you</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">From shoot to live in a day.</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/65">You run the restaurant. We handle the rest — filming, building, translating, and placing your QR codes.</p>
-          </div>
+          </Reveal>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {steps.map((s) => (
-              <div key={s.n} className="relative rounded-card border border-white/10 bg-white/[0.03] p-6">
+              <Reveal key={s.n} className="relative rounded-card border border-white/10 bg-white/[0.03] p-6">
                 <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><s.icon className="h-5 w-5" /></span>
                 <span className="font-display text-5xl font-extrabold text-white/10">{s.n}</span>
                 <h3 className="mt-3 font-display text-lg font-bold">{s.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-white/60">{s.body}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* Stat band */}
@@ -326,15 +330,15 @@ export default function Landing() {
 
       {/* Pricing */}
       <section id="pricing" className="bg-surface text-ink">
-        <Reveal className="mx-auto max-w-6xl px-5 py-20">
-          <div className="text-center">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Reveal className="text-center">
             <Eyebrow>Simple pricing</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">One monthly price. We do the work.</h2>
             <p className="mt-3 text-muted">Plus a one-time on-site capture fee. No contracts, cancel anytime.</p>
-          </div>
+          </Reveal>
           <div className="mt-12 grid items-start gap-5 md:grid-cols-3">
             {plans.map((p) => (
-              <div key={p.name} className={`rounded-card p-6 ${p.dark ? "bg-ink text-white shadow-xl ring-1 ring-accent/40 md:-mt-3 md:pb-9" : "border border-line bg-white"}`}>
+              <Reveal key={p.name} className={`rounded-card p-6 ${p.dark ? "bg-ink text-white shadow-xl ring-1 ring-accent/40 md:-mt-3 md:pb-9" : "border border-line bg-white"}`}>
                 <div className="flex items-center justify-between">
                   <h3 className="font-display text-xl font-bold">{p.name}</h3>
                   {p.dark && <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Most popular</span>}
@@ -347,22 +351,22 @@ export default function Landing() {
                     <li key={it} className="flex gap-2"><Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.dark ? "text-accent" : "text-sea"}`} /><span className={p.dark ? "text-white/85" : ""}>{it}</span></li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             ))}
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* Final CTA — email capture */}
       <section id="waitlist" className="relative overflow-hidden scroll-mt-20">
         <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(55% 70% at 50% 35%, rgba(251,106,26,.32), transparent)" }} />
-        <div className="mx-auto max-w-2xl px-5 py-24 text-center">
+        <Reveal className="mx-auto max-w-2xl px-5 py-24 text-center">
           <PlatoMark className="mx-auto h-12 w-auto" onDark />
           <h2 className="mt-5 font-display text-section font-extrabold">Let’s bring your menu to life.</h2>
           <p className="mx-auto mt-3 max-w-md text-lg text-white/70">Leave your email and we’ll reach out to book a capture visit — your filmed menu can be live before your next dinner service.</p>
           <div className="mt-8"><EmailCapture variant="dark" /></div>
           <Link href="/hungparadise" className="mt-4 inline-block text-sm font-medium text-white/70 hover:text-white">See a live menu →</Link>
-        </div>
+        </Reveal>
       </section>
 
       {/* Footer */}

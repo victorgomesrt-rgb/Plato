@@ -2,23 +2,42 @@
 
 import { useEffect, useRef } from "react";
 
-// Scroll-reveal: adds .in-view (CSS transition fades/slides up) when scrolled into view.
+// Scroll-reveal: adds .in-view (CSS fades/slides up) when the element reaches ~88% down the
+// viewport. One shared rAF-throttled scroll/resize check across all instances — robust against
+// fast scroll and anchor jumps (anything in OR above the viewport reveals; nothing stays hidden).
 // Ref + classList only — no setState-in-effect.
-export function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+const items = new Set<HTMLElement>();
+let raf = 0;
+function run() {
+  raf = 0;
+  const vh = window.innerHeight;
+  for (const el of items) {
+    if (el.getBoundingClientRect().top < vh * 0.88) {
+      el.classList.add("in-view");
+      items.delete(el);
+    }
+  }
+}
+function schedule() { if (!raf) raf = requestAnimationFrame(run); }
+
+export function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { el.classList.add("in-view"); io.unobserve(el); } }),
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    items.add(el);
+    if (items.size === 1) {
+      window.addEventListener("scroll", schedule, { passive: true });
+      window.addEventListener("resize", schedule);
+    }
+    schedule();
+    return () => {
+      items.delete(el);
+      if (items.size === 0) {
+        window.removeEventListener("scroll", schedule);
+        window.removeEventListener("resize", schedule);
+      }
+    };
   }, []);
-  return (
-    <div ref={ref} className={`reveal ${className}`} style={delay ? { transitionDelay: `${delay}ms` } : undefined}>
-      {children}
-    </div>
-  );
+  return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
 }
