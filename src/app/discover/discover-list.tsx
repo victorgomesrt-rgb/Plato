@@ -100,7 +100,7 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent/25 blur-[110px]" />
         <div className="mx-auto max-w-3xl px-5 py-14 text-center">
-          <h1 className="font-display text-4xl font-extrabold leading-tight sm:text-5xl">
+          <h1 className="font-display text-hero font-extrabold leading-[1.02]">
             See the food before<br className="hidden sm:block" /> you sit down.
           </h1>
           <p className="mt-3 text-white/70">Browse Aruba&apos;s restaurants with menus that actually move.</p>
