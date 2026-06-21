@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/toast";
 import { addTablet, assignTablet, returnTablet } from "./actions";
 
 export type Tablet = { id: string; asset_tag: string | null; model: string | null; status: string; tenant_id: string | null; monthly_fee: number | null; deposit: number | null; deployed_at: string | null; tenants: { name: string } | null };
@@ -19,7 +20,7 @@ export function TabletsAdmin({ tablets, tenants }: { tablets: Tablet[]; tenants:
   const [pick, setPick] = useState<Record<string, string>>({});
 
   const run = (p: Promise<{ ok: boolean; error?: string }>) =>
-    start(async () => { const r = await p; setErr(r.ok ? null : (r.error ?? "Error")); if (r.ok) router.refresh(); });
+    start(async () => { const r = await p; setErr(r.ok ? null : (r.error ?? "Error")); if (r.ok) { toast("Updated"); router.refresh(); } });
 
   const deployed = tablets.filter((t) => t.status === "deployed").length;
 

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { AdminSidebar } from "@/components/admin-sidebar";
+import { Toaster } from "@/components/toast";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await currentAdmin();
@@ -9,6 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-[#FAF8F4]">
       <AdminSidebar email={admin.email ?? ""} />
       <div className="md:pl-60">{children}</div>
+      <Toaster />
     </div>
   );
 }

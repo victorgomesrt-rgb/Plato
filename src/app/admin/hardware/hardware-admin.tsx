@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/toast";
 import { createHardwareOrder, advanceHardware } from "./actions";
 
 export type Order = { id: string; item_type: string; quantity: number; notes: string | null; status: string; created_at: string; tenants: { name: string } | null };
@@ -19,7 +20,7 @@ export function HardwareAdmin({ orders, tenants }: { orders: Order[]; tenants: T
   const [f, setF] = useState({ tenantId: "", itemType: ITEM_TYPES[0], quantity: 1, notes: "" });
 
   const run = (p: Promise<{ ok: boolean; error?: string }>) =>
-    start(async () => { const r = await p; setErr(r.ok ? null : (r.error ?? "Error")); if (r.ok) router.refresh(); });
+    start(async () => { const r = await p; setErr(r.ok ? null : (r.error ?? "Error")); if (r.ok) { toast("Updated"); router.refresh(); } });
 
   return (
     <div className="mt-6">

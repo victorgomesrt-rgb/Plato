@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "@/components/toast";
 import { setItemAvailable, setItemPrice } from "./actions";
 
 export type QItem = { id: string; name: string; price: number | null; price_text: string | null; is_available: boolean; category_id: string | null };
@@ -19,7 +20,7 @@ function PriceField({ item, currency }: { item: QItem; currency: string }) {
     setSaving(true);
     const r = await setItemPrice(item.id, next);
     setSaving(false);
-    if (r.ok) router.refresh();
+    if (r.ok) { toast("Price updated"); router.refresh(); }
   }
 
   return (
@@ -45,7 +46,7 @@ function SoldOutToggle({ item }: { item: QItem }) {
   return (
     <button
       disabled={pending}
-      onClick={() => start(async () => { const r = await setItemAvailable(item.id, !available); if (r.ok) router.refresh(); })}
+      onClick={() => start(async () => { const r = await setItemAvailable(item.id, !available); if (r.ok) { toast(available ? "Marked sold out" : "Marked available"); router.refresh(); } })}
       className="grid h-11 w-11 place-items-center disabled:opacity-60"
       aria-label={available ? "Available — tap to mark sold out" : "Sold out — tap to mark available"}
     >

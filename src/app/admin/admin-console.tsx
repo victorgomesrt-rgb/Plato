@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/toast";
 import { planPrice } from "@/lib/plans";
 import { setTenantStatus, changeTenantPlan } from "./actions";
 
@@ -43,7 +44,7 @@ export function AdminConsole({ tenants }: { tenants: TenantRow[] }) {
     startTransition(async () => {
       const r = await p;
       setErr(r.ok ? null : (r.error ?? "Something went wrong"));
-      if (r.ok) router.refresh();
+      if (r.ok) { toast("Updated"); router.refresh(); }
     });
 
   const rows = useMemo(() => {
