@@ -100,10 +100,13 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-accent/25 blur-[110px]" />
         <div className="mx-auto max-w-3xl px-5 py-14 text-center">
-          <h1 className="font-display text-hero font-extrabold leading-[1.02]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" /> {tenants.length} restaurant{tenants.length === 1 ? "" : "s"} · One Happy Island
+          </span>
+          <h1 className="mt-4 font-display text-hero font-extrabold leading-[1.02]">
             See the food before<br className="hidden sm:block" /> you sit down.
           </h1>
-          <p className="mt-3 text-white/70">Browse Aruba&apos;s restaurants with menus that actually move.</p>
+          <p className="mt-3 text-white/70">Browse Aruba&apos;s restaurants with menus that actually move. Watch the dishes, then go.</p>
           <div className="mx-auto mt-6 flex max-w-lg items-center gap-2 rounded-full bg-white p-1.5 pl-4 shadow-xl">
             <Search className="h-5 w-5 shrink-0 text-muted" />
             <input
