@@ -190,12 +190,16 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/75 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 p-4">
-            {hydrated && tenant.hours && (
-              <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: isOpenNow(tenant.hours) ? "#18A999" : "#cbb9aa" }} />
-                {isOpenNow(tenant.hours) ? t(locale, "openNow") : t(locale, "closed")}
-              </span>
-            )}
+            {hydrated && tenant.hours && (() => {
+              const open = isOpenNow(tenant.hours);
+              const close = tenant.hours?.[todayKey]?.[1];
+              return (
+                <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: open ? "#18A999" : "#cbb9aa" }} />
+                  {open ? `${t(locale, "openNow")}${close ? ` · until ${close}` : ""}` : t(locale, "closed")}
+                </span>
+              );
+            })()}
             <div className="flex items-end gap-3">
               {tenant.logo_url && (
                 // eslint-disable-next-line @next/next/no-img-element

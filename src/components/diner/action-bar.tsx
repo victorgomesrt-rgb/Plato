@@ -54,11 +54,17 @@ function hrefFor(link: TenantLink, tn: TenantBits): string | null {
 
 const WRAP = "flex min-w-[60px] shrink-0 flex-col items-center gap-1.5";
 
-function Circle({ Icon, primary, accent }: { Icon: Icon; primary: boolean; accent: string }) {
+// Subtle brand tints on the recognizable social/contact icons (design polish).
+const BRAND: Record<string, string> = {
+  whatsapp: "#25D366", instagram: "#E1306C", facebook: "#1877F2", call: "#0E5B5B", reviews: "#F4B740",
+};
+
+function Circle({ Icon, type, primary, accent }: { Icon: Icon; type: string; primary: boolean; accent: string }) {
+  const brand = BRAND[type];
   return (
     <span
-      className={`grid h-12 w-12 place-items-center rounded-full transition ${primary ? "text-white" : "bg-line text-ink"}`}
-      style={primary ? { background: accent } : undefined}
+      className={`grid h-12 w-12 place-items-center rounded-full transition ${primary ? "text-white" : "bg-line"}`}
+      style={primary ? { background: accent } : brand ? { color: brand } : { color: "var(--color-ink)" }}
     >
       <Icon className="h-[22px] w-[22px]" />
     </span>
@@ -81,7 +87,7 @@ function ActionButton({
   const primary = link.type === "directions";
   const inner = (
     <>
-      <Circle Icon={Icon} primary={primary} accent={accent} />
+      <Circle Icon={Icon} type={link.type} primary={primary} accent={accent} />
       <span className="text-[11px] font-medium text-ink">{label}</span>
     </>
   );
