@@ -1,9 +1,9 @@
-# Privacy Policy — Plato
+# Privacy Policy, Plato
 
-> ⚠️ **DRAFT — NOT LEGAL ADVICE.** This document was generated from the project's own
+> ⚠️ **DRAFT, NOT LEGAL ADVICE.** This document was generated from the project's own
 > specs as a starting point. It **must be reviewed and approved by a qualified attorney**
 > (familiar with Aruba law and, for EU visitors, the GDPR) before it is published or
-> relied upon. Replace every `[bracketed]` placeholder. See qa.md §13 — legal sign-off is
+> relied upon. Replace every `[bracketed]` placeholder. See qa.md §13, legal sign-off is
 > a pre-launch blocker.
 
 **Effective date:** [DATE]
@@ -25,10 +25,10 @@ and on custom domains. This policy explains how we handle information for two gr
 - **Restaurant data:** restaurant name, description, address/location pin, phone, WhatsApp,
   opening hours, links, menu content, prices, and the photos/videos we capture.
 - **Billing data:** plan, invoices, payment status, and (if the card path is enabled)
-  payment details handled by our payment processor — we do not store full card numbers.
+  payment details handled by our payment processor, we do not store full card numbers.
 - **Support data:** change requests, hardware orders, and correspondence.
 
-## 3. Information from Diners — cookieless, no personal data
+## 3. Information from Diners, cookieless, no personal data
 The public menu pages are **analytics-light and privacy-first**:
 - **No cookies** are set for diners and **no cookie-consent wall** is shown.
 - We record **anonymous, aggregated events** only (e.g. page views, item views, video
@@ -57,8 +57,8 @@ We share the minimum data necessary with vendors that process it on our behalf:
 | Resend | Transactional email delivery |
 | Cloudflare | DNS and email routing |
 | Anthropic (Claude API) | Menu text translation (EN→ES drafts) |
-| [Stripe — if/when the card path is enabled] | Card payments (via GMS Innovations or an appointed payment entity) |
-| [Sentoo — once added] | Local Aruba card/bank payments |
+| [Stripe, if/when the card path is enabled] | Card payments (via GMS Innovations or an appointed payment entity) |
+| [Sentoo, once added] | Local Aruba card/bank payments |
 
 A current list of sub-processors is available on request. Data may be processed in the
 United States and the European Union depending on provider region.

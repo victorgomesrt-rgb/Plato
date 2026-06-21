@@ -153,7 +153,7 @@ export function BillingAdmin({ tenants, invoices }: { tenants: Tenant[]; invoice
                 <p className="text-muted">
                   {money(Number(inv.amount), inv.currency)} ·{" "}
                   <span className={STATUS_COLOR[inv.status] ?? "text-muted"}>{inv.status}</span> · due{" "}
-                  {inv.due_date ?? "—"}
+                  {inv.due_date ?? "-"}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">

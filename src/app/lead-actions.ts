@@ -13,7 +13,7 @@ export async function submitLead(email: string): Promise<{ ok: true } | { ok: fa
   await svc.from("leads").insert({ email: e, source: "landing" });
   await sendEmail({
     to: process.env.BOOKING_TO || "adrian@platodigital.online",
-    subject: `New lead — ${e}`,
+    subject: `New lead, ${e}`,
     html: emailLayout(`<p>New menu-upgrade lead from the landing page:</p><p style="font-size:16px"><strong>${e}</strong></p>`),
   });
   return { ok: true };

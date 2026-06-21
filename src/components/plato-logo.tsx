@@ -1,5 +1,5 @@
 // Plato brand mark (the real artwork). Dark "P" + orange play triangle, transparent.
-// On dark backgrounds pass `onDark` to use the reversed (white) mark — design.md §1a.
+// On dark backgrounds pass `onDark` to use the reversed (white) mark, design.md §1a.
 
 export function PlatoMark({ className, onDark = false }: { className?: string; onDark?: boolean }) {
   const src = onDark ? "/brand/plato-mark-white.png" : "/brand/plato-mark.png";

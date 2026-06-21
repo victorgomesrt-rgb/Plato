@@ -37,7 +37,7 @@ export function RequestsAdmin({ changeRequests, hardwareOrders }: { changeReques
               return (
                 <li key={r.id} className="rounded-card border border-line bg-surface p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-medium text-ink">{r.tenants?.name ?? "—"} <span className="text-xs font-normal uppercase tracking-wide text-muted">· {r.kind}</span></span>
+                    <span className="text-sm font-medium text-ink">{r.tenants?.name ?? "-"} <span className="text-xs font-normal uppercase tracking-wide text-muted">· {r.kind}</span></span>
                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLE[r.status] ?? "bg-line text-muted"}`}>{r.status.replace("_", " ")}</span>
                   </div>
                   <p className="mt-1.5 text-sm text-ink">{r.message}</p>
@@ -63,7 +63,7 @@ export function RequestsAdmin({ changeRequests, hardwareOrders }: { changeReques
               return (
                 <li key={r.id} className="rounded-card border border-line bg-surface p-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-medium text-ink">{r.tenants?.name ?? "—"} <span className="text-xs font-normal text-muted">· {r.quantity}× {r.item_type}</span></span>
+                    <span className="text-sm font-medium text-ink">{r.tenants?.name ?? "-"} <span className="text-xs font-normal text-muted">· {r.quantity}× {r.item_type}</span></span>
                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLE[r.status] ?? "bg-line text-muted"}`}>{r.status}</span>
                   </div>
                   {r.notes && <p className="mt-1.5 text-sm text-muted">{r.notes}</p>}

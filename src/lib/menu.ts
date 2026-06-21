@@ -29,7 +29,7 @@ export type Item = {
 };
 
 // Visible categories + available-and-unavailable items for a published tenant.
-// (Sold-out items still render, greyed — design.md.) Read with the service role.
+// (Sold-out items still render, greyed, design.md.) Read with the service role.
 export async function getMenu(tenantId: string) {
   const admin = createAdminClient();
   const [{ data: categories }, { data: items }] = await Promise.all([

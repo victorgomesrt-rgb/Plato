@@ -34,7 +34,7 @@ export type ProvisionResult =
   | { ok: true; slug: string; ownerExisted: boolean }
   | { ok: false; error: string };
 
-// Admin "New Client" — creates the tenant, the owner account, and the membership,
+// Admin "New Client", creates the tenant, the owner account, and the membership,
 // then sends a Supabase invite / set-password link. No plaintext password is created.
 // docs/architecture.md §19, design.md §5.
 export async function provisionClient(input: ProvisionInput): Promise<ProvisionResult> {
@@ -69,7 +69,7 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
   if (invited?.user) {
     ownerId = invited.user.id;
   } else if (inviteErr && /already|registered|exists/i.test(inviteErr.message)) {
-    // Owner already has a Plato account — link the new tenant to them.
+    // Owner already has a Plato account, link the new tenant to them.
     const { data: profile } = await svc
       .from("profiles")
       .select("id")
@@ -82,7 +82,7 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
     return { ok: false, error: inviteErr?.message ?? "Could not create the owner account" };
   }
 
-  // Create the tenant (status 'building' — not public until published in admin).
+  // Create the tenant (status 'building', not public until published in admin).
   const { data: tenant, error: tErr } = await svc
     .from("tenants")
     .insert({ slug, name, plan, status: "building" })

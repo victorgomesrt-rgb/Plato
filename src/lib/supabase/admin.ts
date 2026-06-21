@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
-// Service-role client. Bypasses RLS — SERVER ONLY, never import into client code.
+// Service-role client. Bypasses RLS, SERVER ONLY, never import into client code.
 // Used to render public menu pages, run provisioning, webhooks, and analytics writes.
 export function createAdminClient() {
   return createClient(

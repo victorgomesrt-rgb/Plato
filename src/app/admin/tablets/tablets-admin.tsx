@@ -9,7 +9,7 @@ export type Tablet = { id: string; asset_tag: string | null; model: string | nul
 type TenantOpt = { id: string; name: string };
 
 const STATUS_STYLE: Record<string, string> = { in_stock: "bg-line text-muted", deployed: "bg-sea/10 text-sea", retired: "bg-accent/10 text-accent-deep" };
-const usd = (n: number | null) => (n == null ? "—" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n));
+const usd = (n: number | null) => (n == null ? "-" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n));
 
 export function TabletsAdmin({ tablets, tenants }: { tablets: Tablet[]; tenants: TenantOpt[] }) {
   const router = useRouter();
@@ -49,7 +49,7 @@ export function TabletsAdmin({ tablets, tenants }: { tablets: Tablet[]; tenants:
         ) : tablets.map((t) => (
           <div key={t.id} className="rounded-card border border-line bg-surface p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-sm font-medium text-ink">{t.asset_tag ?? "—"} <span className="text-xs font-normal text-muted">{t.model ?? ""}</span></span>
+              <span className="text-sm font-medium text-ink">{t.asset_tag ?? "-"} <span className="text-xs font-normal text-muted">{t.model ?? ""}</span></span>
               <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLE[t.status] ?? "bg-line text-muted"}`}>{t.status.replace("_", " ")}</span>
             </div>
             <p className="mt-1 text-xs text-muted">

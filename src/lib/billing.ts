@@ -5,7 +5,7 @@ import { sendEmail, emailLayout, emailButton } from "./email";
 const money = (a: number, c = "USD") =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: c }).format(a);
 const fmtDate = (d: string | null) =>
-  d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "—";
+  d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "-";
 
 async function ownerEmail(svc: ReturnType<typeof createAdminClient>, tenantId: string) {
   const { data } = await svc
@@ -18,7 +18,7 @@ async function ownerEmail(svc: ReturnType<typeof createAdminClient>, tenantId: s
   return (data?.profiles as unknown as { email: string | null } | null)?.email ?? null;
 }
 
-// Sends the unpaid-invoice reminder (copy.md 1.5). Service-role only, no auth gate —
+// Sends the unpaid-invoice reminder (copy.md 1.5). Service-role only, no auth gate -
 // callers (admin action / cron) authorize first.
 export async function remindInvoice(invoiceId: string): Promise<{ ok: boolean; error?: string }> {
   const svc = createAdminClient();

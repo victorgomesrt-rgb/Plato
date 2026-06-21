@@ -12,7 +12,7 @@ function shortCode(): string {
 }
 
 // Tracked links are written by admin tooling via the service role (short_links has no
-// member insert policy — architecture §13). Creates the standard placements if missing.
+// member insert policy, architecture §13). Creates the standard placements if missing.
 export async function ensureStandardLinks(tenantId: string, slug: string): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
   const svc = createAdminClient();

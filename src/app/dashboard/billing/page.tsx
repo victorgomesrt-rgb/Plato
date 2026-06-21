@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Billing", robots: { index: false } }
 const money = (a: number, c = "USD") =>
   new Intl.NumberFormat("en-US", { style: "currency", currency: c }).format(a);
 const fmt = (d: string | null) =>
-  d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "—";
+  d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "-";
 
 export default async function OwnerBillingPage() {
   const supabase = await createClient();
@@ -61,7 +61,7 @@ export default async function OwnerBillingPage() {
           <div key={inv.number} className="flex items-center justify-between rounded-card border border-line p-3 text-sm">
             <span className="font-medium text-ink">{inv.number}</span>
             <span className="text-muted">
-              {money(Number(inv.amount), inv.currency)} · {inv.status} · due {inv.due_date ?? "—"}
+              {money(Number(inv.amount), inv.currency)} · {inv.status} · due {inv.due_date ?? "-"}
             </span>
           </div>
         ))}

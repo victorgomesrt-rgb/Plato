@@ -16,7 +16,7 @@ export default async function AdminTabletsPage() {
   return (
     <main className="mx-auto max-w-4xl px-5 py-6 lg:px-8 lg:py-8">
       <h1 className="font-display text-2xl font-bold text-ink">Tablets</h1>
-      <p className="text-sm text-muted">The rented tablet fleet — assign to a tenant or mark returned for redeploy.</p>
+      <p className="text-sm text-muted">The rented tablet fleet, assign to a tenant or mark returned for redeploy.</p>
       <TabletsAdmin tablets={tablets ?? []} tenants={tenants ?? []} />
     </main>
   );

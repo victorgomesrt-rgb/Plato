@@ -51,12 +51,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
             {trialDaysLeft != null && (
               <div className="rounded-card border border-citrus/50 bg-citrus/10 px-4 py-3 text-sm text-ink">
                 {trialDaysLeft === 0 ? "Your trial ends today." : `${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} left in your trial.`}{" "}
-                Keep your menu live — <Link href="/dashboard/billing" className="font-semibold text-accent-deep underline">choose a plan</Link>.
+                Keep your menu live, <Link href="/dashboard/billing" className="font-semibold text-accent-deep underline">choose a plan</Link>.
               </div>
             )}
             {pastDue && (
               <div className="rounded-card border border-accent/40 bg-accent/10 px-4 py-3 text-sm text-ink">
-                Your payment didn&apos;t go through. Update it to keep your page online — <Link href="/dashboard/billing" className="font-semibold text-accent-deep underline">view billing</Link>.
+                Your payment didn&apos;t go through. Update it to keep your page online, <Link href="/dashboard/billing" className="font-semibold text-accent-deep underline">view billing</Link>.
               </div>
             )}
           </div>

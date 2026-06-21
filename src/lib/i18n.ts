@@ -1,4 +1,4 @@
-// Localized fields + UI strings — design.md §10. EN/ES at launch; fall back to the
+// Localized fields + UI strings, design.md §10. EN/ES at launch; fall back to the
 // default locale when a translation is missing. Dish proper names are kept as entered.
 
 export function localized(

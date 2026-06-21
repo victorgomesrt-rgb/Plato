@@ -1,4 +1,4 @@
-// USD ⇄ AWG display — docs/architecture.md §9a, design.md §10.
+// USD ⇄ AWG display, docs/architecture.md §9a, design.md §10.
 // Prices are stored in the tenant base currency. The florin is pegged to the dollar,
 // so conversion is a fixed multiply. Round AWG to 0.25, USD to 0.05 for a clean look.
 

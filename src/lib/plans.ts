@@ -1,4 +1,4 @@
-// Plan feature gates — docs/architecture.md §10. Enforced on the SERVER, never trust the UI.
+// Plan feature gates, docs/architecture.md §10. Enforced on the SERVER, never trust the UI.
 
 export type Plan = "starter" | "growth" | "premium";
 
@@ -14,7 +14,7 @@ export function itemCap(plan: string): number {
   return ITEM_CAPS[(plan as Plan) in ITEM_CAPS ? (plan as Plan) : "starter"];
 }
 
-// Monthly plan prices in USD — finance.md §1.
+// Monthly plan prices in USD, finance.md §1.
 export const PLAN_PRICES: Record<Plan, number> = { starter: 99, growth: 249, premium: 499 };
 
 export function planPrice(plan: string): number {

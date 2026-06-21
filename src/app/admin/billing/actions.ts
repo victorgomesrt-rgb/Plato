@@ -17,14 +17,14 @@ function money(amount: number, currency = "USD") {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount);
 }
 function fmtDate(d: string | null) {
-  if (!d) return "—";
+  if (!d) return "-";
   return new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(
     new Date(d)
   );
 }
 function periodLabel(start: string | null, end: string | null) {
   if (!start || !end) return "this period";
-  return `${fmtDate(start)} – ${fmtDate(end)}`;
+  return `${fmtDate(start)} - ${fmtDate(end)}`;
 }
 function arubaYear() {
   return new Intl.DateTimeFormat("en-US", { timeZone: "America/Aruba", year: "numeric" }).format(
@@ -222,7 +222,7 @@ export async function invoiceSignedUrl(invoiceId: string): Promise<Result<{ url:
     .select("pdf_url")
     .eq("id", invoiceId)
     .maybeSingle();
-  if (!inv?.pdf_url) return { ok: false, error: "No PDF yet — send the invoice first" };
+  if (!inv?.pdf_url) return { ok: false, error: "No PDF yet, send the invoice first" };
   const { data } = await svc.storage.from("invoices").createSignedUrl(inv.pdf_url, 60 * 10);
   if (!data) return { ok: false, error: "Could not create link" };
   return { ok: true, data: { url: data.signedUrl } };

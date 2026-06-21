@@ -290,7 +290,7 @@ function ItemRow({
   });
   const [editing, setEditing] = useState(false);
 
-  const price = item.price_text ?? (item.price != null ? money(item.price) : "—");
+  const price = item.price_text ?? (item.price != null ? money(item.price) : "-");
 
   return (
     <div

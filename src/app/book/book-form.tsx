@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Check, Video, Camera, Rocket } from "lucide-react";
 import { submitBooking } from "./actions";
 
-const SIZES = ["Under 20", "20–40", "40–60", "60+"];
+const SIZES = ["Under 20", "20-40", "40-60", "60+"];
 const TIMING = ["This week", "I'm flexible"];
 const PLANS = [
   { key: "Starter", price: "$99", note: "Cafés & casual" },
@@ -19,7 +19,7 @@ export function BookForm() {
   const [err, setErr] = useState<string | null>(null);
   const [f, setF] = useState({
     restaurant: "", area: "", cuisine: "", name: "", phone: "", email: "",
-    menuSize: "20–40", plan: "Growth", timing: "This week", notes: "",
+    menuSize: "20-40", plan: "Growth", timing: "This week", notes: "",
   });
   const set = (k: keyof typeof f, v: string) => setF((p) => ({ ...p, [k]: v }));
 
@@ -38,7 +38,7 @@ export function BookForm() {
       <div className="rounded-card bg-surface p-8 text-center text-ink">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sea/10"><Check className="h-6 w-6 text-sea" /></div>
         <h3 className="mt-3 font-display text-xl font-semibold">Request received</h3>
-        <p className="mt-1 text-muted">We&apos;ll reply to confirm a capture time — usually the same day.</p>
+        <p className="mt-1 text-muted">We&apos;ll reply to confirm a capture time, usually the same day.</p>
       </div>
     );
 
@@ -110,9 +110,9 @@ export function BookForm() {
         <div className="rounded-card border border-white/10 bg-white/5 p-6">
           <p className="font-display text-lg font-semibold">What happens next</p>
           <ul className="mt-4 space-y-4 text-sm text-white/80">
-            <li className="flex gap-3"><Rocket className="h-5 w-5 shrink-0 text-accent" /><span><strong className="text-white">We confirm a time</strong><br />A quick reply to lock the capture visit — usually same day.</span></li>
-            <li className="flex gap-3"><Camera className="h-5 w-5 shrink-0 text-accent" /><span><strong className="text-white">We come and film</strong><br />Our crew shoots every dish — you keep serving.</span></li>
-            <li className="flex gap-3"><Video className="h-5 w-5 shrink-0 text-accent" /><span><strong className="text-white">You go live</strong><br />Built, translated, QR placed — live in a day.</span></li>
+            <li className="flex gap-3"><Rocket className="h-5 w-5 shrink-0 text-accent" /><span><strong className="text-white">We confirm a time</strong><br />A quick reply to lock the capture visit, usually same day.</span></li>
+            <li className="flex gap-3"><Camera className="h-5 w-5 shrink-0 text-accent" /><span><strong className="text-white">We come and film</strong><br />Our crew shoots every dish while you keep serving.</span></li>
+            <li className="flex gap-3"><Video className="h-5 w-5 shrink-0 text-accent" /><span><strong className="text-white">You go live</strong><br />Built, translated, QR placed, live in a day.</span></li>
           </ul>
         </div>
         {selectedPlan && (

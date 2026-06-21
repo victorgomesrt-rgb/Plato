@@ -1,4 +1,4 @@
-// Reserved slugs and slug validation — see docs/architecture.md §2.
+// Reserved slugs and slug validation, see docs/architecture.md §2.
 // Tenant pages share the root path, so no restaurant may take a slug that collides
 // with a real route. Enforced at signup and on slug change (M3) and respected in routing.
 

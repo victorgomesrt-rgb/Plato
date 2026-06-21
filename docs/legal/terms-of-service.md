@@ -1,6 +1,6 @@
-# Terms of Service — Plato
+# Terms of Service, Plato
 
-> ⚠️ **DRAFT — NOT LEGAL ADVICE.** Generated from the project specs as a starting point.
+> ⚠️ **DRAFT, NOT LEGAL ADVICE.** Generated from the project specs as a starting point.
 > **Must be reviewed and approved by a qualified attorney (Aruba law) before use.**
 > Replace every `[bracketed]` placeholder. Legal sign-off is a pre-launch blocker (qa.md §13).
 

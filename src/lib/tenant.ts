@@ -71,7 +71,7 @@ export async function getTenantByCustomDomain(host: string): Promise<Tenant | nu
   return (data as Tenant) ?? null;
 }
 
-// Publish gate — docs/architecture.md §6 / CLAUDE.md.
+// Publish gate, docs/architecture.md §6 / CLAUDE.md.
 // Public only when published_at is set and status is not suspended/canceled.
 // Building tenants 404. past_due stays live (short grace window).
 export type PublicState = "ok" | "not_found" | "unavailable";

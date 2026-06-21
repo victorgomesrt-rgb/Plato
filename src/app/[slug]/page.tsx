@@ -12,7 +12,7 @@ import { DinerPage } from "@/components/diner/diner-page";
 
 type Props = { params: Promise<{ slug: string }> };
 
-// ISR — revalidated on menu/branding edits via revalidatePath (M4 actions).
+// ISR, revalidated on menu/branding edits via revalidatePath (M4 actions).
 export const revalidate = 300;
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io";
@@ -65,7 +65,7 @@ export default async function TenantPage({ params }: Props) {
   const { categories, items } = await getMenu(t.id);
   const url = `${SITE}/${t.slug}`;
 
-  // schema.org Restaurant + Menu (architecture §14) — default-locale strings.
+  // schema.org Restaurant + Menu (architecture §14), default-locale strings.
   const ld = {
     "@context": "https://schema.org",
     "@type": "Restaurant",

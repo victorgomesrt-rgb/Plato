@@ -54,7 +54,7 @@ export function Donut({
       <div className="relative shrink-0" style={{ width: height, height }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={total ? data : [{ name: "—", value: 1, color: "#ECE7E1" }]} dataKey="value" nameKey="name"
+            <Pie data={total ? data : [{ name: "-", value: 1, color: "#ECE7E1" }]} dataKey="value" nameKey="name"
               innerRadius="64%" outerRadius="100%" paddingAngle={total ? 2 : 0} startAngle={90} endAngle={-270} stroke="none">
               {(total ? data : [{ color: "#ECE7E1" }]).map((d, i) => <Cell key={i} fill={d.color} />)}
             </Pie>

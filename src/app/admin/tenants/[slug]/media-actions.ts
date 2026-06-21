@@ -34,7 +34,7 @@ export async function processItemImage(
 
     let input = Buffer.from(await blob.arrayBuffer());
 
-    // HEIC/HEIF can't be decoded by browsers or sharp directly — convert to JPEG first.
+    // HEIC/HEIF can't be decoded by browsers or sharp directly, convert to JPEG first.
     if (/\.(heic|heif)$/i.test(tmpPath)) {
       const out = await convert({ buffer: input, format: "JPEG", quality: 0.92 });
       input = Buffer.from(out);

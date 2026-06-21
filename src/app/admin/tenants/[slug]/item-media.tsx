@@ -21,7 +21,7 @@ type Props = {
   videoThumbUrl: string | null;
 };
 
-const TARGET_RATIO = 9 / 16; // 0.5625 — capture standard (architecture §8)
+const TARGET_RATIO = 9 / 16; // 0.5625, capture standard (architecture §8)
 
 // Reads dimensions + duration from a video file in the browser.
 function inspectVideo(file: File): Promise<{ duration: number; ratio: number }> {
@@ -88,10 +88,10 @@ export function ItemMedia({
     if (file.size > 60 * 1024 * 1024) warnings.push("over 60MB");
     try {
       const { duration, ratio } = await inspectVideo(file);
-      if (duration > 12) warnings.push(`${Math.round(duration)}s long (aim for 4–8s)`);
+      if (duration > 12) warnings.push(`${Math.round(duration)}s long (aim for 4-8s)`);
       if (Math.abs(ratio - TARGET_RATIO) > 0.12) warnings.push("not 9:16 vertical");
     } catch {
-      /* metadata read failed — proceed anyway */
+      /* metadata read failed, proceed anyway */
     }
     if (warnings.length) {
       const proceed = window.confirm(

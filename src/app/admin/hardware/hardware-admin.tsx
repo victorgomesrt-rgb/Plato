@@ -50,7 +50,7 @@ export function HardwareAdmin({ orders, tenants }: { orders: Order[]; tenants: T
           return (
             <div key={o.id} className="rounded-card border border-line bg-surface p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="text-sm font-medium text-ink">{o.tenants?.name ?? "—"} <span className="text-xs font-normal text-muted">· {o.quantity}× {o.item_type}</span></span>
+                <span className="text-sm font-medium text-ink">{o.tenants?.name ?? "-"} <span className="text-xs font-normal text-muted">· {o.quantity}× {o.item_type}</span></span>
                 <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLE[o.status] ?? "bg-line text-muted"}`}>{o.status}</span>
               </div>
               {o.notes && <p className="mt-1.5 text-sm text-muted">{o.notes}</p>}

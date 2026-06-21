@@ -25,7 +25,7 @@ export function EmailCapture({ variant = "dark" }: { variant?: "dark" | "light" 
   if (done)
     return (
       <div className={`mx-auto flex max-w-md items-center justify-center gap-2 rounded-btn px-5 py-4 font-medium ${dark ? "bg-white/10 text-white" : "bg-sea/10 text-sea"}`}>
-        <Check className="h-5 w-5 text-accent" /> Thanks — we&apos;ll reach out soon.
+        <Check className="h-5 w-5 text-accent" /> Thanks, we&apos;ll reach out soon.
       </div>
     );
 

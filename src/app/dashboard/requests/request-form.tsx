@@ -42,7 +42,7 @@ export function RequestForm() {
           className="mt-1 w-full rounded-card border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-accent" />
       </label>
       {err && <p className="mt-2 text-sm text-accent-deep">{err}</p>}
-      {ok && <p className="mt-2 text-sm text-sea">Sent — our team will take care of it.</p>}
+      {ok && <p className="mt-2 text-sm text-sea">Sent, our team will take care of it.</p>}
       <button type="submit" disabled={pending} className="mt-4 rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
         {pending ? "Sending…" : "Send request"}
       </button>

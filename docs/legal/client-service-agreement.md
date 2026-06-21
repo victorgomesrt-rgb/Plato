@@ -1,6 +1,6 @@
-# Client Service Agreement — Plato
+# Client Service Agreement, Plato
 
-> ⚠️ **DRAFT — NOT LEGAL ADVICE.** Generated from the project specs (finance.md, operations.md,
+> ⚠️ **DRAFT, NOT LEGAL ADVICE.** Generated from the project specs (finance.md, operations.md,
 > architecture.md) as a starting point for your attorney. **Must be reviewed and approved by
 > a qualified attorney (Aruba law) before signing.** Fill every `[bracket]`.
 
@@ -18,7 +18,7 @@ Plato provides a done-for-you video-menu service:
 - **Support** and change requests, and re-shoots per the plan cadence below.
 
 ## 2. Plan and inclusions
-- **Selected plan:** ☐ Starter ☐ Growth ☐ Premium — per the current price list.
+- **Selected plan:** ☐ Starter ☐ Growth ☐ Premium, per the current price list.
 - **Item cap, hardware, custom domain, and re-shoot cadence** are per the plan:
   Starter pays per re-shoot; Growth includes one re-shoot per year; Premium includes a
   quarterly re-shoot.
@@ -31,7 +31,7 @@ Plato provides a done-for-you video-menu service:
 ## 4. Fees and payment
 - **Monthly fee:** $[ ] · **One-time setup fee:** $[ ] · **Add-ons:** [ ].
 - **Optional rented tablet:** $[ ]/month, refundable deposit $[ ], minimum term
-  **[6–12] months**; the device remains Plato's property (kiosk-locked to the Client's menu).
+  **[6-12] months**; the device remains Plato's property (kiosk-locked to the Client's menu).
 - Billed in **USD** by invoice (bank transfer or in person); due within **[14] days**.
 - Late payment may lead to a short grace period and then **suspension** of the page.
 - Client is responsible for applicable taxes (incl. Aruba BBO/turnover tax).

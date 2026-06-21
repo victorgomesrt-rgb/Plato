@@ -150,7 +150,7 @@ export async function createItem(
     if (!input.name?.trim()) return { ok: false, error: "Item name is required" };
     const supabase = await createClient();
 
-    // Plan cap — enforced on the server, not just the UI (architecture §10).
+    // Plan cap, enforced on the server, not just the UI (architecture §10).
     const { count } = await supabase
       .from("menu_items")
       .select("id", { count: "exact", head: true })
@@ -339,7 +339,7 @@ export type TranslateResult =
   | { ok: true; nameEs: string; descriptionEs: string }
   | { ok: false; error: string };
 
-// Fills a Spanish DRAFT for an item from its English text. Never publishes — the
+// Fills a Spanish DRAFT for an item from its English text. Never publishes, the
 // editor drops the result into the ES fields for the team to review (architecture §28).
 export async function translateItemDraft(
   tenantId: string,

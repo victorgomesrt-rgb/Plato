@@ -5,9 +5,9 @@ import Link from "next/link";
 import { checkSlug, provisionClient, type SlugCheck } from "../actions";
 
 const PLANS = [
-  { value: "starter", label: "Starter — $99/mo" },
-  { value: "growth", label: "Growth — $249/mo" },
-  { value: "premium", label: "Premium — $499/mo" },
+  { value: "starter", label: "Starter, $99/mo" },
+  { value: "growth", label: "Growth, $249/mo" },
+  { value: "premium", label: "Premium, $499/mo" },
 ];
 
 export function NewClientForm() {

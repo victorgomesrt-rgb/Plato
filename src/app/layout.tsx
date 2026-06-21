@@ -17,7 +17,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io"),
   title: {
-    default: "Plato — Video menus for Caribbean restaurants",
+    default: "Plato: Video menus for Caribbean restaurants",
     template: "%s · Plato",
   },
   description:
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "Plato",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Plato — turn every table into a video menu" }],
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Plato, turn every table into a video menu" }],
   },
   twitter: {
     card: "summary_large_image",

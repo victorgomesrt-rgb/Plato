@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ComponentType } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,7 +13,7 @@ import { TemplateSwitcher } from "@/components/landing/template-switcher";
 import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
-  title: "Plato — Video menus for Caribbean restaurants",
+  title: "Plato: Video menus for Caribbean restaurants",
   description:
     "We come to your restaurant, film every dish, and build a beautiful menu page where the food actually moves. Diners scan, watch, and decide.",
 };
@@ -23,13 +24,13 @@ const KB = (s: number) => ({ animation: `plato-kenburns ${s}s ease-in-out infini
 const TICKER = ["Brisa", "Zeerover", "Gostoso", "Pinchos Grill", "Madame Janette", "Flying Fishbone", "Quinta del Carmen", "Yemanja"];
 
 const why = [
-  { icon: Play, tint: "bg-accent/10 text-accent", title: "Food is the hero", body: "Short looping clips fill the screen. A dish in motion sells itself — far better than a line of text and a price." },
-  { icon: Hand, tint: "bg-sea/10 text-sea", title: "One tap to value", body: "No app, no login, no waiting. Scan the QR, see the food, get directions or call — even on slow data by the beach." },
-  { icon: Sparkles, tint: "bg-citrus/20 text-[#9a7b15]", title: "Made for the island", body: "English and Spanish, USD and AWG, a Caribbean look. Built for tourists and locals alike — and for you to never touch it." },
+  { icon: Play, tint: "bg-accent/10 text-accent", title: "Food is the hero", body: "Short looping clips fill the screen. A dish in motion sells itself, far better than a line of text and a price." },
+  { icon: Hand, tint: "bg-sea/10 text-sea", title: "One tap to value", body: "No app, no login, no waiting. Scan the QR, see the food, get directions or call, even on slow data by the beach." },
+  { icon: Sparkles, tint: "bg-citrus/20 text-[#9a7b15]", title: "Made for the island", body: "English and Spanish, USD and AWG, a Caribbean look. Built for tourists and locals alike, and for you to never touch it." },
 ];
 
 const features = [
-  { icon: MapPin, title: "Action bar", body: "Directions, call, WhatsApp, reserve, wifi, Instagram — the buttons you choose, one tap away." },
+  { icon: MapPin, title: "Action bar", body: "Directions, call, WhatsApp, reserve, wifi, Instagram. The buttons you choose, one tap away." },
   { icon: Languages, title: "Two languages", body: "English and Spanish per dish. We auto-translate a draft, then review it by hand before you go live." },
   { icon: Coins, title: "Two currencies", body: "USD and AWG at the island peg. Diners always know exactly what they’ll pay before they sit down." },
   { icon: ScanLine, title: "QR + NFC", body: "Tap or scan from the table, window, or host stand. Every scan is tracked back to that spot." },
@@ -38,9 +39,9 @@ const features = [
 ];
 
 const steps = [
-  { n: "1", icon: Video, title: "We come and film", body: "Our team visits and shoots every dish to one standard — vertical, 4–8 second loops, soft light, no busy moves." },
+  { n: "1", icon: Video, title: "We come and film", body: "Our team visits and shoots every dish to one standard: vertical, 4-8 second loops, soft light, no busy moves." },
   { n: "2", icon: PenTool, title: "We build your page", body: "We cut the clips, write your descriptions in EN and ES, set prices and currency, and pick the template that fits." },
-  { n: "3", icon: CheckCircle2, title: "You go live", body: "We place your QR and NFC, hand you the link, and show it on your phone. Need a change? Ask — it lands in our queue." },
+  { n: "3", icon: CheckCircle2, title: "You go live", body: "We place your QR and NFC, hand you the link, and show it on your phone. Need a change? Ask. It lands in our queue." },
 ];
 
 const stats = [["63", "Live menu pages"], ["4", "Menu templates"], ["2", "Languages · EN & ES"], ["1", "Day from shoot to live"]];
@@ -55,7 +56,7 @@ const plans = [
 ];
 
 // Match the real diner page action bar (brand-tinted icons).
-const ACTIONS: { icon: typeof MapPin; label: string; primary?: boolean; color?: string }[] = [
+const ACTIONS: { icon: ComponentType<{ className?: string }>; label: string; primary?: boolean; color?: string }[] = [
   { icon: MapPin, label: "Directions", primary: true },
   { icon: Phone, label: "Call" },
   { icon: WhatsAppIcon, label: "WhatsApp", color: "#25D366" },
@@ -109,7 +110,7 @@ function HeroPhone() {
             ))}
           </div>
 
-          {/* Most popular — overlaid name + price chip, matching the diner page featured band */}
+          {/* Most popular, overlaid name + price chip, matching the diner page featured band */}
           <div className="px-4 pt-2">
             <div className="flex items-baseline justify-between">
               <p className="text-[13px] font-semibold text-ink">Most Popular</p>
@@ -134,7 +135,7 @@ function HeroPhone() {
         </div>
       </div>
 
-      {/* Floating "views" chip — top:38 left:-28 w:184 */}
+      {/* Floating "views" chip, top:38 left:-28 w:184 */}
       <div className="absolute left-[-28px] top-[38px] w-[184px] rounded-2xl bg-white/95 px-[15px] py-[13px] text-ink shadow-[0_22px_44px_-20px_rgba(0,0,0,0.6)]" style={{ animation: "plato-float 5s ease-in-out infinite" }}>
         <p className="text-[11px] font-semibold text-[#9A938A]">This week</p>
         <p className="flex items-baseline gap-1.5"><span className="font-display text-2xl font-extrabold leading-none text-ink">1,284</span><span className="text-xs font-bold text-[#157A48]">▲ 22%</span></p>
@@ -142,7 +143,7 @@ function HeroPhone() {
         <Sparkline className="mt-1.5 h-7 w-full" />
       </div>
 
-      {/* Floating "scan" chip — bottom:70 right:-24 */}
+      {/* Floating "scan" chip, bottom:70 right:-24 */}
       <div className="absolute bottom-[70px] right-[-24px] flex items-center gap-[11px] rounded-2xl bg-white/95 px-[14px] py-3 text-ink shadow-[0_22px_44px_-20px_rgba(0,0,0,0.6)]" style={{ animation: "plato-float-slow 6s ease-in-out infinite" }}>
         <span className="grid h-[42px] w-[42px] place-items-center rounded-[10px] bg-ink text-white"><QrCode className="h-6 w-6" /></span>
         <div><p className="text-[12px] font-bold leading-tight">Scan to view</p><p className="text-[11px] text-[#9A938A]">Tracked QR &amp; NFC</p></div>
@@ -159,7 +160,7 @@ export default function Landing() {
   const year = new Date().getFullYear();
   return (
     <div className="bg-ink text-white">
-      {/* Nav — floating pill (fixed, centered, blurred) like the mockup */}
+      {/* Nav, floating pill (fixed, centered, blurred) like the mockup */}
       <header className="fixed left-1/2 top-4 z-50 w-[calc(100%-32px)] max-w-[1080px] -translate-x-1/2 rounded-full border border-white/10 bg-ink/[0.62] px-5 py-[11px] shadow-[0_14px_40px_-20px_rgba(0,0,0,0.7)] backdrop-blur-[18px]">
         <nav className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2"><PlatoMark className="h-7 w-auto" onDark /><span className="font-display text-lg font-extrabold tracking-tight">Plato</span></Link>
@@ -203,7 +204,7 @@ export default function Landing() {
           </div>
           <HeroPhone />
         </div>
-        {/* Ticker — label centered above, names scroll cleanly on their own line (exact mockup) */}
+        {/* Ticker, label centered above, names scroll cleanly on their own line (exact mockup) */}
         <div className="overflow-hidden pb-7 pt-1">
           <p className="mb-3 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">Now serving the island</p>
           <div className="flex w-max" style={{ animation: "plato-marquee 32s linear infinite" }}>
@@ -242,7 +243,7 @@ export default function Landing() {
           <Reveal className="text-center">
             <Eyebrow>Four templates, one shoot</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">Pick the look that fits your room.</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/65">Same dishes, four presentations. From TikTok-style full-screen reels to a calm fine-dining list — switch anytime, no re-shoot needed.</p>
+            <p className="mx-auto mt-3 max-w-xl text-white/65">Same dishes, four presentations. From TikTok-style full-screen reels to a calm fine-dining list, switch anytime, no re-shoot needed.</p>
           </Reveal>
           <TemplateSwitcher />
         </div>
@@ -261,7 +262,7 @@ export default function Landing() {
             <Reveal className="rounded-card bg-ink p-6 text-white shadow-lg">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><BarChart3 className="h-5 w-5" /></span>
               <h3 className="mt-4 font-display text-xl font-bold">Know what they crave.</h3>
-              <p className="mt-1.5 text-sm text-white/65">Views, top dishes, video plays, QR scans, directions and calls — all in one dashboard. We even email you a monthly recap so the value stays visible.</p>
+              <p className="mt-1.5 text-sm text-white/65">Views, top dishes, video plays, QR scans, directions and calls, all in one dashboard. We even email you a monthly recap so the value stays visible.</p>
               <div className="mt-5 rounded-card bg-white p-4 text-ink">
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-muted">Menu views · 30 days</p>
@@ -301,7 +302,7 @@ export default function Landing() {
           <Reveal className="text-center">
             <Eyebrow>Done for you</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">From shoot to live in a day.</h2>
-            <p className="mx-auto mt-3 max-w-xl text-white/65">You run the restaurant. We handle the rest — filming, building, translating, and placing your QR codes.</p>
+            <p className="mx-auto mt-3 max-w-xl text-white/65">You run the restaurant. We handle the rest, filming, building, translating, and placing your QR codes.</p>
           </Reveal>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {steps.map((s) => (
@@ -357,13 +358,13 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Final CTA — email capture */}
+      {/* Final CTA, email capture */}
       <section id="waitlist" className="relative overflow-hidden scroll-mt-20">
         <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(55% 70% at 50% 35%, rgba(251,106,26,.32), transparent)" }} />
         <Reveal className="mx-auto max-w-2xl px-5 py-24 text-center">
           <PlatoMark className="mx-auto h-12 w-auto" onDark />
           <h2 className="mt-5 font-display text-section font-extrabold">Let’s bring your menu to life.</h2>
-          <p className="mx-auto mt-3 max-w-md text-lg text-white/70">Leave your email and we’ll reach out to book a capture visit — your filmed menu can be live before your next dinner service.</p>
+          <p className="mx-auto mt-3 max-w-md text-lg text-white/70">Leave your email and we’ll reach out to book a capture visit, your filmed menu can be live before your next dinner service.</p>
           <div className="mt-8"><EmailCapture variant="dark" /></div>
           <Link href="/discover" className="mt-4 inline-block text-sm font-medium text-white/70 hover:text-white">Go to the Discovery page →</Link>
         </Reveal>

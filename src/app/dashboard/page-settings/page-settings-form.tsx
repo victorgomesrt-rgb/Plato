@@ -92,7 +92,7 @@ export function PageSettingsForm({ tenantId, description, address, logoUrl, cove
       <form onSubmit={save} className="rounded-card border border-line bg-surface p-5">
         <h2 className="font-display text-base font-semibold text-ink">Details</h2>
         <label className="mt-3 block text-sm font-medium text-ink">Description
-          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="Beachfront Caribbean kitchen — fresh catch, island classics."
+          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="Beachfront Caribbean kitchen, fresh catch, island classics."
             className="mt-1 w-full rounded-card border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-accent" />
         </label>
         <label className="mt-3 block text-sm font-medium text-ink">Address

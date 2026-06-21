@@ -2,7 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 
 // Auto-translate a menu item EN → ES draft via the Claude API (architecture §28).
-// Keeps dish proper names, casual menu tone. Always a DRAFT for human review — the
+// Keeps dish proper names, casual menu tone. Always a DRAFT for human review, the
 // editor fills the ES fields; nothing is auto-published.
 export async function translateToEs(
   name: string,

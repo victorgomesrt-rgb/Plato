@@ -17,7 +17,7 @@ export async function submitChangeRequest(input: { kind: string; message: string
   const { error } = await supabase.from("change_requests").insert({
     tenant_id: mem.tenant_id, kind: input.kind, message, created_by: user.id,
   });
-  if (error) return { ok: false, error: "Could not send — please try again." };
+  if (error) return { ok: false, error: "Could not send, please try again." };
   revalidatePath("/dashboard/requests");
   return { ok: true };
 }

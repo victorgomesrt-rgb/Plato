@@ -124,7 +124,7 @@ export default async function AnalyticsPage({
     stat.set(e.item_id, s);
   }
   const topDishes = [...stat.entries()]
-    .map(([id, s]) => ({ name: names.get(id) ?? "—", ...s }))
+    .map(([id, s]) => ({ name: names.get(id) ?? "-", ...s }))
     .sort((a, b) => b.views - a.views)
     .slice(0, 5);
 

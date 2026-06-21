@@ -1,4 +1,4 @@
-// Opening hours in America/Aruba (AST, UTC-4, no DST) — docs/architecture.md §20.
+// Opening hours in America/Aruba (AST, UTC-4, no DST), docs/architecture.md §20.
 
 export const DAY_KEYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 export type DayKey = (typeof DAY_KEYS)[number];
@@ -35,6 +35,6 @@ export function isOpenNow(hours: Hours): boolean {
   const range = hours[day];
   if (!range) return false;
   const [open, close] = range.map(toMinutes);
-  // Handle ranges that cross midnight (e.g. 11:00–00:00).
+  // Handle ranges that cross midnight (e.g. 11:00-00:00).
   return close <= open ? minutes >= open || minutes < close : minutes >= open && minutes < close;
 }

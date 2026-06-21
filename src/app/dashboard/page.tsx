@@ -50,7 +50,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <main className="mx-auto max-w-5xl px-5 py-10 lg:px-8">
         <h1 className="font-display text-2xl font-semibold text-ink">Dashboard</h1>
         <p className="mt-4 rounded-card border border-line bg-surface p-6 text-muted">
-          We&apos;re building your menu from your shoot. It goes live shortly — you&apos;ll see your numbers here.
+          We&apos;re building your menu from your shoot. It goes live shortly, you&apos;ll see your numbers here.
         </p>
       </main>
     );
@@ -115,7 +115,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     if (e.event_type !== "video_play" || !e.item_id) continue;
     plays.set(e.item_id, (plays.get(e.item_id) ?? 0) + 1);
   }
-  const topDishes = [...plays.entries()].map(([id, n]) => ({ name: itemMap.get(id)?.name ?? "—", img: itemMap.get(id)?.img ?? null, plays: n }))
+  const topDishes = [...plays.entries()].map(([id, n]) => ({ name: itemMap.get(id)?.name ?? "-", img: itemMap.get(id)?.img ?? null, plays: n }))
     .sort((a, b) => b.plays - a.plays).slice(0, 4);
   const maxPlays = Math.max(1, ...topDishes.map((d) => d.plays));
   const monthName = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "America/Aruba" }).format(new Date());

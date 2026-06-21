@@ -31,7 +31,7 @@ export default async function AdminOverviewPage() {
     svc.from("invoices").select("amount, paid_at, tenants(name)").not("paid_at", "is", null).order("paid_at", { ascending: false }).limit(5).returns<Inv[]>(),
   ]);
   const tenants = tData ?? [];
-  // Server render time — read the clock once (pure for the rest of render).
+  // Server render time, read the clock once (pure for the rest of render).
   // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
   const nowD = new Date(now);
@@ -68,7 +68,7 @@ export default async function AdminOverviewPage() {
 
   type Act = { icon: "pay" | "live"; title: string; sub: string; ts: string };
   const activity: Act[] = [
-    ...(iData ?? []).filter((i) => i.paid_at).map((i): Act => ({ icon: "pay", title: `Payment received — ${i.tenants?.name ?? "—"}`, sub: usd(Number(i.amount)), ts: i.paid_at! })),
+    ...(iData ?? []).filter((i) => i.paid_at).map((i): Act => ({ icon: "pay", title: `Payment received, ${i.tenants?.name ?? "-"}`, sub: usd(Number(i.amount)), ts: i.paid_at! })),
     ...tenants.filter((t) => t.published_at).slice(0, 3).map((t): Act => ({ icon: "live", title: `${t.name} went live`, sub: t.plan, ts: t.published_at! })),
   ].sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime()).slice(0, 6);
 

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-  Plato design tokens — see docs/design.md §2.
+  Plato design tokens, see docs/design.md §2.
   Tailwind v4 reads @theme to generate utilities (bg-accent, text-ink, rounded-card, …).
   Each tenant overrides --color-accent at runtime via an inline style on their page root.
 */
@@ -23,15 +23,15 @@
   --color-background: var(--color-surface);
   --color-foreground: var(--color-ink);
 
-  /* Type — Bricolage Grotesque (display), Inter (UI/data) */
+  /* Type, Bricolage Grotesque (display), Inter (UI/data) */
   --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
-  /* Radius — design.md §2 */
+  /* Radius, design.md §2 */
   --radius-btn: 12px;
   --radius-card: 16px;
 
-  /* Fluid type scale — responsive clamp(min, preferred, max) so type scales smoothly
+  /* Fluid type scale, responsive clamp(min, preferred, max) so type scales smoothly
      across PC / tablet / phone without breakpoints. Used as text-hero / text-section / text-lead. */
   --text-hero: clamp(2.5rem, 1.4rem + 4.4vw, 4.25rem);      /* 40px → 68px */
   --text-section: clamp(1.75rem, 1.15rem + 2.4vw, 2.5rem);  /* 28px → 40px */
@@ -42,7 +42,7 @@
 }
 
 /*
-  shadcn/ui token bridge — maps shadcn's semantic tokens onto the Plato palette so
+  shadcn/ui token bridge, maps shadcn's semantic tokens onto the Plato palette so
   shadcn components (Button, Dialog, …) match the brand. We deliberately do NOT remap
   --color-accent or --color-muted here; those keep their Plato meanings (brand orange /
   secondary text). shadcn components that lean on those are authored to use our tokens.
@@ -103,12 +103,12 @@ body {
 @keyframes plato-ring { 0% { box-shadow: 0 0 0 0 rgba(251,106,26,.5); } 100% { box-shadow: 0 0 0 14px rgba(251,106,26,0); } }
 @keyframes plato-fadeswap { 0% { opacity: 0; transform: translateY(10px) scale(0.985); } 100% { opacity: 1; transform: none; } }
 
-/* Scroll-reveal — <Reveal> adds .in-view via IntersectionObserver (matches mockup pl-reveal) */
+/* Scroll-reveal, <Reveal> adds .in-view via IntersectionObserver (matches mockup pl-reveal) */
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.3,1); }
 .reveal.in-view { opacity: 1; transform: none; }
 @keyframes plato-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
 
-/* Respect reduced motion globally — design.md §9, video loops pause elsewhere in JS */
+/* Respect reduced motion globally, design.md §9, video loops pause elsewhere in JS */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

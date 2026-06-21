@@ -130,7 +130,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
     onPlay: (it) => track(tenant.id, "video_play", it.id),
   };
 
-  // Reel is a full-screen feed, not the scrollable shell — featured dishes lead.
+  // Reel is a full-screen feed, not the scrollable shell, featured dishes lead.
   if (template === "reel") {
     const reelDishes = [...featured, ...items.filter((i) => !featured.some((f) => f.id === i.id))];
     return (
@@ -307,7 +307,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           ))}
         </nav>
 
-        {/* Sections — Grid template, two columns */}
+        {/* Sections, Grid template, two columns */}
         <div className="px-4">
           {categories.map((c) => {
             const catItems = items.filter((i) => i.category_id === c.id);
@@ -371,7 +371,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                   const r = tenant.hours?.[d];
                   return (
                     <li key={d} className={d === todayKey ? "font-medium text-ink" : ""}>
-                      {DAY_LABEL[d]} · {r ? `${r[0]}–${r[1]}` : "—"}
+                      {DAY_LABEL[d]} · {r ? `${r[0]}-${r[1]}` : "-"}
                     </li>
                   );
                 })}
