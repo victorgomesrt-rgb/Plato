@@ -1,10 +1,10 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { isOpenNow, type Hours } from "@/lib/hours";
+import { PlatoMark } from "@/components/plato-logo";
 
 export type DiscoverCard = {
   slug: string;
@@ -86,7 +86,7 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/brand/plato-appicon.png" alt="" width={28} height={28} className="h-7 w-7 rounded-lg" />
+            <PlatoMark className="h-7 w-7 text-white" />
             <span className="font-display font-extrabold">Plato</span>
           </Link>
           <div className="flex items-center gap-4 text-sm">

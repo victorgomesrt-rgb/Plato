@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import Link from "next/link";
-import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
+import { PlatoMark } from "@/components/plato-logo";
 
 const C: Components = {
   h1: ({ children }) => <h1 className="font-display text-3xl font-bold text-ink">{children}</h1>,
@@ -29,7 +29,7 @@ export async function LegalDoc({ file }: { file: string }) {
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/brand/plato-appicon.png" alt="" width={26} height={26} className="h-6 w-6 rounded-lg" />
+            <PlatoMark className="h-6 w-6 text-ink" />
             <span className="font-display font-extrabold text-ink">Plato</span>
           </Link>
           <Link href="/" className="text-sm text-muted hover:text-ink">← Home</Link>

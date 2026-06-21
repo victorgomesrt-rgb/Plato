@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import {
   Video, LayoutGrid, MapPin, QrCode, Languages, BarChart3, Camera, Tablet, Check,
 } from "lucide-react";
+import { PlatoMark } from "@/components/plato-logo";
+import { EmailCapture } from "@/components/email-capture";
 
 export const metadata: Metadata = {
   title: "Plato — Video menus for Caribbean restaurants",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     "We come to your restaurant, film your food, and build a fast video menu where the dishes actually move. Diners scan, watch, and decide.",
 };
 
-const DEMO = "/book";
+const WAITLIST = "#waitlist";
 
 const features = [
   { icon: Video, title: "Dishes that move", body: "A short, silent looping clip for every dish. People order what they can see." },
@@ -39,12 +40,72 @@ const plans = [
     items: ["Everything in Growth", "Unlimited items", "Spot on the Discover page", "Quarterly re-shoot · flyer design", "Full hardware kit · priority support"] },
 ];
 
-function Logo({ className = "" }: { className?: string }) {
+const dishes = [
+  { n: "Catch of the Day", p: "$29", bg: "#0E5B5B22" },
+  { n: "Garlic Shrimp", p: "$24", bg: "#FB6A1A22" },
+  { n: "Keshi Yena", p: "$18", bg: "#F4B74033" },
+  { n: "Island Mojito", p: "$9", bg: "#0E5B5B1f" },
+];
+
+function Logo() {
   return (
-    <Link href="/" className={`flex items-center gap-2 ${className}`}>
-      <Image src="/brand/plato-appicon.png" alt="" width={32} height={32} className="h-8 w-8 rounded-lg" />
+    <Link href="/" className="flex items-center gap-2">
+      <PlatoMark className="h-7 w-7 text-white" />
       <span className="font-display text-lg font-extrabold tracking-tight">Plato</span>
     </Link>
+  );
+}
+
+function PhoneMock() {
+  return (
+    <div className="relative mx-auto w-[270px]">
+      <div className="overflow-hidden rounded-[2.4rem] border-[8px] border-ink bg-black shadow-2xl ring-1 ring-white/10">
+        <div
+          className="relative h-[160px]"
+          style={{ background: "linear-gradient(120deg,#FB6A1A,#F4B740 45%,#0E5B5B 90%)", backgroundSize: "200% 200%", animation: "plato-pan 9s ease-in-out infinite" }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-pulse 1.6s ease-in-out infinite" }} /> LIVE
+          </span>
+          <div className="absolute bottom-3 left-3">
+            <p className="font-display text-xl font-extrabold text-white drop-shadow">Brisa</p>
+            <p className="text-[11px] text-white/85">Beach kitchen · Eagle Beach</p>
+          </div>
+        </div>
+        <div className="bg-surface p-3 text-ink">
+          <p className="text-xs font-semibold text-muted">Most Popular</p>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {dishes.map((d, i) => (
+              <div key={d.n} className="overflow-hidden rounded-lg border border-line">
+                <div className="relative h-16 w-full overflow-hidden" style={{ background: d.bg }}>
+                  <span
+                    className="absolute inset-y-0 left-0 w-1/3 -skew-x-12 bg-white/30 blur-md"
+                    style={{ animation: `plato-shimmer ${2.6 + i * 0.5}s ease-in-out ${i * 0.45}s infinite` }}
+                  />
+                  <span className="absolute left-1/2 top-1/2 grid h-6 w-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/35 backdrop-blur">
+                    <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden><path d="M1 0l6 4-6 4z" fill="#fff" /></svg>
+                  </span>
+                </div>
+                <div className="p-1.5">
+                  <p className="truncate text-[11px] font-medium">{d.n}</p>
+                  <p className="text-[11px] font-semibold text-accent">{d.p}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute -left-6 top-8 rounded-xl bg-white px-3 py-2 text-ink shadow-lg" style={{ animation: "plato-float 4s ease-in-out infinite" }}>
+        <p className="text-[10px] text-muted">Menu views</p>
+        <p className="font-display text-lg font-bold leading-none">1,284 <span className="text-xs font-semibold text-sea">▲19%</span></p>
+      </div>
+      <div className="absolute -right-5 bottom-14 rounded-xl bg-white px-3 py-2 text-ink shadow-lg" style={{ animation: "plato-float-slow 5s ease-in-out infinite" }}>
+        <p className="text-[10px] text-muted">QR scans</p>
+        <p className="font-display text-base font-bold leading-none">482</p>
+      </div>
+    </div>
   );
 }
 
@@ -64,7 +125,7 @@ export default function Landing() {
           </div>
           <div className="flex items-center gap-2">
             <Link href="/login" className="px-3 py-1.5 text-sm font-medium text-white/80 hover:text-white">Log in</Link>
-            <a href={DEMO} className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">Book a Demo</a>
+            <a href={WAITLIST} className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">Get started</a>
           </div>
         </nav>
       </header>
@@ -85,7 +146,7 @@ export default function Landing() {
               food actually moves. Diners scan, watch, and decide. You don&apos;t build a thing.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a href={DEMO} className="rounded-btn bg-accent px-5 py-3 font-semibold text-white hover:bg-accent-deep">Book a Demo →</a>
+              <a href={WAITLIST} className="rounded-btn bg-accent px-5 py-3 font-semibold text-white hover:bg-accent-deep">Get started →</a>
               <Link href="/hungparadise" className="rounded-btn border border-white/20 px-5 py-3 font-semibold text-white hover:bg-white/5">See a live menu</Link>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
@@ -94,37 +155,7 @@ export default function Landing() {
               <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-accent" /> We film it for you</span>
             </div>
           </div>
-
-          {/* Phone preview */}
-          <div className="relative mx-auto w-[260px]">
-            <div className="overflow-hidden rounded-[2.2rem] border-[7px] border-ink bg-black shadow-2xl ring-1 ring-white/10">
-              <div className="relative h-[150px]" style={{ background: "linear-gradient(135deg,#FB6A1A,#F4B740 55%,#0E5B5B)" }}>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute bottom-3 left-3">
-                  <p className="font-display text-xl font-extrabold drop-shadow">Brisa</p>
-                  <p className="text-[11px] text-white/80">Beach kitchen · Eagle Beach</p>
-                </div>
-              </div>
-              <div className="bg-surface p-3 text-ink">
-                <p className="text-xs font-semibold text-muted">Most Popular</p>
-                <div className="mt-2 grid grid-cols-2 gap-2">
-                  {["Catch of the Day", "Garlic Shrimp"].map((d, i) => (
-                    <div key={d} className="overflow-hidden rounded-lg border border-line">
-                      <div className="h-16 w-full" style={{ background: i ? "#FB6A1A22" : "#0E5B5B22" }} />
-                      <div className="p-1.5">
-                        <p className="truncate text-[11px] font-medium">{d}</p>
-                        <p className="text-[11px] font-semibold text-accent">${i ? "24" : "29"}.00</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="absolute -left-6 top-6 rounded-xl bg-white px-3 py-2 text-ink shadow-lg">
-              <p className="text-[10px] text-muted">Menu views</p>
-              <p className="font-display text-lg font-bold leading-none">1,284 <span className="text-xs font-semibold text-sea">▲19%</span></p>
-            </div>
-          </div>
+          <PhoneMock />
         </div>
       </section>
 
@@ -199,20 +230,20 @@ export default function Landing() {
                     <li key={it} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" /><span>{it}</span></li>
                   ))}
                 </ul>
-                <a href={DEMO} className={`mt-6 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.highlight ? "bg-accent text-white hover:bg-accent-deep" : "border border-line text-ink hover:bg-line"}`}>Book a Demo</a>
+                <a href={WAITLIST} className={`mt-6 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.highlight ? "bg-accent text-white hover:bg-accent-deep" : "border border-line text-ink hover:bg-line"}`}>Get started</a>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(60% 80% at 50% 0%, rgba(251,106,26,.25), transparent)" }} />
-        <div className="mx-auto max-w-3xl px-5 py-20 text-center">
-          <h2 className="font-display text-4xl font-extrabold">Show your food in motion.</h2>
-          <p className="mx-auto mt-3 max-w-md text-white/70">Book a free demo — we&apos;ll confirm a capture time and have your filmed menu live before your next dinner service.</p>
-          <a href={DEMO} className="mt-7 inline-block rounded-btn bg-accent px-6 py-3 font-semibold text-white hover:bg-accent-deep">Book a Demo →</a>
+      {/* Final CTA — email capture */}
+      <section id="waitlist" className="relative overflow-hidden scroll-mt-20">
+        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(60% 80% at 50% 0%, rgba(251,106,26,.3), transparent)" }} />
+        <div className="mx-auto max-w-2xl px-5 py-20 text-center">
+          <h2 className="font-display text-4xl font-extrabold">Ready to upgrade your menu?</h2>
+          <p className="mx-auto mt-3 max-w-md text-lg text-white/75">We&apos;ll reach out :) Just leave your email.</p>
+          <div className="mt-8"><EmailCapture variant="dark" /></div>
         </div>
       </section>
 
@@ -223,7 +254,6 @@ export default function Landing() {
           <div className="flex flex-wrap items-center gap-5">
             <Link href="/discover" className="hover:text-white">Discover</Link>
             <Link href="/login" className="hover:text-white">Log in</Link>
-            <a href={DEMO} className="hover:text-white">Book a Demo</a>
             <Link href="/terms" className="hover:text-white">Terms</Link>
             <Link href="/privacy" className="hover:text-white">Privacy</Link>
           </div>

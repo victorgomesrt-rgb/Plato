@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, Receipt, LineChart } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
+import { PlatoMark } from "@/components/plato-logo";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutGrid, exact: true },
@@ -22,7 +22,7 @@ export function AdminSidebar({ email }: { email: string }) {
   return (
     <aside className="bg-ink text-white lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col">
       <div className="flex items-center gap-2 px-5 py-4">
-        <Image src="/brand/plato-appicon.png" alt="" width={28} height={28} className="h-7 w-7 rounded-lg" />
+        <PlatoMark className="h-7 w-7 text-white" />
         <span className="font-display font-extrabold">Plato</span>
         <span className="rounded-md bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">Admin</span>
       </div>

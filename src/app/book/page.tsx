@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { BookForm } from "./book-form";
+import { PlatoMark } from "@/components/plato-logo";
 
 export const metadata: Metadata = {
   title: "Book a free demo",
@@ -16,7 +16,7 @@ export default function BookPage() {
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <Image src="/brand/plato-appicon.png" alt="" width={28} height={28} className="h-7 w-7 rounded-lg" />
+            <PlatoMark className="h-7 w-7 text-white" />
             <span className="font-display font-extrabold">Plato</span>
           </Link>
           <Link href="/login" className="text-sm text-white/70 hover:text-white">Log in</Link>
