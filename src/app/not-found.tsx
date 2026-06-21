@@ -1,16 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
+import { PlatoMark } from "@/components/plato-logo";
 
 export default function NotFound() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-5 px-6 text-center">
-      <Image
-        src="/brand/plato-mark.png"
-        alt="Plato"
-        width={56}
-        height={56}
-        className="h-14 w-14"
-      />
+      <PlatoMark className="h-14 w-auto" />
       <h1 className="font-display text-2xl font-semibold text-ink">Page not found</h1>
       <p className="max-w-sm text-muted">
         This page doesn’t exist, or the menu isn’t live yet.
