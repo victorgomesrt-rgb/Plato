@@ -77,71 +77,80 @@ function Sparkline({ className = "" }: { className?: string }) {
 
 function HeroPhone() {
   return (
-    <div className="relative mx-auto w-[280px]">
-      <div className="overflow-hidden rounded-[2.6rem] border-[9px] border-ink bg-black shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
-        {/* Cover */}
-        <div className="relative h-[210px] overflow-hidden">
-          <Image src="/landing/dish-8.jpg" alt="" fill sizes="280px" className="object-cover" style={KB(13)} priority />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/25" />
-          <div className="absolute inset-x-3 top-3 flex items-center justify-between">
-            <span className="flex items-center gap-1.5 rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white backdrop-blur">
+    <div className="relative mx-auto w-[312px]">
+      {/* Phone frame: 312x632, ink body, big soft shadow + 2px white ring (exact mockup) */}
+      <div className="h-[632px] w-[312px] rounded-[44px] bg-[#14110F] p-[9px] shadow-[0_50px_100px_-30px_rgba(0,0,0,0.8),0_0_0_2px_rgba(255,255,255,0.06)]">
+        <div className="relative h-full w-full overflow-hidden rounded-[36px] bg-surface">
+          {/* Notch */}
+          <div className="absolute left-1/2 top-0 z-10 h-[26px] w-[110px] -translate-x-1/2 rounded-b-2xl bg-[#14110F]" />
+
+          {/* Cover */}
+          <div className="relative h-[252px] overflow-hidden bg-[#2A211B]">
+            <Image src="/landing/dish-8.jpg" alt="" fill sizes="312px" className="object-cover" style={KB(13)} priority />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(rgba(0,0,0,.34) 0%, rgba(0,0,0,0) 38%, rgba(0,0,0,.8) 100%)" }} />
+            <div className="absolute left-4 top-9 flex items-center gap-1.5 rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Open now
-            </span>
-            <div className="flex gap-1">
+            </div>
+            <div className="absolute right-4 top-[38px] flex gap-1.5">
               <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink">EN</span>
               <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink">USD</span>
             </div>
+            <div className="absolute bottom-3.5 left-4">
+              <p className="font-display text-[26px] font-extrabold leading-none text-white drop-shadow">Brisa</p>
+              <p className="mt-1 text-[11px] text-white/85">Beach kitchen · Eagle Beach</p>
+            </div>
           </div>
-          <div className="absolute bottom-3 left-4">
-            <p className="font-display text-2xl font-extrabold text-white drop-shadow">Brisa</p>
-            <p className="text-[11px] text-white/85">Beach kitchen · Eagle Beach</p>
-          </div>
-        </div>
-        {/* Action bar */}
-        <div className="flex justify-between bg-surface px-3 pt-3">
-          {ACTIONS.map((a) => (
-            <span key={a.label} className="flex flex-col items-center gap-1">
-              <span className={`grid h-9 w-9 place-items-center rounded-full ${a.primary ? "bg-accent text-white" : "bg-line text-ink"}`}>
-                <a.icon className="h-[18px] w-[18px]" />
+
+          {/* Action bar */}
+          <div className="flex gap-3.5 px-4 pb-2 pt-3.5">
+            {ACTIONS.map((a) => (
+              <span key={a.label} className="flex flex-1 flex-col items-center gap-1.5">
+                <span className={`grid h-10 w-10 place-items-center rounded-full ${a.primary ? "bg-accent text-white" : "bg-line text-ink"}`}>
+                  <a.icon className="h-[18px] w-[18px]" />
+                </span>
+                <span className="text-[9px] font-medium text-muted">{a.label}</span>
               </span>
-              <span className="text-[8px] font-medium text-muted">{a.label}</span>
-            </span>
-          ))}
-        </div>
-        {/* Most popular */}
-        <div className="bg-surface p-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-ink">Most Popular</p>
-            <span className="text-[10px] text-muted">Tap to open</span>
-          </div>
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            {[{ img: "/landing/dish-7.jpg", n: "Garlic Shrimp", p: "$24", s: 14 }, { img: "/landing/dish-4.jpg", n: "Mango Colada", p: "$12", s: 16 }].map((d) => (
-              <div key={d.n} className="overflow-hidden rounded-xl border border-line">
-                <div className="relative h-[78px] overflow-hidden">
-                  <Image src={d.img} alt="" fill sizes="130px" className="object-cover" style={KB(d.s)} />
-                  <span className="absolute left-1/2 top-1/2 grid h-7 w-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/40 backdrop-blur">
-                    <Play className="h-3 w-3 fill-white text-white" />
-                  </span>
-                </div>
-                <div className="p-2">
-                  <p className="truncate text-[11px] font-semibold text-ink">{d.n}</p>
-                  <p className="text-[11px] font-bold text-accent">{d.p}</p>
-                </div>
-              </div>
             ))}
+          </div>
+
+          {/* Most popular */}
+          <div className="px-4 pt-2">
+            <div className="flex items-baseline justify-between">
+              <p className="text-[13px] font-semibold text-ink">Most Popular</p>
+              <span className="text-[10px] text-muted">Tap to open</span>
+            </div>
+            <div className="mt-2.5 flex gap-2.5">
+              {[{ img: "/landing/dish-7.jpg", n: "Garlic Shrimp", p: "$24", s: 14 }, { img: "/landing/dish-4.jpg", n: "Mango Colada", p: "$12", s: 16 }].map((d) => (
+                <div key={d.n} className="w-[128px] shrink-0 overflow-hidden rounded-2xl border border-line">
+                  <div className="relative h-[124px] overflow-hidden">
+                    <Image src={d.img} alt="" fill sizes="128px" className="object-cover" style={KB(d.s)} />
+                    <span className="absolute left-1/2 top-1/2 grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/40 backdrop-blur">
+                      <Play className="h-3.5 w-3.5 fill-white text-white" />
+                    </span>
+                  </div>
+                  <div className="p-2.5">
+                    <p className="truncate text-[12px] font-semibold text-ink">{d.n}</p>
+                    <p className="text-[12px] font-bold text-accent">{d.p}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Floating chips */}
-      <div className="absolute -left-10 top-12 w-36 rounded-2xl bg-white p-3 text-ink shadow-xl" style={{ animation: "plato-float 5s ease-in-out infinite" }}>
-        <p className="text-[10px] text-muted">Menu views</p>
-        <p className="font-display text-xl font-extrabold leading-none">1,284 <span className="text-xs font-bold text-sea">▲22%</span></p>
-        <Sparkline className="mt-1.5 h-6 w-full" />
+      {/* Floating "views" chip — top:38 left:-28 w:184 */}
+      <div className="absolute left-[-28px] top-[38px] w-[184px] rounded-2xl bg-white/95 px-[15px] py-[13px] text-ink shadow-[0_22px_44px_-20px_rgba(0,0,0,0.6)]" style={{ animation: "plato-float 5s ease-in-out infinite" }}>
+        <p className="text-[11px] font-semibold text-[#9A938A]">This week</p>
+        <p className="flex items-baseline gap-1.5"><span className="font-display text-2xl font-extrabold leading-none text-ink">1,284</span><span className="text-xs font-bold text-[#157A48]">▲ 22%</span></p>
+        <p className="text-[11px] text-[#9A938A]">menu views</p>
+        <Sparkline className="mt-1.5 h-7 w-full" />
       </div>
-      <div className="absolute -right-8 bottom-28 flex items-center gap-2 rounded-2xl bg-white p-2.5 pr-3 text-ink shadow-xl" style={{ animation: "plato-float-slow 6s ease-in-out infinite" }}>
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-white"><QrCode className="h-5 w-5" /></span>
-        <div><p className="text-[11px] font-bold leading-tight">Scan to view</p><p className="text-[9px] text-muted">Tracked QR & NFC</p></div>
+
+      {/* Floating "scan" chip — bottom:70 right:-24 */}
+      <div className="absolute bottom-[70px] right-[-24px] flex items-center gap-[11px] rounded-2xl bg-white/95 px-[14px] py-3 text-ink shadow-[0_22px_44px_-20px_rgba(0,0,0,0.6)]" style={{ animation: "plato-float-slow 6s ease-in-out infinite" }}>
+        <span className="grid h-[42px] w-[42px] place-items-center rounded-[10px] bg-ink text-white"><QrCode className="h-6 w-6" /></span>
+        <div><p className="text-[12px] font-bold leading-tight">Scan to view</p><p className="text-[11px] text-[#9A938A]">Tracked QR &amp; NFC</p></div>
       </div>
     </div>
   );
