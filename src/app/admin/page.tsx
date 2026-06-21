@@ -131,17 +131,22 @@ export default async function AdminOverviewPage() {
           <div className="mt-4 space-y-4">
             {onboarding.length === 0 ? (
               <p className="text-sm text-muted">Nothing in the pipeline right now.</p>
-            ) : onboarding.map((o) => (
-              <div key={o.name}>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-ink">{o.name}</span>
-                  <span className="text-muted">{o.label}</span>
+            ) : onboarding.map((o) => {
+              const filled = Math.round((o.pct / 100) * 6);
+              return (
+                <div key={o.name}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium text-ink">{o.name}</span>
+                    <span className="text-muted">{o.label}</span>
+                  </div>
+                  <div className="mt-1.5 flex gap-1">
+                    {Array.from({ length: 6 }, (_, i) => (
+                      <span key={i} className={`h-1.5 flex-1 rounded-full ${i < filled ? "bg-accent" : "bg-line"}`} />
+                    ))}
+                  </div>
                 </div>
-                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
-                  <div className="h-full rounded-full bg-accent" style={{ width: `${o.pct}%` }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 
