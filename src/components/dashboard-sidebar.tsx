@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, UtensilsCrossed, BarChart3, MessageSquare, CreditCard, ExternalLink } from "lucide-react";
+import { LayoutDashboard, UtensilsCrossed, BarChart3, MessageSquare, CreditCard, Settings, ExternalLink } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
 
 type Item = { href: string; label: string; icon: typeof LayoutDashboard; external?: boolean };
@@ -20,10 +20,11 @@ export function DashboardSidebar({
   const path = usePathname();
   const nav: Item[] = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: `/${slug}`, label: "My menu", icon: UtensilsCrossed, external: true },
+    { href: "/dashboard/menu", label: "My menu", icon: UtensilsCrossed },
     { href: "/dashboard/analytics", label: "Insights", icon: BarChart3 },
     { href: "/dashboard/requests", label: "Request a change", icon: MessageSquare },
     { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
+    { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
   const initial = name.trim().charAt(0).toUpperCase() || "•";
 
