@@ -224,6 +224,8 @@ export default function Landing() {
             <Link href="/discover" className="hover:text-white">Discover</Link>
             <Link href="/login" className="hover:text-white">Log in</Link>
             <a href={DEMO} className="hover:text-white">Book a Demo</a>
+            <Link href="/terms" className="hover:text-white">Terms</Link>
+            <Link href="/privacy" className="hover:text-white">Privacy</Link>
           </div>
           <p>© {year} Plato · GMS Innovations, Aruba</p>
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
 import { X } from "lucide-react";
 import type { Tenant } from "@/lib/tenant";
 import type { Category, Item } from "@/lib/menu";
@@ -359,8 +360,10 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
               </ul>
             </div>
           )}
-          <p className="mt-6 pb-2 text-center">
+          <p className="mt-6 flex items-center justify-center gap-3 pb-2 text-center text-xs">
             <a href="https://platodigital.io" className="hover:text-ink">{t(locale, "poweredBy")}</a>
+            <span aria-hidden>·</span>
+            <Link href="/privacy" className="hover:text-ink">{t(locale, "privacy")}</Link>
           </p>
         </footer>
       </div>
