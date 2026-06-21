@@ -30,7 +30,7 @@ export function DashboardSidebar({
   const initial = name.trim().charAt(0).toUpperCase() || "•";
 
   return (
-    <aside className="bg-ink text-white lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col">
+    <aside className="bg-ink text-white md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col">
       <div className="flex items-center gap-3 px-5 py-4">
         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent font-display text-lg font-bold text-white">{initial}</span>
         <div className="min-w-0">
@@ -46,13 +46,13 @@ export function DashboardSidebar({
         </span>
       </div>
 
-      <nav className="mt-4 flex gap-1 overflow-x-auto px-3 pb-2 lg:mt-5 lg:flex-1 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:pb-0">
+      <nav className="mt-4 flex gap-1 overflow-x-auto px-3 pb-2 md:mt-5 md:flex-1 md:flex-col md:gap-0.5 md:overflow-visible md:pb-0">
         {nav.map(({ href, label, icon: Icon, external }) => {
           const active = !external && (href === "/dashboard" ? path === href : path.startsWith(href));
           const cls = `flex shrink-0 items-center gap-2.5 rounded-btn px-3 py-2 text-sm font-medium ${active ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white"}`;
           return external ? (
             <a key={label} href={href} target="_blank" rel="noopener noreferrer" className={cls}>
-              <Icon className="h-4 w-4" />{label}<ExternalLink className="ml-auto hidden h-3 w-3 text-white/30 lg:block" />
+              <Icon className="h-4 w-4" />{label}<ExternalLink className="ml-auto hidden h-3 w-3 text-white/30 md:block" />
             </a>
           ) : (
             <Link key={label} href={href} className={cls}><Icon className="h-4 w-4" />{label}</Link>
@@ -60,13 +60,13 @@ export function DashboardSidebar({
         })}
       </nav>
 
-      <div className="px-4 pb-4 lg:mt-auto">
-        <div className="hidden rounded-card border border-white/10 bg-white/5 p-3 lg:block">
+      <div className="px-4 pb-4 md:mt-auto">
+        <div className="hidden rounded-card border border-white/10 bg-white/5 p-3 md:block">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">{plan} · {price}/mo</p>
           {renews && <p className="mt-0.5 text-xs text-white/55">Renews {renews}</p>}
           <Link href="/dashboard/billing" className="mt-2 block rounded-btn bg-white/10 px-3 py-1.5 text-center text-xs font-medium text-white hover:bg-white/15">Manage plan</Link>
         </div>
-        <div className="px-1 lg:mt-3"><SignOutButton /></div>
+        <div className="px-1 md:mt-3"><SignOutButton /></div>
       </div>
     </aside>
   );

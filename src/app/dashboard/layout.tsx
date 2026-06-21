@@ -34,7 +34,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         live={live}
         renews={renews}
       />
-      <div className="lg:pl-60">{children}</div>
+      <div className="md:pl-60">{children}</div>
     </div>
   );
 }

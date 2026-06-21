@@ -20,14 +20,14 @@ const NAV = [
 export function AdminSidebar({ email }: { email: string }) {
   const path = usePathname();
   return (
-    <aside className="bg-ink text-white lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-60 lg:flex-col">
+    <aside className="bg-ink text-white md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col">
       <div className="flex items-center gap-2 px-5 py-4">
         <PlatoMark className="h-7 w-7 text-white" />
         <span className="font-display font-extrabold">Plato</span>
         <span className="rounded-md bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">Admin</span>
       </div>
 
-      <nav className="mt-1 flex gap-1 overflow-x-auto px-3 pb-2 lg:mt-4 lg:flex-1 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:pb-0">
+      <nav className="mt-1 flex gap-1 overflow-x-auto px-3 pb-2 md:mt-4 md:flex-1 md:flex-col md:gap-0.5 md:overflow-visible md:pb-0">
         {NAV.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? path === href : path.startsWith(href);
           return (
@@ -39,15 +39,15 @@ export function AdminSidebar({ email }: { email: string }) {
         })}
       </nav>
 
-      <div className="px-4 pb-4 lg:mt-auto">
-        <div className="hidden items-center gap-2.5 rounded-card border border-white/10 bg-white/5 p-3 lg:flex">
+      <div className="px-4 pb-4 md:mt-auto">
+        <div className="hidden items-center gap-2.5 rounded-card border border-white/10 bg-white/5 p-3 md:flex">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">OP</span>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">Plato HQ</p>
             <p className="truncate text-xs text-white/50">{email}</p>
           </div>
         </div>
-        <div className="px-1 lg:mt-3"><SignOutButton /></div>
+        <div className="px-1 md:mt-3"><SignOutButton /></div>
       </div>
     </aside>
   );

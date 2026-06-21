@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-[#FAF8F4]">
       <AdminSidebar email={admin.email ?? ""} />
-      <div className="lg:pl-60">{children}</div>
+      <div className="md:pl-60">{children}</div>
     </div>
   );
 }
