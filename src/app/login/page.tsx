@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Mail, Lock, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { PlatoLogo } from "@/components/plato-logo";
+import { AuthShell } from "@/components/auth-shell";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -44,52 +45,45 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 flex justify-center"><PlatoLogo mark="h-9 w-auto" text="text-2xl" /></div>
-        <h1 className="font-display text-xl font-semibold text-ink">Sign in</h1>
-        <p className="mt-1 text-sm text-muted">Restaurant owners and the Plato team.</p>
+    <AuthShell>
+      <h1 className="font-display text-2xl font-bold text-ink">Welcome back</h1>
+      <p className="mt-1 text-sm text-muted">Sign in to your Plato dashboard.</p>
 
-        <form onSubmit={signInWithPassword} className="mt-6 space-y-3">
-          <input
-            type="email"
-            required
-            placeholder="you@restaurant.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-btn border border-line px-3 py-2.5 text-ink outline-none focus:border-accent"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-btn border border-line px-3 py-2.5 text-ink outline-none focus:border-accent"
-          />
-          <div className="text-right">
-            <Link href="/forgot" className="text-sm font-medium text-accent hover:text-accent-deep">
-              Forgot password?
-            </Link>
-          </div>
-          <button
-            type="submit"
-            disabled={busy}
-            className="w-full rounded-btn bg-accent px-4 py-2.5 font-medium text-white disabled:opacity-60"
-          >
-            Sign in
-          </button>
-        </form>
-
-        <button
-          onClick={sendMagicLink}
-          disabled={busy}
-          className="mt-3 w-full rounded-btn border border-line px-4 py-2.5 font-medium text-ink disabled:opacity-60"
-        >
-          Email me a sign-in link
+      <form onSubmit={signInWithPassword} className="mt-7 space-y-4">
+        <label className="block">
+          <span className="text-sm font-medium text-ink">Email</span>
+          <span className="relative mt-1 block">
+            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input type="email" required placeholder="you@restaurant.com" value={email} onChange={(e) => setEmail(e.target.value)}
+              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent" />
+          </span>
+        </label>
+        <label className="block">
+          <span className="flex items-center justify-between text-sm font-medium text-ink">
+            Password
+            <Link href="/forgot" className="font-medium text-accent hover:text-accent-deep">Forgot?</Link>
+          </span>
+          <span className="relative mt-1 block">
+            <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)}
+              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent" />
+          </span>
+        </label>
+        <button type="submit" disabled={busy} className="h-11 w-full rounded-btn bg-accent font-semibold text-white transition hover:bg-accent-deep disabled:opacity-60">
+          {busy ? "…" : "Log in →"}
         </button>
+      </form>
 
-        {status && <p className="mt-4 text-sm text-muted">{status}</p>}
-      </div>
-    </main>
+      <div className="my-5 flex items-center gap-3 text-xs text-muted"><span className="h-px flex-1 bg-line" /> or <span className="h-px flex-1 bg-line" /></div>
+
+      <button onClick={sendMagicLink} disabled={busy}
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-btn border border-line bg-surface font-medium text-ink transition hover:border-ink/20 disabled:opacity-60">
+        <Sparkles className="h-4 w-4 text-accent" /> Email me a magic link instead
+      </button>
+
+      {status && <p className="mt-4 text-center text-sm text-muted">{status}</p>}
+
+      <p className="mt-6 text-center text-sm text-muted">New restaurant? <Link href="/#waitlist" className="font-semibold text-accent hover:text-accent-deep">Get started →</Link></p>
+    </AuthShell>
   );
 }

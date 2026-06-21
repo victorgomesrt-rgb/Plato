@@ -104,14 +104,15 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
             See the food before<br className="hidden sm:block" /> you sit down.
           </h1>
           <p className="mt-3 text-white/70">Browse Aruba&apos;s restaurants with menus that actually move.</p>
-          <div className="mx-auto mt-6 flex max-w-lg items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5">
-            <Search className="h-5 w-5 text-white/50" />
+          <div className="mx-auto mt-6 flex max-w-lg items-center gap-2 rounded-full bg-white p-1.5 pl-4 shadow-xl">
+            <Search className="h-5 w-5 shrink-0 text-muted" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search restaurants, dishes…"
-              className="flex-1 bg-transparent text-white outline-none placeholder:text-white/40"
+              className="h-9 flex-1 bg-transparent text-ink outline-none placeholder:text-muted"
             />
+            <span className="shrink-0 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white">Search</span>
           </div>
           <div className="mt-4 flex justify-center gap-2 text-sm">
             <button onClick={() => setOpenOnly(false)} className={`rounded-full px-3 py-1 font-medium ${!openOnly ? "bg-accent text-white" : "bg-white/10 text-white/80"}`}>All</button>

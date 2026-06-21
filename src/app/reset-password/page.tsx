@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Lock } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { PlatoLogo } from "@/components/plato-logo";
+import { AuthShell } from "@/components/auth-shell";
 
 export default function ResetPasswordPage() {
   const supabase = createClient();
@@ -33,28 +34,25 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 flex justify-center"><PlatoLogo mark="h-9 w-auto" text="text-2xl" /></div>
-        <h1 className="font-display text-xl font-semibold text-ink">Set a new password</h1>
-        <p className="mt-1 text-sm text-muted">Choose a password you&apos;ll remember.</p>
+    <AuthShell>
+      <h1 className="font-display text-2xl font-bold text-ink">Set a new password</h1>
+      <p className="mt-1 text-sm text-muted">Choose a password you&apos;ll remember.</p>
 
-        <form onSubmit={submit} className="mt-6 space-y-3">
-          <input
-            type="password"
-            required
-            placeholder="New password"
-            value={pw}
-            onChange={(e) => setPw(e.target.value)}
-            className="w-full rounded-btn border border-line px-3 py-2.5 text-ink outline-none focus:border-accent"
-          />
-          <button type="submit" disabled={busy} className="w-full rounded-btn bg-accent px-4 py-2.5 font-medium text-white disabled:opacity-60">
-            {busy ? "Saving…" : "Update password"}
-          </button>
-        </form>
+      <form onSubmit={submit} className="mt-7 space-y-4">
+        <label className="block">
+          <span className="text-sm font-medium text-ink">New password</span>
+          <span className="relative mt-1 block">
+            <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
+            <input type="password" required placeholder="••••••••" value={pw} onChange={(e) => setPw(e.target.value)}
+              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent" />
+          </span>
+        </label>
+        <button type="submit" disabled={busy} className="h-11 w-full rounded-btn bg-accent font-semibold text-white transition hover:bg-accent-deep disabled:opacity-60">
+          {busy ? "Saving…" : "Update password"}
+        </button>
+      </form>
 
-        {status && <p className="mt-4 text-sm text-muted">{status}</p>}
-      </div>
-    </main>
+      {status && <p className="mt-4 text-sm text-muted">{status}</p>}
+    </AuthShell>
   );
 }
