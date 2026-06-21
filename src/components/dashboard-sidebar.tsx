@@ -22,7 +22,7 @@ export function DashboardSidebar({
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: `/${slug}`, label: "My menu", icon: UtensilsCrossed, external: true },
     { href: "/dashboard/analytics", label: "Insights", icon: BarChart3 },
-    { href: "mailto:hello@platodigital.io?subject=Change%20request%20—%20" + encodeURIComponent(name), label: "Request a change", icon: MessageSquare, external: true },
+    { href: "/dashboard/requests", label: "Request a change", icon: MessageSquare },
     { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   ];
   const initial = name.trim().charAt(0).toUpperCase() || "•";

@@ -129,7 +129,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </div>
         <div className="flex gap-2">
           <a href={`/${tn.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-btn border border-line bg-surface px-3 py-2 text-sm font-medium text-ink hover:border-ink/20">View live menu</a>
-          <a href={`mailto:hello@platodigital.io?subject=Change%20request%20—%20${encodeURIComponent(tn.name)}`} className="rounded-btn bg-accent px-3 py-2 text-sm font-medium text-white">Request a change</a>
+          <Link href="/dashboard/requests" className="rounded-btn bg-accent px-3 py-2 text-sm font-medium text-white">Request a change</Link>
         </div>
       </div>
 

@@ -3,14 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Building2, UserPlus, Receipt } from "lucide-react";
+import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, Receipt, LineChart } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: LayoutGrid, exact: true },
   { href: "/admin/tenants", label: "Tenants", icon: Building2 },
   { href: "/admin/new-client", label: "New client", icon: UserPlus },
+  { href: "/admin/requests", label: "Requests", icon: Inbox },
+  { href: "/admin/hardware", label: "Hardware", icon: Package },
+  { href: "/admin/tablets", label: "Tablets", icon: Tablet },
   { href: "/admin/billing", label: "Billing", icon: Receipt },
+  { href: "/admin/revenue", label: "Revenue", icon: LineChart },
 ];
 
 export function AdminSidebar({ email }: { email: string }) {
