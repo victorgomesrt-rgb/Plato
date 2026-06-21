@@ -32,7 +32,7 @@ function PriceField({ item, currency }: { item: QItem; currency: string }) {
         onBlur={save}
         onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
         placeholder={item.price_text || "—"}
-        className={`w-20 rounded-btn border px-2 py-1.5 text-sm text-ink outline-none focus:border-accent ${saving ? "border-accent" : "border-line"}`}
+        className={`h-11 w-20 rounded-btn border px-2 text-sm text-ink outline-none focus:border-accent ${saving ? "border-accent" : "border-line"}`}
       />
     </div>
   );
@@ -46,10 +46,12 @@ function SoldOutToggle({ item }: { item: QItem }) {
     <button
       disabled={pending}
       onClick={() => start(async () => { const r = await setItemAvailable(item.id, !available); if (r.ok) router.refresh(); })}
-      className={`relative h-6 w-11 rounded-full transition ${available ? "bg-sea" : "bg-line"} disabled:opacity-60`}
+      className="grid h-11 w-11 place-items-center disabled:opacity-60"
       aria-label={available ? "Available — tap to mark sold out" : "Sold out — tap to mark available"}
     >
-      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${available ? "left-[22px]" : "left-0.5"}`} />
+      <span className={`relative block h-6 w-11 rounded-full transition ${available ? "bg-sea" : "bg-line"}`}>
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${available ? "left-[22px]" : "left-0.5"}`} />
+      </span>
     </button>
   );
 }
