@@ -66,7 +66,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     supabase.from("analytics_daily").select("*").eq("tenant_id", tenantId).gte("day", prevStart).order("day").returns<Daily[]>(),
     supabase.from("analytics_events").select("event_type, session_id").eq("tenant_id", tenantId).gte("created_at", arubaStartUTC(todayStr)),
     supabase.from("analytics_events").select("item_id, event_type").eq("tenant_id", tenantId).not("item_id", "is", null).in("event_type", ["item_view", "video_play"]).gte("created_at", arubaStartUTC(curStart)),
-    supabase.from("menu_items").select("id, name").eq("tenant_id", tenantId),
+    supabase.from("menu_items").select("id, name, image_url").eq("tenant_id", tenantId),
   ]);
 
   const rows = daily ?? [];
@@ -109,13 +109,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   ];
 
   // Most-played dishes.
-  const names = new Map((menuItems ?? []).map((m) => [m.id, m.name]));
+  const itemMap = new Map((menuItems ?? []).map((m) => [m.id, { name: m.name, img: m.image_url as string | null }]));
   const plays = new Map<string, number>();
   for (const e of itemEvents ?? []) {
     if (e.event_type !== "video_play" || !e.item_id) continue;
     plays.set(e.item_id, (plays.get(e.item_id) ?? 0) + 1);
   }
-  const topDishes = [...plays.entries()].map(([id, n]) => ({ name: names.get(id) ?? "—", plays: n }))
+  const topDishes = [...plays.entries()].map(([id, n]) => ({ name: itemMap.get(id)?.name ?? "—", img: itemMap.get(id)?.img ?? null, plays: n }))
     .sort((a, b) => b.plays - a.plays).slice(0, 4);
   const maxPlays = Math.max(1, ...topDishes.map((d) => d.plays));
   const monthName = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "America/Aruba" }).format(new Date());
@@ -183,13 +183,21 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             {topDishes.length === 0 ? (
               <p className="text-sm text-muted">No dish plays yet in this range.</p>
             ) : topDishes.map((d) => (
-              <div key={d.name}>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-ink">{d.name}</span>
-                  <span className="text-muted">{d.plays.toLocaleString()} plays</span>
-                </div>
-                <div className="mt-1 h-2 overflow-hidden rounded-full bg-line">
-                  <div className="h-full rounded-full bg-accent" style={{ width: `${(d.plays / maxPlays) * 100}%` }} />
+              <div key={d.name} className="flex items-center gap-3">
+                <span className="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-line">
+                  {d.img && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={d.img} alt="" className="h-full w-full object-cover" />
+                  )}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="truncate font-medium text-ink">{d.name}</span>
+                    <span className="shrink-0 text-muted">{d.plays.toLocaleString()} plays</span>
+                  </div>
+                  <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
+                    <div className="h-full rounded-full bg-accent" style={{ width: `${(d.plays / maxPlays) * 100}%` }} />
+                  </div>
                 </div>
               </div>
             ))}
