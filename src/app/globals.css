@@ -31,6 +31,13 @@
   --radius-btn: 12px;
   --radius-card: 16px;
 
+  /* Fluid type scale — responsive clamp(min, preferred, max) so type scales smoothly
+     across PC / tablet / phone without breakpoints. Used as text-hero / text-section / text-lead. */
+  --text-hero: clamp(2.5rem, 1.4rem + 4.4vw, 4.25rem);      /* 40px → 68px */
+  --text-section: clamp(1.75rem, 1.15rem + 2.4vw, 2.5rem);  /* 28px → 40px */
+  --text-subhead: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);   /* 20px → 24px */
+  --text-lead: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);      /* 16px → 18px */
+
   /* Spacing scale 4/8/12/16/24/32/48 is the Tailwind default; no override needed */
 }
 

@@ -189,7 +189,7 @@ export default function Landing() {
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
               <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Digital menus for Aruba’s restaurants
             </span>
-            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[1.03] tracking-tight sm:text-6xl">
+            <h1 className="mt-5 font-display text-hero font-extrabold leading-[0.96] tracking-tight">
               People eat with their <span className="text-accent">eyes.</span>
             </h1>
             <p className="mt-5 max-w-md text-lg text-white/70">
@@ -208,15 +208,15 @@ export default function Landing() {
           </div>
           <HeroPhone />
         </div>
-        {/* Ticker */}
-        <div className="border-y border-white/10 bg-white/[0.03] py-3">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <span className="shrink-0 pl-5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent">Now serving the island</span>
-            <div className="flex min-w-full shrink-0 items-center gap-8 whitespace-nowrap pl-8 text-sm font-medium text-white/45" style={{ animation: "plato-marquee 28s linear infinite" }}>
-              {[...TICKER, ...TICKER].map((n, i) => (
-                <span key={i} className="flex items-center gap-8"><span>{n}</span><span className="h-1 w-1 rounded-full bg-accent/70" /></span>
-              ))}
-            </div>
+        {/* Ticker — label centered above, names scroll cleanly on their own line (exact mockup) */}
+        <div className="overflow-hidden pb-7 pt-1">
+          <p className="mb-3 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">Now serving the island</p>
+          <div className="flex w-max" style={{ animation: "plato-marquee 32s linear infinite" }}>
+            {[...TICKER, ...TICKER].map((n, i) => (
+              <span key={i} className="flex items-center gap-9 whitespace-nowrap px-[18px] text-[20px] font-bold text-white/[0.62]">
+                {n}<span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              </span>
+            ))}
           </div>
         </div>
       </section>
@@ -225,7 +225,7 @@ export default function Landing() {
       <section id="how" className="bg-surface text-ink">
         <div className="mx-auto max-w-6xl px-5 py-20">
           <Eyebrow>Why it works</Eyebrow>
-          <h2 className="mt-3 max-w-2xl font-display text-4xl font-extrabold leading-tight">A paper menu can’t show how good it tastes.</h2>
+          <h2 className="mt-3 max-w-2xl font-display text-section font-extrabold leading-tight">A paper menu can’t show how good it tastes.</h2>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {why.map((c) => (
               <div key={c.title} className="rounded-card border border-line bg-white p-6 shadow-sm">
@@ -244,7 +244,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-20">
           <div className="text-center">
             <Eyebrow>Four templates, one shoot</Eyebrow>
-            <h2 className="mt-3 font-display text-4xl font-extrabold">Pick the look that fits your room.</h2>
+            <h2 className="mt-3 font-display text-section font-extrabold">Pick the look that fits your room.</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/65">Same dishes, four presentations. From TikTok-style full-screen reels to a calm fine-dining list — switch anytime, no re-shoot needed.</p>
           </div>
           <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
@@ -284,7 +284,7 @@ export default function Landing() {
       <section id="features" className="bg-surface text-ink">
         <div className="mx-auto max-w-6xl px-5 py-20">
           <Eyebrow>Everything included</Eyebrow>
-          <h2 className="mt-3 font-display text-4xl font-extrabold">Built for diners on the island.</h2>
+          <h2 className="mt-3 font-display text-section font-extrabold">Built for diners on the island.</h2>
 
           <div className="mt-10 grid items-stretch gap-5 lg:grid-cols-[1.1fr_1fr]">
             {/* Dashboard preview */}
@@ -330,7 +330,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-20">
           <div className="text-center">
             <Eyebrow>Done for you</Eyebrow>
-            <h2 className="mt-3 font-display text-4xl font-extrabold">From shoot to live in a day.</h2>
+            <h2 className="mt-3 font-display text-section font-extrabold">From shoot to live in a day.</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/65">You run the restaurant. We handle the rest — filming, building, translating, and placing your QR codes.</p>
           </div>
           <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -363,7 +363,7 @@ export default function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-20">
           <div className="text-center">
             <Eyebrow>Simple pricing</Eyebrow>
-            <h2 className="mt-3 font-display text-4xl font-extrabold">One monthly price. We do the work.</h2>
+            <h2 className="mt-3 font-display text-section font-extrabold">One monthly price. We do the work.</h2>
             <p className="mt-3 text-muted">Plus a one-time on-site capture fee. No contracts, cancel anytime.</p>
           </div>
           <div className="mt-12 grid items-start gap-5 md:grid-cols-3">
@@ -374,7 +374,7 @@ export default function Landing() {
                   {p.dark && <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Most popular</span>}
                 </div>
                 <p className={`text-sm ${p.dark ? "text-white/60" : "text-muted"}`}>{p.tagline}</p>
-                <p className="mt-4"><span className="font-display text-4xl font-extrabold">${p.price}</span><span className={p.dark ? "text-white/60" : "text-muted"}>/mo</span></p>
+                <p className="mt-4"><span className="font-display text-section font-extrabold">${p.price}</span><span className={p.dark ? "text-white/60" : "text-muted"}>/mo</span></p>
                 <a href={WAITLIST} className={`mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-white hover:bg-accent-deep" : "bg-ink text-white hover:bg-ink/90"}`}>{p.cta}</a>
                 <ul className="mt-5 space-y-2.5 text-sm">
                   {p.items.map((it) => (
@@ -392,7 +392,7 @@ export default function Landing() {
         <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(55% 70% at 50% 35%, rgba(251,106,26,.32), transparent)" }} />
         <div className="mx-auto max-w-2xl px-5 py-24 text-center">
           <PlatoMark className="mx-auto h-12 w-auto" onDark />
-          <h2 className="mt-5 font-display text-4xl font-extrabold sm:text-5xl">Let’s bring your menu to life.</h2>
+          <h2 className="mt-5 font-display text-section font-extrabold">Let’s bring your menu to life.</h2>
           <p className="mx-auto mt-3 max-w-md text-lg text-white/70">Leave your email and we’ll reach out to book a capture visit — your filmed menu can be live before your next dinner service.</p>
           <div className="mt-8"><EmailCapture variant="dark" /></div>
           <Link href="/hungparadise" className="mt-4 inline-block text-sm font-medium text-white/70 hover:text-white">See a live menu →</Link>
