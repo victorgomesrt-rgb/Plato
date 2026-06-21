@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, UtensilsCrossed, BarChart3, MessageSquare, CreditCard, Settings, ExternalLink } from "lucide-react";
+import { LayoutDashboard, UtensilsCrossed, Store, BarChart3, MessageSquare, CreditCard, Settings, ExternalLink } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
 
 type Item = { href: string; label: string; icon: typeof LayoutDashboard; external?: boolean };
@@ -21,6 +21,7 @@ export function DashboardSidebar({
   const nav: Item[] = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/dashboard/menu", label: "My menu", icon: UtensilsCrossed },
+    { href: "/dashboard/page-settings", label: "Page", icon: Store },
     { href: "/dashboard/analytics", label: "Insights", icon: BarChart3 },
     { href: "/dashboard/requests", label: "Request a change", icon: MessageSquare },
     { href: "/dashboard/billing", label: "Billing", icon: CreditCard },

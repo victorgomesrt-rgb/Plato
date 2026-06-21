@@ -179,7 +179,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-2xl pb-20">
+      <div className="mx-auto w-full max-w-2xl pb-10">
         {/* Cover */}
         <div ref={coverRef} className="relative h-56 w-full overflow-hidden sm:h-64">
           {tenant.cover_url ? (
@@ -334,6 +334,20 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
         {/* Footer */}
         <footer className="mt-10 border-t border-line px-4 pt-6 text-sm text-muted">
+          {(() => {
+            const q = tenant.lat != null && tenant.lng != null
+              ? `${tenant.lat},${tenant.lng}`
+              : tenant.address ? encodeURIComponent(tenant.address) : null;
+            return q ? (
+              <iframe
+                title="Map"
+                src={`https://maps.google.com/maps?q=${q}&z=16&output=embed`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="mb-4 h-44 w-full rounded-card border border-line"
+              />
+            ) : null;
+          })()}
           {tenant.address && <p className="text-ink">{tenant.address}</p>}
           {tenant.hours && (
             <div className="mt-3">
