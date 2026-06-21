@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  MapPin, Phone, Wifi, CalendarCheck, QrCode, Play, Check, Video, PenTool, CheckCircle2,
+  MapPin, Phone, CalendarCheck, QrCode, Play, Check, Video, PenTool, CheckCircle2,
   Languages, Coins, ScanLine, BarChart3, Sparkles, Hand,
 } from "lucide-react";
-import { WhatsAppIcon } from "@/components/diner/brand-icons";
+import { WhatsAppIcon, InstagramIcon } from "@/components/diner/brand-icons";
 import { PlatoMark } from "@/components/plato-logo";
 import { EmailCapture } from "@/components/email-capture";
 import { TemplateSwitcher } from "@/components/landing/template-switcher";
@@ -54,12 +54,13 @@ const plans = [
     items: ["Everything in Growth", "Unlimited items", "Featured on Discover", "Quarterly re-shoot · full hardware kit", "Flyer design · priority support"] },
 ];
 
-const ACTIONS = [
-  { icon: MapPin, label: "Route", primary: true },
-  { icon: Phone, label: "Call" },
-  { icon: WhatsAppIcon, label: "WhatsApp" },
-  { icon: Wifi, label: "Wifi" },
+// Match the real diner page action bar (brand-tinted icons).
+const ACTIONS: { icon: typeof MapPin; label: string; primary?: boolean; color?: string }[] = [
+  { icon: MapPin, label: "Directions", primary: true },
+  { icon: Phone, label: "Call", color: "#0E5B5B" },
+  { icon: WhatsAppIcon, label: "WhatsApp", color: "#25D366" },
   { icon: CalendarCheck, label: "Reserve" },
+  { icon: InstagramIcon, label: "Instagram", color: "#E1306C" },
 ];
 
 function Sparkline({ className = "" }: { className?: string }) {
@@ -100,7 +101,7 @@ function HeroPhone() {
           <div className="flex gap-3.5 px-4 pb-2 pt-3.5">
             {ACTIONS.map((a) => (
               <span key={a.label} className="flex flex-1 flex-col items-center gap-1.5">
-                <span className={`grid h-10 w-10 place-items-center rounded-full ${a.primary ? "bg-accent text-white" : "bg-line text-ink"}`}>
+                <span className={`grid h-10 w-10 place-items-center rounded-full ${a.primary ? "bg-accent text-white" : "bg-line"}`} style={a.primary ? undefined : { color: a.color ?? "var(--color-ink)" }}>
                   <a.icon className="h-[18px] w-[18px]" />
                 </span>
                 <span className="text-[9px] font-medium text-muted">{a.label}</span>
@@ -108,7 +109,7 @@ function HeroPhone() {
             ))}
           </div>
 
-          {/* Most popular */}
+          {/* Most popular — overlaid name + price chip, matching the diner page featured band */}
           <div className="px-4 pt-2">
             <div className="flex items-baseline justify-between">
               <p className="text-[13px] font-semibold text-ink">Most Popular</p>
@@ -116,16 +117,15 @@ function HeroPhone() {
             </div>
             <div className="mt-2.5 flex gap-2.5">
               {[{ img: "/landing/dish-7.jpg", n: "Garlic Shrimp", p: "$24", s: 14 }, { img: "/landing/dish-4.jpg", n: "Mango Colada", p: "$12", s: 16 }].map((d) => (
-                <div key={d.n} className="w-[128px] shrink-0 overflow-hidden rounded-2xl border border-line">
-                  <div className="relative h-[124px] overflow-hidden">
-                    <Image src={d.img} alt="" fill sizes="128px" className="object-cover" style={KB(d.s)} />
-                    <span className="absolute left-1/2 top-1/2 grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/40 backdrop-blur">
-                      <Play className="h-3.5 w-3.5 fill-white text-white" />
-                    </span>
-                  </div>
-                  <div className="p-2.5">
-                    <p className="truncate text-[12px] font-semibold text-ink">{d.n}</p>
-                    <p className="text-[12px] font-bold text-accent">{d.p}</p>
+                <div key={d.n} className="relative h-[150px] w-[128px] shrink-0 overflow-hidden rounded-2xl">
+                  <Image src={d.img} alt="" fill sizes="128px" className="object-cover" style={KB(d.s)} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent" />
+                  <span className="absolute left-1/2 top-[42%] grid h-8 w-8 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/40 backdrop-blur">
+                    <Play className="h-3.5 w-3.5 fill-white text-white" />
+                  </span>
+                  <div className="absolute inset-x-0 bottom-0 p-2.5">
+                    <p className="truncate text-[12px] font-semibold text-white drop-shadow">{d.n}</p>
+                    <span className="mt-0.5 inline-block rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-white">{d.p}</span>
                   </div>
                 </div>
               ))}
@@ -365,7 +365,7 @@ export default function Landing() {
           <h2 className="mt-5 font-display text-section font-extrabold">Let’s bring your menu to life.</h2>
           <p className="mx-auto mt-3 max-w-md text-lg text-white/70">Leave your email and we’ll reach out to book a capture visit — your filmed menu can be live before your next dinner service.</p>
           <div className="mt-8"><EmailCapture variant="dark" /></div>
-          <Link href="/hungparadise" className="mt-4 inline-block text-sm font-medium text-white/70 hover:text-white">See a live menu →</Link>
+          <Link href="/discover" className="mt-4 inline-block text-sm font-medium text-white/70 hover:text-white">Go to the Discovery page →</Link>
         </Reveal>
       </section>
 
