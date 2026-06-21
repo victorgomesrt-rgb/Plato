@@ -1,7 +1,7 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendEmail, emailLayout } from "@/lib/email";
+import { sendEmail, emailLayout, escapeHtml } from "@/lib/email";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -14,7 +14,7 @@ export async function submitLead(email: string): Promise<{ ok: true } | { ok: fa
   await sendEmail({
     to: process.env.BOOKING_TO || "adrian@platodigital.online",
     subject: `New lead, ${e}`,
-    html: emailLayout(`<p>New menu-upgrade lead from the landing page:</p><p style="font-size:16px"><strong>${e}</strong></p>`),
+    html: emailLayout(`<p>New menu-upgrade lead from the landing page:</p><p style="font-size:16px"><strong>${escapeHtml(e)}</strong></p>`),
   });
   return { ok: true };
 }

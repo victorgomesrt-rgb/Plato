@@ -6,6 +6,12 @@ const FROM = process.env.RESEND_FROM_EMAIL || "Plato <hello@platodigital.io>";
 
 export type Attachment = { filename: string; content: Buffer };
 
+// Escape user-supplied text before interpolating into email HTML (prevents layout
+// breakage / markup injection in the notification emails we send ourselves).
+export function escapeHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 export async function sendEmail(opts: {
   to: string;
   subject: string;

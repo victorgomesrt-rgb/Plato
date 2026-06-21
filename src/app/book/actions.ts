@@ -1,6 +1,6 @@
 "use server";
 
-import { sendEmail, emailLayout } from "@/lib/email";
+import { sendEmail, emailLayout, escapeHtml } from "@/lib/email";
 
 export type BookingInput = {
   restaurant: string;
@@ -46,9 +46,9 @@ export async function submitBooking(
     html: emailLayout(
       `<p>New demo request from the website:</p>
        <table style="border-collapse:collapse;font-size:14px">
-         ${rows.map(([k, v]) => `<tr><td style="padding:3px 12px 3px 0;color:#6b6660">${k}</td><td style="padding:3px 0;color:#16110e"><strong>${v}</strong></td></tr>`).join("")}
+         ${rows.map(([k, v]) => `<tr><td style="padding:3px 12px 3px 0;color:#6b6660">${k}</td><td style="padding:3px 0;color:#16110e"><strong>${escapeHtml(v)}</strong></td></tr>`).join("")}
        </table>
-       <p style="margin-top:14px">Reply to ${email} to confirm a capture time.</p>`
+       <p style="margin-top:14px">Reply to ${escapeHtml(email)} to confirm a capture time.</p>`
     ),
   });
   if (error) return { ok: false, error: "Could not send right now, please email us directly." };

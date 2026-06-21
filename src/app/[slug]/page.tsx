@@ -106,7 +106,11 @@ export default async function TenantPage({ params }: Props) {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
+        // Escape <, >, & so tenant/owner-supplied text (name, description, items) cannot
+        // break out of this <script> block (stored-XSS guard).
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(ld).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026"),
+        }}
       />
       <DinerPage
         tenant={t}
