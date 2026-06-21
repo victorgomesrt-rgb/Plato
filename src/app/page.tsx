@@ -57,10 +57,10 @@ const plans = [
 // Match the real diner page action bar (brand-tinted icons).
 const ACTIONS: { icon: typeof MapPin; label: string; primary?: boolean; color?: string }[] = [
   { icon: MapPin, label: "Directions", primary: true },
-  { icon: Phone, label: "Call", color: "#0E5B5B" },
+  { icon: Phone, label: "Call" },
   { icon: WhatsAppIcon, label: "WhatsApp", color: "#25D366" },
   { icon: CalendarCheck, label: "Reserve" },
-  { icon: InstagramIcon, label: "Instagram", color: "#E1306C" },
+  { icon: InstagramIcon, label: "Instagram" },
 ];
 
 function Sparkline({ className = "" }: { className?: string }) {

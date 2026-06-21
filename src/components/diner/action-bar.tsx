@@ -54,9 +54,9 @@ function hrefFor(link: TenantLink, tn: TenantBits): string | null {
 
 const WRAP = "flex min-w-[60px] shrink-0 flex-col items-center gap-1.5";
 
-// Subtle brand tints on the recognizable social/contact icons (design polish).
+// Match the mockup: only WhatsApp gets its brand green; everything else is neutral ink.
 const BRAND: Record<string, string> = {
-  whatsapp: "#25D366", instagram: "#E1306C", facebook: "#1877F2", call: "#0E5B5B", reviews: "#F4B740",
+  whatsapp: "#25D366",
 };
 
 function Circle({ Icon, type, primary, accent }: { Icon: Icon; type: string; primary: boolean; accent: string }) {
