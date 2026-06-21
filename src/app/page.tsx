@@ -1,95 +1,131 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
-  Video, LayoutGrid, MapPin, QrCode, Languages, BarChart3, Camera, Tablet, Check,
+  MapPin, Phone, Wifi, CalendarCheck, QrCode, Play, Check, Video, PenTool, CheckCircle2,
+  Languages, Coins, ScanLine, BarChart3, Sparkles, Hand,
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/diner/brand-icons";
 import { PlatoMark } from "@/components/plato-logo";
 import { EmailCapture } from "@/components/email-capture";
 
 export const metadata: Metadata = {
   title: "Plato — Video menus for Caribbean restaurants",
   description:
-    "We come to your restaurant, film your food, and build a fast video menu where the dishes actually move. Diners scan, watch, and decide.",
+    "We come to your restaurant, film every dish, and build a beautiful menu page where the food actually moves. Diners scan, watch, and decide.",
 };
 
 const WAITLIST = "#waitlist";
+const KB = (s: number) => ({ animation: `plato-kenburns ${s}s ease-in-out infinite alternate` });
+
+const TICKER = ["Brisa", "Zeerover", "Gostoso", "Pinchos Grill", "Madame Janette", "Flying Fishbone", "Quinta del Carmen", "Yemanja"];
+
+const why = [
+  { icon: Play, tint: "bg-accent/10 text-accent", title: "Food is the hero", body: "Short looping clips fill the screen. A dish in motion sells itself — far better than a line of text and a price." },
+  { icon: Hand, tint: "bg-sea/10 text-sea", title: "One tap to value", body: "No app, no login, no waiting. Scan the QR, see the food, get directions or call — even on slow data by the beach." },
+  { icon: Sparkles, tint: "bg-citrus/20 text-[#9a7b15]", title: "Made for the island", body: "English and Spanish, USD and AWG, a Caribbean look. Built for tourists and locals alike — and for you to never touch it." },
+];
+
+const templates = [
+  { name: "Reel", body: "Full-screen video, swipe up. TikTok energy.", icon: Play },
+  { name: "Grid", body: "Two-column cards. Scannable, holds a lot.", icon: QrCode },
+  { name: "Classic", body: "Elegant single-column list. Calm, fine-dining.", icon: Languages },
+  { name: "Spotlight", body: "Magazine hero per category. Editorial feel.", icon: Sparkles },
+];
 
 const features = [
-  { icon: Video, title: "Dishes that move", body: "A short, silent looping clip for every dish. People order what they can see." },
-  { icon: LayoutGrid, title: "Four templates", body: "Reel, Grid, Classic, or Spotlight — the same menu, your look." },
-  { icon: MapPin, title: "One-tap action bar", body: "Directions, Call, WhatsApp, Reserve, Order, Reviews, WiFi — you choose." },
-  { icon: QrCode, title: "QR & NFC, tracked", body: "Every scan and tap is counted, so you see what's working." },
-  { icon: Languages, title: "USD/AWG · EN/ES", body: "A clean currency toggle and Spanish, ready for every visitor." },
-  { icon: BarChart3, title: "Real analytics", body: "Views, top dishes, scans, and directions — all in your dashboard." },
-  { icon: Camera, title: "Done for you", body: "We shoot the food and build the menu — on every plan." },
-  { icon: Tablet, title: "Optional tablet", body: "A kiosk-locked tablet for your counter, rented monthly." },
+  { icon: MapPin, title: "Action bar", body: "Directions, call, WhatsApp, reserve, wifi, Instagram — the buttons you choose, one tap away." },
+  { icon: Languages, title: "Two languages", body: "English and Spanish per dish. We auto-translate a draft, then review it by hand before you go live." },
+  { icon: Coins, title: "Two currencies", body: "USD and AWG at the island peg. Diners always know exactly what they’ll pay before they sit down." },
+  { icon: ScanLine, title: "QR + NFC", body: "Tap or scan from the table, window, or host stand. Every scan is tracked back to that spot." },
+  { icon: BarChart3, title: "Analytics", body: "Views, top dishes, video plays, scans, directions, calls. See what diners actually crave." },
+  { icon: Sparkles, title: "Done for you", body: "You build nothing. We capture, cut, write, translate, place the codes, and publish. You just open." },
 ];
 
 const steps = [
-  { n: "01", title: "We come and film", body: "Our team visits and shoots your dishes to one consistent, mouth-watering standard." },
-  { n: "02", title: "We build your menu", body: "Photos, video, prices, Spanish translation, and your chosen template — handled for you." },
-  { n: "03", title: "You go live", body: "Share the link, place the QR, and watch the views roll in. Quick edits are one tap." },
+  { n: "1", icon: Video, title: "We come and film", body: "Our team visits and shoots every dish to one standard — vertical, 4–8 second loops, soft light, no busy moves." },
+  { n: "2", icon: PenTool, title: "We build your page", body: "We cut the clips, write your descriptions in EN and ES, set prices and currency, and pick the template that fits." },
+  { n: "3", icon: CheckCircle2, title: "You go live", body: "We place your QR and NFC, hand you the link, and show it on your phone. Need a change? Ask — it lands in our queue." },
 ];
+
+const stats = [["63", "Live menu pages"], ["4", "Menu templates"], ["2", "Languages · EN & ES"], ["1", "Day from shoot to live"]];
 
 const plans = [
-  { name: "Starter", price: 99, setup: 199, highlight: false,
-    items: ["Video menu page", "On-site photo & video capture", "One QR code stand", "Dashboard & basic analytics", "Up to 40 items"] },
-  { name: "Growth", price: 249, setup: 299, highlight: true,
-    items: ["Everything in Starter", "Full video menu, more items", "NFC + QR sticker pack, window decal", "Custom domain · EN & ES", "Advanced analytics"] },
-  { name: "Premium", price: 499, setup: 499, highlight: false,
-    items: ["Everything in Growth", "Unlimited items", "Spot on the Discover page", "Quarterly re-shoot · flyer design", "Full hardware kit · priority support"] },
+  { name: "Starter", tagline: "For cafes & casual spots", price: 99, cta: "Get started", dark: false,
+    items: ["On-site photo & video capture", "Your menu page + one QR stand", "Sold-out & price quick edits", "Up to 40 items", "Basic analytics"] },
+  { name: "Growth", tagline: "For busy restaurants", price: 249, cta: "Get started", dark: true,
+    items: ["Everything in Starter", "Full video menu, more items", "English & Spanish · USD & AWG", "NFC + QR stickers & window decal", "Custom domain", "Advanced analytics · 1 re-shoot/yr"] },
+  { name: "Premium", tagline: "For beach clubs & fine dining", price: 499, cta: "Get started", dark: false,
+    items: ["Everything in Growth", "Unlimited items", "Featured on Discover", "Quarterly re-shoot · full hardware kit", "Flyer design · priority support"] },
 ];
 
-const dishes = [
-  { n: "Catch of the Day", p: "$29", bg: "#0E5B5B22" },
-  { n: "Garlic Shrimp", p: "$24", bg: "#FB6A1A22" },
-  { n: "Keshi Yena", p: "$18", bg: "#F4B74033" },
-  { n: "Island Mojito", p: "$9", bg: "#0E5B5B1f" },
+const ACTIONS = [
+  { icon: MapPin, label: "Route", primary: true },
+  { icon: Phone, label: "Call" },
+  { icon: WhatsAppIcon, label: "WhatsApp" },
+  { icon: Wifi, label: "Wifi" },
+  { icon: CalendarCheck, label: "Reserve" },
 ];
 
-function Logo() {
+function Sparkline({ className = "" }: { className?: string }) {
   return (
-    <Link href="/" className="flex items-center gap-2">
-      <PlatoMark className="h-7 w-auto" onDark />
-      <span className="font-display text-lg font-extrabold tracking-tight">Plato</span>
-    </Link>
+    <svg viewBox="0 0 120 36" className={className} fill="none" preserveAspectRatio="none">
+      <path d="M0 30 L14 26 L28 28 L42 20 L56 23 L70 14 L84 17 L98 9 L120 4" stroke="#FB6A1A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
-function PhoneMock() {
+function HeroPhone() {
   return (
-    <div className="relative mx-auto w-[270px]">
-      <div className="overflow-hidden rounded-[2.4rem] border-[8px] border-ink bg-black shadow-2xl ring-1 ring-white/10">
-        <div
-          className="relative h-[160px]"
-          style={{ background: "linear-gradient(120deg,#FB6A1A,#F4B740 45%,#0E5B5B 90%)", backgroundSize: "200% 200%", animation: "plato-pan 9s ease-in-out infinite" }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-          <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-pulse 1.6s ease-in-out infinite" }} /> LIVE
-          </span>
-          <div className="absolute bottom-3 left-3">
-            <p className="font-display text-xl font-extrabold text-white drop-shadow">Brisa</p>
+    <div className="relative mx-auto w-[280px]">
+      <div className="overflow-hidden rounded-[2.6rem] border-[9px] border-ink bg-black shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)] ring-1 ring-white/10">
+        {/* Cover */}
+        <div className="relative h-[210px] overflow-hidden">
+          <Image src="/landing/dish-8.jpg" alt="" fill sizes="280px" className="object-cover" style={KB(13)} priority />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/25" />
+          <div className="absolute inset-x-3 top-3 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Open now
+            </span>
+            <div className="flex gap-1">
+              <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink">EN</span>
+              <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink">USD</span>
+            </div>
+          </div>
+          <div className="absolute bottom-3 left-4">
+            <p className="font-display text-2xl font-extrabold text-white drop-shadow">Brisa</p>
             <p className="text-[11px] text-white/85">Beach kitchen · Eagle Beach</p>
           </div>
         </div>
-        <div className="bg-surface p-3 text-ink">
-          <p className="text-xs font-semibold text-muted">Most Popular</p>
+        {/* Action bar */}
+        <div className="flex justify-between bg-surface px-3 pt-3">
+          {ACTIONS.map((a) => (
+            <span key={a.label} className="flex flex-col items-center gap-1">
+              <span className={`grid h-9 w-9 place-items-center rounded-full ${a.primary ? "bg-accent text-white" : "bg-line text-ink"}`}>
+                <a.icon className="h-[18px] w-[18px]" />
+              </span>
+              <span className="text-[8px] font-medium text-muted">{a.label}</span>
+            </span>
+          ))}
+        </div>
+        {/* Most popular */}
+        <div className="bg-surface p-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-ink">Most Popular</p>
+            <span className="text-[10px] text-muted">Tap to open</span>
+          </div>
           <div className="mt-2 grid grid-cols-2 gap-2">
-            {dishes.map((d, i) => (
-              <div key={d.n} className="overflow-hidden rounded-lg border border-line">
-                <div className="relative h-16 w-full overflow-hidden" style={{ background: d.bg }}>
-                  <span
-                    className="absolute inset-y-0 left-0 w-1/3 -skew-x-12 bg-white/30 blur-md"
-                    style={{ animation: `plato-shimmer ${2.6 + i * 0.5}s ease-in-out ${i * 0.45}s infinite` }}
-                  />
-                  <span className="absolute left-1/2 top-1/2 grid h-6 w-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/35 backdrop-blur">
-                    <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden><path d="M1 0l6 4-6 4z" fill="#fff" /></svg>
+            {[{ img: "/landing/dish-7.jpg", n: "Garlic Shrimp", p: "$24", s: 14 }, { img: "/landing/dish-4.jpg", n: "Mango Colada", p: "$12", s: 16 }].map((d) => (
+              <div key={d.n} className="overflow-hidden rounded-xl border border-line">
+                <div className="relative h-[78px] overflow-hidden">
+                  <Image src={d.img} alt="" fill sizes="130px" className="object-cover" style={KB(d.s)} />
+                  <span className="absolute left-1/2 top-1/2 grid h-7 w-7 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-black/40 backdrop-blur">
+                    <Play className="h-3 w-3 fill-white text-white" />
                   </span>
                 </div>
-                <div className="p-1.5">
-                  <p className="truncate text-[11px] font-medium">{d.n}</p>
-                  <p className="text-[11px] font-semibold text-accent">{d.p}</p>
+                <div className="p-2">
+                  <p className="truncate text-[11px] font-semibold text-ink">{d.n}</p>
+                  <p className="text-[11px] font-bold text-accent">{d.p}</p>
                 </div>
               </div>
             ))}
@@ -97,16 +133,22 @@ function PhoneMock() {
         </div>
       </div>
 
-      <div className="absolute -left-6 top-8 rounded-xl bg-white px-3 py-2 text-ink shadow-lg" style={{ animation: "plato-float 4s ease-in-out infinite" }}>
+      {/* Floating chips */}
+      <div className="absolute -left-10 top-12 w-36 rounded-2xl bg-white p-3 text-ink shadow-xl" style={{ animation: "plato-float 5s ease-in-out infinite" }}>
         <p className="text-[10px] text-muted">Menu views</p>
-        <p className="font-display text-lg font-bold leading-none">1,284 <span className="text-xs font-semibold text-sea">▲19%</span></p>
+        <p className="font-display text-xl font-extrabold leading-none">1,284 <span className="text-xs font-bold text-sea">▲22%</span></p>
+        <Sparkline className="mt-1.5 h-6 w-full" />
       </div>
-      <div className="absolute -right-5 bottom-14 rounded-xl bg-white px-3 py-2 text-ink shadow-lg" style={{ animation: "plato-float-slow 5s ease-in-out infinite" }}>
-        <p className="text-[10px] text-muted">QR scans</p>
-        <p className="font-display text-base font-bold leading-none">482</p>
+      <div className="absolute -right-8 bottom-28 flex items-center gap-2 rounded-2xl bg-white p-2.5 pr-3 text-ink shadow-xl" style={{ animation: "plato-float-slow 6s ease-in-out infinite" }}>
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-white"><QrCode className="h-5 w-5" /></span>
+        <div><p className="text-[11px] font-bold leading-tight">Scan to view</p><p className="text-[9px] text-muted">Tracked QR & NFC</p></div>
       </div>
     </div>
   );
+}
+
+function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
+  return <p className={`text-xs font-bold uppercase tracking-[0.18em] ${dark ? "text-accent" : "text-accent"}`}>{children}</p>;
 }
 
 export default function Landing() {
@@ -116,11 +158,11 @@ export default function Landing() {
       {/* Nav */}
       <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/80 backdrop-blur">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-          <Logo />
+          <Link href="/" className="flex items-center gap-2"><PlatoMark className="h-7 w-auto" onDark /><span className="font-display text-lg font-extrabold tracking-tight">Plato</span></Link>
           <div className="hidden items-center gap-7 text-sm text-white/70 md:flex">
             <a href="#how" className="hover:text-white">How it works</a>
-            <a href="#features" className="hover:text-white">Features</a>
             <a href="#templates" className="hover:text-white">Templates</a>
+            <a href="#features" className="hover:text-white">Features</a>
             <a href="#pricing" className="hover:text-white">Pricing</a>
           </div>
           <div className="flex items-center gap-2">
@@ -132,18 +174,18 @@ export default function Landing() {
 
       {/* Hero */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -right-32 -top-32 h-[36rem] w-[36rem] rounded-full bg-accent/30 blur-[120px]" />
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-2 md:py-24">
+        <div className="pointer-events-none absolute -right-32 -top-40 h-[40rem] w-[40rem] rounded-full bg-accent/25 blur-[130px]" />
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 md:grid-cols-2 md:py-24">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Digital menus for Aruba restaurants
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Digital menus for Aruba’s restaurants
             </span>
-            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl">
-              People eat with<br />their <span className="text-accent">eyes.</span>
+            <h1 className="mt-5 font-display text-5xl font-extrabold leading-[1.03] tracking-tight sm:text-6xl">
+              People eat with their <span className="text-accent">eyes.</span>
             </h1>
             <p className="mt-5 max-w-md text-lg text-white/70">
-              We come to your restaurant, film your menu, and build a beautiful page where the
-              food actually moves. Diners scan, watch, and decide. You don&apos;t build a thing.
+              We come to your restaurant, film every dish, and build you a beautiful menu page where the
+              food actually moves. Diners scan, watch, and decide. You don’t build a thing.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <a href={WAITLIST} className="rounded-btn bg-accent px-5 py-3 font-semibold text-white hover:bg-accent-deep">Get started →</a>
@@ -151,41 +193,36 @@ export default function Landing() {
             </div>
             <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
               <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-accent" /> Live in a day</span>
-              <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-accent" /> Nothing to install</span>
-              <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-accent" /> We film it for you</span>
+              <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-accent" /> EN & ES</span>
+              <span className="flex items-center gap-1.5"><Check className="h-4 w-4 text-accent" /> No app to download</span>
             </div>
           </div>
-          <PhoneMock />
+          <HeroPhone />
         </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <h2 className="font-display text-3xl font-bold">How it works</h2>
-          <p className="mt-2 text-muted">A live, filmed menu within a day or two of our visit.</p>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {steps.map((s) => (
-              <div key={s.n} className="rounded-card border border-line p-6">
-                <span className="font-display text-2xl font-extrabold text-accent">{s.n}</span>
-                <h3 className="mt-2 font-display text-lg font-semibold">{s.title}</h3>
-                <p className="mt-1 text-sm text-muted">{s.body}</p>
-              </div>
-            ))}
+        {/* Ticker */}
+        <div className="border-y border-white/10 bg-white/[0.03] py-3">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <span className="shrink-0 pl-5 text-[11px] font-bold uppercase tracking-[0.2em] text-accent">Now serving the island</span>
+            <div className="flex min-w-full shrink-0 items-center gap-8 whitespace-nowrap pl-8 text-sm font-medium text-white/45" style={{ animation: "plato-marquee 28s linear infinite" }}>
+              {[...TICKER, ...TICKER].map((n, i) => (
+                <span key={i} className="flex items-center gap-8"><span>{n}</span><span className="h-1 w-1 rounded-full bg-accent/70" /></span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-5 pb-16">
-          <h2 className="font-display text-3xl font-bold">Everything your menu needs</h2>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f) => (
-              <div key={f.title} className="rounded-card border border-line p-5">
-                <f.icon className="h-6 w-6 text-accent" />
-                <h3 className="mt-3 font-semibold">{f.title}</h3>
-                <p className="mt-1 text-sm text-muted">{f.body}</p>
+      {/* Why it works */}
+      <section id="how" className="bg-surface text-ink">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Eyebrow>Why it works</Eyebrow>
+          <h2 className="mt-3 max-w-2xl font-display text-4xl font-extrabold leading-tight">A paper menu can’t show how good it tastes.</h2>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {why.map((c) => (
+              <div key={c.title} className="rounded-card border border-line bg-white p-6 shadow-sm">
+                <span className={`grid h-11 w-11 place-items-center rounded-xl ${c.tint}`}><c.icon className="h-5 w-5" /></span>
+                <h3 className="mt-4 font-display text-lg font-bold">{c.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted">{c.body}</p>
               </div>
             ))}
           </div>
@@ -193,44 +230,148 @@ export default function Landing() {
       </section>
 
       {/* Templates */}
-      <section id="templates" className="border-y border-white/10">
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <h2 className="font-display text-3xl font-bold">One menu, your look</h2>
-          <p className="mt-2 max-w-lg text-white/70">Switch templates anytime — the same dishes, a different feel.</p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              ["Reel", "Full-screen video, swipe to the next dish."],
-              ["Grid", "Two-column cards. The scannable default."],
-              ["Classic", "An elegant single-column list."],
-              ["Spotlight", "A magazine hero per category."],
-            ].map(([t, d]) => (
-              <div key={t} className="rounded-card border border-white/10 bg-white/5 p-5">
-                <p className="font-display text-lg font-bold text-accent">{t}</p>
-                <p className="mt-1 text-sm text-white/70">{d}</p>
+      <section id="templates" className="relative overflow-hidden">
+        <div className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-accent/15 blur-[120px]" />
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <div className="text-center">
+            <Eyebrow>Four templates, one shoot</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl font-extrabold">Pick the look that fits your room.</h2>
+            <p className="mx-auto mt-3 max-w-xl text-white/65">Same dishes, four presentations. From TikTok-style full-screen reels to a calm fine-dining list — switch anytime, no re-shoot needed.</p>
+          </div>
+          <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
+            <div className="space-y-3">
+              {templates.map((t, i) => (
+                <div key={t.name} className={`flex items-center gap-4 rounded-card border p-4 ${i === 0 ? "border-accent/60 bg-accent/10" : "border-white/10 bg-white/[0.03]"}`}>
+                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${i === 0 ? "bg-accent text-white" : "bg-white/10 text-white/80"}`}><t.icon className="h-5 w-5" /></span>
+                  <div className="flex-1">
+                    <p className="font-display font-bold">{t.name}</p>
+                    <p className="text-sm text-white/60">{t.body}</p>
+                  </div>
+                  {i === 0 && <span className="h-2 w-2 rounded-full bg-accent" style={{ animation: "plato-pulse 1.6s ease-in-out infinite" }} />}
+                </div>
+              ))}
+            </div>
+            {/* Spotlight phone */}
+            <div className="relative mx-auto w-[260px]">
+              <div className="overflow-hidden rounded-[2.4rem] border-[9px] border-black bg-black shadow-2xl ring-1 ring-white/10">
+                <div className="relative h-[440px] overflow-hidden">
+                  <Image src="/landing/dish-9.jpg" alt="" fill sizes="260px" className="object-cover" style={KB(15)} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/30" />
+                  <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur"><span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-pulse 1.4s infinite" }} /> LIVE CLIP</span>
+                  <div className="absolute inset-x-4 bottom-4">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Chef’s pick</p>
+                    <p className="font-display text-2xl font-extrabold text-white drop-shadow">Caribbean Lobster</p>
+                    <p className="text-xs text-white/80">Grilled over coals, lime butter.</p>
+                    <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-bold text-white">$46</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features + dashboard */}
+      <section id="features" className="bg-surface text-ink">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <Eyebrow>Everything included</Eyebrow>
+          <h2 className="mt-3 font-display text-4xl font-extrabold">Built for diners on the island.</h2>
+
+          <div className="mt-10 grid items-stretch gap-5 lg:grid-cols-[1.1fr_1fr]">
+            {/* Dashboard preview */}
+            <div className="rounded-card bg-ink p-6 text-white shadow-lg">
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><BarChart3 className="h-5 w-5" /></span>
+              <h3 className="mt-4 font-display text-xl font-bold">Know what they crave.</h3>
+              <p className="mt-1.5 text-sm text-white/65">Views, top dishes, video plays, QR scans, directions and calls — all in one dashboard. We even email you a monthly recap so the value stays visible.</p>
+              <div className="mt-5 rounded-card bg-white p-4 text-ink">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted">Menu views · 30 days</p>
+                  <span className="text-xs font-bold text-sea">▲ 19%</span>
+                </div>
+                <p className="font-display text-3xl font-extrabold">8,420</p>
+                <Sparkline className="mt-1 h-10 w-full" />
+                <div className="mt-3 space-y-2 border-t border-line pt-3">
+                  {[["Garlic Shrimp", "1,204", "/landing/dish-7.jpg", 100], ["Catch of the Day", "986", "/landing/dish-2.jpg", 82], ["Mango Colada", "742", "/landing/dish-4.jpg", 62]].map(([n, plays, img, w]) => (
+                    <div key={n as string} className="flex items-center gap-2.5">
+                      <span className="relative h-7 w-7 overflow-hidden rounded-md"><Image src={img as string} alt="" fill sizes="28px" className="object-cover" /></span>
+                      <span className="flex-1 text-xs font-medium">{n}</span>
+                      <div className="h-1.5 w-16 overflow-hidden rounded-full bg-line"><div className="h-full rounded-full bg-accent" style={{ width: `${w}%` }} /></div>
+                      <span className="w-12 text-right text-[11px] text-muted">{plays} plays</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            {/* Feature grid */}
+            <div className="grid gap-4 sm:grid-cols-2">
+              {features.map((f) => (
+                <div key={f.title} className="rounded-card border border-line bg-white p-5">
+                  <f.icon className="h-6 w-6 text-accent" />
+                  <h3 className="mt-3 font-semibold">{f.title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{f.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Steps */}
+      <section className="relative overflow-hidden">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <div className="text-center">
+            <Eyebrow>Done for you</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl font-extrabold">From shoot to live in a day.</h2>
+            <p className="mx-auto mt-3 max-w-xl text-white/65">You run the restaurant. We handle the rest — filming, building, translating, and placing your QR codes.</p>
+          </div>
+          <div className="mt-12 grid gap-5 md:grid-cols-3">
+            {steps.map((s) => (
+              <div key={s.n} className="relative rounded-card border border-white/10 bg-white/[0.03] p-6">
+                <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><s.icon className="h-5 w-5" /></span>
+                <span className="font-display text-5xl font-extrabold text-white/10">{s.n}</span>
+                <h3 className="mt-3 font-display text-lg font-bold">{s.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/60">{s.body}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Stat band */}
+      <section className="bg-accent text-white">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 py-14 md:grid-cols-4">
+          {stats.map(([n, l]) => (
+            <div key={l} className="text-center">
+              <p className="font-display text-5xl font-extrabold leading-none">{n}</p>
+              <p className="mt-2 text-sm font-medium text-white/85">{l}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Pricing */}
       <section id="pricing" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-5 py-16">
-          <h2 className="font-display text-3xl font-bold">Simple plans</h2>
-          <p className="mt-2 text-muted">Capture and menu-building are included on every plan. Annual: pay 10 months, get 12.</p>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
+        <div className="mx-auto max-w-6xl px-5 py-20">
+          <div className="text-center">
+            <Eyebrow>Simple pricing</Eyebrow>
+            <h2 className="mt-3 font-display text-4xl font-extrabold">One monthly price. We do the work.</h2>
+            <p className="mt-3 text-muted">Plus a one-time on-site capture fee. No contracts, cancel anytime.</p>
+          </div>
+          <div className="mt-12 grid items-start gap-5 md:grid-cols-3">
             {plans.map((p) => (
-              <div key={p.name} className={`rounded-card border p-6 ${p.highlight ? "border-accent ring-1 ring-accent" : "border-line"}`}>
-                {p.highlight && <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-white">Most popular</span>}
-                <h3 className="mt-2 font-display text-xl font-bold">{p.name}</h3>
-                <p className="mt-1"><span className="font-display text-3xl font-extrabold">${p.price}</span><span className="text-muted">/mo</span></p>
-                <p className="text-xs text-muted">+ ${p.setup} one-time setup</p>
-                <ul className="mt-4 space-y-2 text-sm">
+              <div key={p.name} className={`rounded-card p-6 ${p.dark ? "bg-ink text-white shadow-xl ring-1 ring-accent/40 md:-mt-3 md:pb-9" : "border border-line bg-white"}`}>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display text-xl font-bold">{p.name}</h3>
+                  {p.dark && <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Most popular</span>}
+                </div>
+                <p className={`text-sm ${p.dark ? "text-white/60" : "text-muted"}`}>{p.tagline}</p>
+                <p className="mt-4"><span className="font-display text-4xl font-extrabold">${p.price}</span><span className={p.dark ? "text-white/60" : "text-muted"}>/mo</span></p>
+                <a href={WAITLIST} className={`mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-white hover:bg-accent-deep" : "bg-ink text-white hover:bg-ink/90"}`}>{p.cta}</a>
+                <ul className="mt-5 space-y-2.5 text-sm">
                   {p.items.map((it) => (
-                    <li key={it} className="flex gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" /><span>{it}</span></li>
+                    <li key={it} className="flex gap-2"><Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.dark ? "text-accent" : "text-sea"}`} /><span className={p.dark ? "text-white/85" : ""}>{it}</span></li>
                   ))}
                 </ul>
-                <a href={WAITLIST} className={`mt-6 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.highlight ? "bg-accent text-white hover:bg-accent-deep" : "border border-line text-ink hover:bg-line"}`}>Get started</a>
               </div>
             ))}
           </div>
@@ -239,25 +380,32 @@ export default function Landing() {
 
       {/* Final CTA — email capture */}
       <section id="waitlist" className="relative overflow-hidden scroll-mt-20">
-        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(60% 80% at 50% 0%, rgba(251,106,26,.3), transparent)" }} />
-        <div className="mx-auto max-w-2xl px-5 py-20 text-center">
-          <h2 className="font-display text-4xl font-extrabold">Ready to upgrade your menu?</h2>
-          <p className="mx-auto mt-3 max-w-md text-lg text-white/75">We&apos;ll reach out :) Just leave your email.</p>
+        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(55% 70% at 50% 35%, rgba(251,106,26,.32), transparent)" }} />
+        <div className="mx-auto max-w-2xl px-5 py-24 text-center">
+          <PlatoMark className="mx-auto h-12 w-auto" onDark />
+          <h2 className="mt-5 font-display text-4xl font-extrabold sm:text-5xl">Let’s bring your menu to life.</h2>
+          <p className="mx-auto mt-3 max-w-md text-lg text-white/70">Leave your email and we’ll reach out to book a capture visit — your filmed menu can be live before your next dinner service.</p>
           <div className="mt-8"><EmailCapture variant="dark" /></div>
+          <Link href="/hungparadise" className="mt-4 inline-block text-sm font-medium text-white/70 hover:text-white">See a live menu →</Link>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-white/60 sm:flex-row">
-          <Logo />
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-white/55 sm:flex-row">
+          <div className="flex items-center gap-2">
+            <PlatoMark className="h-6 w-auto" onDark />
+            <span className="font-display font-extrabold text-white">Plato</span>
+            <span className="ml-2 hidden text-white/40 sm:inline">Digital menus · Oranjestad, Aruba</span>
+          </div>
           <div className="flex flex-wrap items-center gap-5">
-            <Link href="/discover" className="hover:text-white">Discover</Link>
-            <Link href="/login" className="hover:text-white">Log in</Link>
+            <a href="#how" className="hover:text-white">How it works</a>
+            <a href="#templates" className="hover:text-white">Templates</a>
+            <a href="#pricing" className="hover:text-white">Pricing</a>
             <Link href="/terms" className="hover:text-white">Terms</Link>
             <Link href="/privacy" className="hover:text-white">Privacy</Link>
           </div>
-          <p>© {year} Plato · GMS Innovations, Aruba</p>
+          <p>© {year} Plato</p>
         </div>
       </footer>
     </div>

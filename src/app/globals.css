@@ -85,12 +85,15 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Landing phone-mockup motion (auto-disabled by the reduced-motion block below) */
-@keyframes plato-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-@keyframes plato-float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(7px); } }
+/* Landing motion (auto-disabled by the reduced-motion block below) */
+@keyframes plato-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes plato-float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
 @keyframes plato-pan { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 @keyframes plato-shimmer { 0% { transform: translateX(-120%); } 60%, 100% { transform: translateX(220%); } }
 @keyframes plato-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes plato-kenburns { 0% { transform: scale(1.04); } 100% { transform: scale(1.18); } }
+@keyframes plato-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes plato-ring { 0% { box-shadow: 0 0 0 0 rgba(251,106,26,.5); } 100% { box-shadow: 0 0 0 14px rgba(251,106,26,0); } }
 
 /* Respect reduced motion globally — design.md §9, video loops pause elsewhere in JS */
 @media (prefers-reduced-motion: reduce) {
