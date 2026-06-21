@@ -86,7 +86,7 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <PlatoMark className="h-7 w-7 text-white" />
+            <PlatoMark className="h-7 w-auto" onDark />
             <span className="font-display font-extrabold">Plato</span>
           </Link>
           <div className="flex items-center gap-4 text-sm">

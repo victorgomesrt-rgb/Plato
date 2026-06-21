@@ -29,7 +29,7 @@ export async function LegalDoc({ file }: { file: string }) {
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-3">
           <Link href="/" className="flex items-center gap-2">
-            <PlatoMark className="h-6 w-6 text-ink" />
+            <PlatoMark className="h-6 w-auto" />
             <span className="font-display font-extrabold text-ink">Plato</span>
           </Link>
           <Link href="/" className="text-sm text-muted hover:text-ink">← Home</Link>

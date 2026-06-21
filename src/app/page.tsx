@@ -50,7 +50,7 @@ const dishes = [
 function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2">
-      <PlatoMark className="h-7 w-7 text-white" />
+      <PlatoMark className="h-7 w-auto" onDark />
       <span className="font-display text-lg font-extrabold tracking-tight">Plato</span>
     </Link>
   );

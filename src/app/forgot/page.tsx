@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { PlatoLogo } from "@/components/plato-logo";
 
 export default function ForgotPage() {
   const supabase = createClient();
@@ -27,7 +27,7 @@ export default function ForgotPage() {
   return (
     <main className="flex flex-1 items-center justify-center px-6">
       <div className="w-full max-w-sm">
-        <Image src="/brand/plato-lockup.png" alt="Plato" width={160} height={46} priority className="mx-auto mb-8 h-auto w-[150px]" />
+        <div className="mb-8 flex justify-center"><PlatoLogo mark="h-9 w-auto" text="text-2xl" /></div>
         <h1 className="font-display text-xl font-semibold text-ink">Reset your password</h1>
         <p className="mt-1 text-sm text-muted">We&apos;ll email you a link to set a new one.</p>
 

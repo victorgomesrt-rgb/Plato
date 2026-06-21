@@ -22,7 +22,7 @@ export function AdminSidebar({ email }: { email: string }) {
   return (
     <aside className="bg-ink text-white md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col">
       <div className="flex items-center gap-2 px-5 py-4">
-        <PlatoMark className="h-7 w-7 text-white" />
+        <PlatoMark className="h-7 w-auto" onDark />
         <span className="font-display font-extrabold">Plato</span>
         <span className="rounded-md bg-accent/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">Admin</span>
       </div>
