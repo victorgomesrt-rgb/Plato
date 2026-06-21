@@ -8,6 +8,8 @@ import {
 import { WhatsAppIcon } from "@/components/diner/brand-icons";
 import { PlatoMark } from "@/components/plato-logo";
 import { EmailCapture } from "@/components/email-capture";
+import { TemplateSwitcher } from "@/components/landing/template-switcher";
+import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Plato — Video menus for Caribbean restaurants",
@@ -24,13 +26,6 @@ const why = [
   { icon: Play, tint: "bg-accent/10 text-accent", title: "Food is the hero", body: "Short looping clips fill the screen. A dish in motion sells itself — far better than a line of text and a price." },
   { icon: Hand, tint: "bg-sea/10 text-sea", title: "One tap to value", body: "No app, no login, no waiting. Scan the QR, see the food, get directions or call — even on slow data by the beach." },
   { icon: Sparkles, tint: "bg-citrus/20 text-[#9a7b15]", title: "Made for the island", body: "English and Spanish, USD and AWG, a Caribbean look. Built for tourists and locals alike — and for you to never touch it." },
-];
-
-const templates = [
-  { name: "Reel", body: "Full-screen video, swipe up. TikTok energy.", icon: Play },
-  { name: "Grid", body: "Two-column cards. Scannable, holds a lot.", icon: QrCode },
-  { name: "Classic", body: "Elegant single-column list. Calm, fine-dining.", icon: Languages },
-  { name: "Spotlight", body: "Magazine hero per category. Editorial feel.", icon: Sparkles },
 ];
 
 const features = [
@@ -223,7 +218,7 @@ export default function Landing() {
 
       {/* Why it works */}
       <section id="how" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-6xl px-5 py-20">
           <Eyebrow>Why it works</Eyebrow>
           <h2 className="mt-3 max-w-2xl font-display text-section font-extrabold leading-tight">A paper menu can’t show how good it tastes.</h2>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -235,54 +230,25 @@ export default function Landing() {
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Templates */}
       <section id="templates" className="relative overflow-hidden">
         <div className="pointer-events-none absolute -left-32 top-1/4 h-96 w-96 rounded-full bg-accent/15 blur-[120px]" />
-        <div className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-6xl px-5 py-20">
           <div className="text-center">
             <Eyebrow>Four templates, one shoot</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">Pick the look that fits your room.</h2>
             <p className="mx-auto mt-3 max-w-xl text-white/65">Same dishes, four presentations. From TikTok-style full-screen reels to a calm fine-dining list — switch anytime, no re-shoot needed.</p>
           </div>
-          <div className="mt-12 grid items-center gap-10 md:grid-cols-2">
-            <div className="space-y-3">
-              {templates.map((t, i) => (
-                <div key={t.name} className={`flex items-center gap-4 rounded-card border p-4 ${i === 0 ? "border-accent/60 bg-accent/10" : "border-white/10 bg-white/[0.03]"}`}>
-                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${i === 0 ? "bg-accent text-white" : "bg-white/10 text-white/80"}`}><t.icon className="h-5 w-5" /></span>
-                  <div className="flex-1">
-                    <p className="font-display font-bold">{t.name}</p>
-                    <p className="text-sm text-white/60">{t.body}</p>
-                  </div>
-                  {i === 0 && <span className="h-2 w-2 rounded-full bg-accent" style={{ animation: "plato-pulse 1.6s ease-in-out infinite" }} />}
-                </div>
-              ))}
-            </div>
-            {/* Spotlight phone */}
-            <div className="relative mx-auto w-[260px]">
-              <div className="overflow-hidden rounded-[2.4rem] border-[9px] border-black bg-black shadow-2xl ring-1 ring-white/10">
-                <div className="relative h-[440px] overflow-hidden">
-                  <Image src="/landing/dish-9.jpg" alt="" fill sizes="260px" className="object-cover" style={KB(15)} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/30" />
-                  <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2 py-1 text-[10px] font-semibold text-white backdrop-blur"><span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-pulse 1.4s infinite" }} /> LIVE CLIP</span>
-                  <div className="absolute inset-x-4 bottom-4">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Chef’s pick</p>
-                    <p className="font-display text-2xl font-extrabold text-white drop-shadow">Caribbean Lobster</p>
-                    <p className="text-xs text-white/80">Grilled over coals, lime butter.</p>
-                    <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-bold text-white">$46</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <TemplateSwitcher />
+        </Reveal>
       </section>
 
       {/* Features + dashboard */}
       <section id="features" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-6xl px-5 py-20">
           <Eyebrow>Everything included</Eyebrow>
           <h2 className="mt-3 font-display text-section font-extrabold">Built for diners on the island.</h2>
 
@@ -322,12 +288,12 @@ export default function Landing() {
               ))}
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Steps */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-6xl px-5 py-20">
           <div className="text-center">
             <Eyebrow>Done for you</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">From shoot to live in a day.</h2>
@@ -343,7 +309,7 @@ export default function Landing() {
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Stat band */}
@@ -360,7 +326,7 @@ export default function Landing() {
 
       {/* Pricing */}
       <section id="pricing" className="bg-surface text-ink">
-        <div className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-6xl px-5 py-20">
           <div className="text-center">
             <Eyebrow>Simple pricing</Eyebrow>
             <h2 className="mt-3 font-display text-section font-extrabold">One monthly price. We do the work.</h2>
@@ -384,7 +350,7 @@ export default function Landing() {
               </div>
             ))}
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Final CTA — email capture */}

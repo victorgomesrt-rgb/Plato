@@ -101,6 +101,11 @@ body {
 @keyframes plato-kenburns { 0% { transform: scale(1.04); } 100% { transform: scale(1.18); } }
 @keyframes plato-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 @keyframes plato-ring { 0% { box-shadow: 0 0 0 0 rgba(251,106,26,.5); } 100% { box-shadow: 0 0 0 14px rgba(251,106,26,0); } }
+@keyframes plato-fadeswap { 0% { opacity: 0; transform: translateY(10px) scale(0.985); } 100% { opacity: 1; transform: none; } }
+
+/* Scroll-reveal — <Reveal> adds .in-view via IntersectionObserver */
+.reveal { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.in-view { opacity: 1; transform: none; }
 
 /* Respect reduced motion globally — design.md §9, video loops pause elsewhere in JS */
 @media (prefers-reduced-motion: reduce) {
@@ -110,4 +115,5 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+  .reveal { opacity: 1 !important; transform: none !important; }
 }
