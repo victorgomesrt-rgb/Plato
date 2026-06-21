@@ -58,13 +58,13 @@ export function DashboardSidebar({
         })}
       </nav>
 
-      <div className="hidden px-4 pb-4 lg:block">
-        <div className="rounded-card border border-white/10 bg-white/5 p-3">
+      <div className="px-4 pb-4 lg:mt-auto">
+        <div className="hidden rounded-card border border-white/10 bg-white/5 p-3 lg:block">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">{plan} · {price}/mo</p>
           {renews && <p className="mt-0.5 text-xs text-white/55">Renews {renews}</p>}
           <Link href="/dashboard/billing" className="mt-2 block rounded-btn bg-white/10 px-3 py-1.5 text-center text-xs font-medium text-white hover:bg-white/15">Manage plan</Link>
         </div>
-        <div className="mt-3 px-1"><SignOutButton /></div>
+        <div className="px-1 lg:mt-3"><SignOutButton /></div>
       </div>
     </aside>
   );

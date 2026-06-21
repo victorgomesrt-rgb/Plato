@@ -26,7 +26,7 @@ export async function submitBooking(
   if (!restaurant) return { ok: false, error: "Please add your restaurant name." };
   if (!EMAIL_RE.test(email)) return { ok: false, error: "Please add a valid email." };
 
-  const to = process.env.BOOKING_TO || "hello@platodigital.io";
+  const to = process.env.BOOKING_TO || "adrian@platodigital.online";
   const rows: [string, string][] = [
     ["Restaurant", restaurant],
     ["Area", input.area || "—"],

@@ -35,15 +35,15 @@ export function AdminSidebar({ email }: { email: string }) {
         })}
       </nav>
 
-      <div className="hidden px-4 pb-4 lg:block">
-        <div className="flex items-center gap-2.5 rounded-card border border-white/10 bg-white/5 p-3">
+      <div className="px-4 pb-4 lg:mt-auto">
+        <div className="hidden items-center gap-2.5 rounded-card border border-white/10 bg-white/5 p-3 lg:flex">
           <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">OP</span>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">Plato HQ</p>
             <p className="truncate text-xs text-white/50">{email}</p>
           </div>
         </div>
-        <div className="mt-3 px-1"><SignOutButton /></div>
+        <div className="px-1 lg:mt-3"><SignOutButton /></div>
       </div>
     </aside>
   );
