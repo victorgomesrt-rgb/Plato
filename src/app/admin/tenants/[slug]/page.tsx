@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
 import { itemCap } from "@/lib/plans";
-import { startImpersonation } from "../../actions";
 import { MenuEditor } from "./menu-editor";
 import { TemplatePicker } from "./template-picker";
 import { TenantControls } from "./tenant-controls";
@@ -56,7 +55,8 @@ export default async function ManageTenantPage({
           </p>
         </div>
         <div className="flex items-center gap-3 text-sm">
-          <form action={startImpersonation.bind(null, tenant.id)}>
+          <form action="/admin/impersonate" method="post">
+            <input type="hidden" name="tenant_id" value={tenant.id} />
             <button type="submit" className="font-medium text-accent">View as owner</button>
           </form>
           <Link href={`/admin/tenants/${tenant.slug}/qr`} className="font-medium text-accent">

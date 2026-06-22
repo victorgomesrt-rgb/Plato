@@ -5,7 +5,6 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { Toaster } from "@/components/toast";
 import { createClient } from "@/lib/supabase/server";
 import { resolveDashboard } from "@/lib/dashboard-context";
-import { stopImpersonation } from "@/app/admin/actions";
 
 const dateFmt = (d: string) =>
   new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "America/Aruba" }).format(new Date(d));
@@ -79,7 +78,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {impersonating && (
           <div className="flex flex-wrap items-center justify-between gap-2 bg-ink px-5 py-2.5 text-sm text-white lg:px-8">
             <span>Viewing <strong>{t?.name ?? "this restaurant"}</strong> as the owner — read-only (admin).</span>
-            <form action={stopImpersonation}>
+            <form action="/admin/impersonate/stop" method="post">
               <button type="submit" className="rounded-full bg-white/15 px-3 py-1 font-medium hover:bg-white/25">Exit</button>
             </form>
           </div>
