@@ -58,11 +58,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const curStart = addDays(todayStr, -(N - 1));
   const prevStart = addDays(todayStr, -(2 * N - 1));
 
-  const [{ data: daily }, { data: todayEvents }, { data: itemEvents }, { data: menuItems }] = await Promise.all([
+  const [{ data: daily }, { data: todayEvents }, { data: itemEvents }, { data: menuItems }, { data: shortLinks }] = await Promise.all([
     db.from("analytics_daily").select("*").eq("tenant_id", tenantId).gte("day", prevStart).order("day").returns<Daily[]>(),
     db.from("analytics_events").select("event_type, session_id").eq("tenant_id", tenantId).gte("created_at", arubaStartUTC(todayStr)),
     db.from("analytics_events").select("item_id, event_type").eq("tenant_id", tenantId).not("item_id", "is", null).in("event_type", ["item_view", "video_play"]).gte("created_at", arubaStartUTC(curStart)),
     db.from("menu_items").select("id, name, image_url").eq("tenant_id", tenantId),
+    db.from("short_links").select("placement, scans").eq("tenant_id", tenantId).returns<{ placement: string | null; scans: number }[]>(),
   ]);
 
   const rows = daily ?? [];
@@ -94,15 +95,22 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   });
   const viewsTotal = metrics[0].value;
 
-  // How diners arrive.
+  // QR + NFC scans (used in the metrics + monthly recap).
   const qr = sumK(curRows, "qr_scans") + live("qr_scan");
   const nfc = sumK(curRows, "nfc_taps") + live("nfc_tap");
-  const direct = Math.max(0, viewsTotal - qr - nfc);
-  const arrive = [
-    { name: "QR scan", value: qr, color: "#FB6A1A" },
-    { name: "NFC tap", value: nfc, color: "#0E5B5B" },
-    { name: "Direct link", value: direct, color: "#F4B740" },
-  ];
+
+  // Where they scan: the tenant's tracked-link scans grouped by placement (short_links).
+  const PLACEMENT_LABEL: Record<string, string> = { table: "Table tent", window: "Window decal", host_stand: "Host stand", business_cards: "Business cards" };
+  const PLACEMENT_COLOR: Record<string, string> = { table: "#FB6A1A", window: "#0E5B5B", host_stand: "#F4B740", business_cards: "#CFC8BF" };
+  const placeMap = new Map<string, number>();
+  for (const l of shortLinks ?? []) {
+    const key = l.placement ?? "other";
+    placeMap.set(key, (placeMap.get(key) ?? 0) + Number(l.scans ?? 0));
+  }
+  const scanPlaces = [...placeMap.entries()]
+    .map(([p, v]) => ({ name: PLACEMENT_LABEL[p] ?? p, value: v, color: PLACEMENT_COLOR[p] ?? "#CFC8BF" }))
+    .sort((a, b) => b.value - a.value);
+  const totalScans = scanPlaces.reduce((a, s) => a + s.value, 0);
 
   // Most-played dishes.
   const itemMap = new Map((menuItems ?? []).map((m) => [m.id, { name: m.name, img: m.image_url as string | null }]));
@@ -172,9 +180,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </section>
 
         <section className="rounded-card border border-line bg-surface p-5">
-          <h2 className="font-display text-base font-semibold text-ink">How diners arrive</h2>
-          <p className="text-xs text-muted">QR · NFC · direct</p>
-          <div className="mt-4"><Donut data={arrive} centerValue={(qr + nfc).toLocaleString()} centerLabel="scans" height={150} /></div>
+          <h2 className="font-display text-base font-semibold text-ink">Where they scan</h2>
+          <p className="text-xs text-muted">QR &amp; NFC by placement</p>
+          <div className="mt-4"><Donut data={scanPlaces} centerValue={totalScans.toLocaleString()} centerLabel="scans" height={150} /></div>
         </section>
       </div>
 

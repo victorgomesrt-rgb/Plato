@@ -20,10 +20,10 @@ export function DashboardSidebar({
   const path = usePathname();
   const nav: Item[] = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/dashboard/menu", label: "My menu", icon: UtensilsCrossed },
-    { href: "/dashboard/page-settings", label: "Page", icon: Store },
+    { href: "/dashboard/menu", label: "Menu", icon: UtensilsCrossed },
+    { href: "/dashboard/page-settings", label: "Your page", icon: Store },
     { href: "/dashboard/analytics", label: "Insights", icon: BarChart3 },
-    { href: "/dashboard/requests", label: "Request a change", icon: MessageSquare },
+    { href: "/dashboard/requests", label: "Requests", icon: MessageSquare },
     { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
     { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
