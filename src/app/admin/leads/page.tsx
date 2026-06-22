@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Mail } from "lucide-react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { AdminHeader } from "../admin-header";
 
 export const metadata: Metadata = { title: "Admin · Leads", robots: { index: false } };
 
@@ -11,14 +12,16 @@ const fmt = (d: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium
 
 export default async function AdminLeadsPage() {
   if (!(await currentAdmin())) notFound();
-  const { data } = await createAdminClient()
-    .from("leads").select("id, email, source, created_at").order("created_at", { ascending: false }).limit(500).returns<Lead[]>();
+  const svc = createAdminClient();
+  const [{ data }, { data: tenants }] = await Promise.all([
+    svc.from("leads").select("id, email, source, created_at").order("created_at", { ascending: false }).limit(500).returns<Lead[]>(),
+    svc.from("tenants").select("name, slug, plan").order("name").returns<{ name: string; slug: string; plan: string }[]>(),
+  ]);
   const leads = data ?? [];
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-6 lg:px-8 lg:py-8">
-      <h1 className="font-display text-2xl font-bold text-ink">Leads</h1>
-      <p className="text-sm text-muted">{leads.length} email{leads.length === 1 ? "" : "s"} captured from the landing page.</p>
+      <AdminHeader title="Leads" subtitle={`${leads.length} email${leads.length === 1 ? "" : "s"} captured from the landing page`} tenants={tenants ?? []} />
 
       {leads.length === 0 ? (
         <div className="mt-6 rounded-card border border-line bg-surface p-8 text-center">

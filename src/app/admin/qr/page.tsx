@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { QrCode } from "lucide-react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { AdminHeader } from "../admin-header";
 
 export const metadata: Metadata = { title: "Admin · QR codes", robots: { index: false } };
 
@@ -17,8 +18,8 @@ export default async function AdminQrPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-5 py-6 lg:px-8 lg:py-8">
-      <h1 className="font-display text-2xl font-bold text-ink">QR codes</h1>
-      <p className="text-sm text-muted">Pick a restaurant to generate and download its QR + NFC codes.</p>
+      <AdminHeader title="QR codes" subtitle="Generate a restaurant's QR + NFC codes" tenants={tenants.map((t) => ({ name: t.name, slug: t.slug, plan: t.plan }))} />
+      <div className="mt-1" />
 
       {tenants.length === 0 ? (
         <div className="mt-6 rounded-card border border-line bg-surface p-8 text-center">
