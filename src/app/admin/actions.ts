@@ -122,10 +122,20 @@ export async function setTenantStatus(
   if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
   if (!STATUSES.includes(status)) return { ok: false, error: "Invalid status" };
   const svc = createAdminClient();
-  const { error } = await svc.from("tenants").update({ status }).eq("id", tenantId);
+
+  // Going live (active/trialing) stamps published_at the first time, which opens the
+  // publish gate. Without this the page stays 404 even when the status is active.
+  const patch: { status: string; published_at?: string } = { status };
+  if (status === "active" || status === "trialing") {
+    const { data: cur } = await svc.from("tenants").select("published_at").eq("id", tenantId).maybeSingle();
+    if (!cur?.published_at) patch.published_at = new Date().toISOString();
+  }
+
+  const { error } = await svc.from("tenants").update(patch).eq("id", tenantId);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/admin");
   revalidatePath(`/${slug}`); // status affects the public publish gate
+  revalidatePath("/discover"); // a newly-live tenant joins the directory
   return { ok: true };
 }
 
