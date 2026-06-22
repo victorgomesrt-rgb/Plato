@@ -1,21 +1,26 @@
 import "server-only";
+import { cache } from "react";
 import { createClient } from "./supabase/server";
-import type { User } from "@supabase/supabase-js";
 
-// Returns the signed-in user if they are a platform admin, else null.
-// Pages use this to redirect/404; server actions use it to reject.
-export async function currentAdmin(): Promise<User | null> {
+export type AdminUser = { id: string; email: string };
+
+// Returns the signed-in user iff they are a platform admin, else null.
+// - cache(): dedupes the layout + page calls within one request render.
+// - getClaims(): verifies the JWT locally when the project uses asymmetric signing keys
+//   (no auth-server round-trip), falling back to a network check otherwise — so it's as
+//   fast as possible and never less safe than getUser.
+export const currentAdmin = cache(async (): Promise<AdminUser | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  const { data, error } = await supabase.auth.getClaims();
+  const claims = data?.claims;
+  if (error || !claims?.sub) return null;
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("is_platform_admin")
-    .eq("id", user.id)
+    .eq("id", claims.sub)
     .maybeSingle();
+  if (!profile?.is_platform_admin) return null;
 
-  return profile?.is_platform_admin ? user : null;
-}
+  return { id: claims.sub, email: (claims.email as string | undefined) ?? "" };
+});
