@@ -13,6 +13,7 @@ import { ActionBar } from "./action-bar";
 import { CardMedia } from "./card-media";
 import { ReelView } from "./reel-view";
 import { GridList, ClassicList, SpotlightList, type SectionView } from "./menu-sections";
+import { DIETARY_TAGS, tagLabel } from "@/lib/tags";
 
 // Hydration-safe per-session persistence (no setState-in-effect).
 function useSessionState(key: string, fallback: string) {
@@ -61,6 +62,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
   const [active, setActive] = useState<string | null>(categories[0]?.id ?? null);
   const [selected, setSelected] = useState<Item | null>(null);
   const [showMini, setShowMini] = useState(false);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
   const hydrated = useHydrated();
   const coverRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -124,11 +126,18 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
     cdnHost,
     accent,
     soldOut: t(locale, "soldOut"),
+    locale,
     l,
     price,
     onOpen: openItem,
     onPlay: (it) => track(tenant.id, "video_play", it.id),
   };
+
+  // Dietary filter: chips for the dietary tags actually present in this menu; a dish
+  // matches when it carries ALL selected tags (so restrictions narrow the list).
+  const menuTags = DIETARY_TAGS.filter((tg) => items.some((i) => (i.tags ?? []).includes(tg)));
+  const matchesTags = (it: Item) => activeTags.length === 0 || activeTags.every((tg) => (it.tags ?? []).includes(tg));
+  const shownFeatured = featured.filter(matchesTags);
 
   // Reel is a full-screen feed, not the scrollable shell, featured dishes lead.
   if (template === "reel") {
@@ -266,11 +275,11 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           )}
 
           {/* Featured band */}
-          {featured.length > 0 && (
+          {shownFeatured.length > 0 && (
             <section className="mt-6">
               <h2 className="font-display text-lg font-semibold text-ink">{t(locale, "mostPopular")}</h2>
               <div className="mt-3 flex gap-3 overflow-x-auto pb-2">
-                {featured.map((it) => (
+                {shownFeatured.map((it) => (
                   <button
                     key={it.id}
                     onClick={() => openItem(it)}
@@ -309,8 +318,33 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
         {/* Sections, Grid template, two columns */}
         <div className="px-4">
+          {menuTags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 pt-6">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted">{locale === "es" ? "Dietético" : "Dietary"}</span>
+              {menuTags.map((tg) => {
+                const on = activeTags.includes(tg);
+                return (
+                  <button
+                    key={tg}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => setActiveTags(on ? activeTags.filter((x) => x !== tg) : [...activeTags, tg])}
+                    className={`rounded-full px-3 py-1 text-sm font-medium transition ${on ? "text-white" : "border border-line bg-surface text-ink"}`}
+                    style={on ? { background: accent } : undefined}
+                  >
+                    {tagLabel(tg, locale)}
+                  </button>
+                );
+              })}
+              {activeTags.length > 0 && (
+                <button type="button" onClick={() => setActiveTags([])} className="text-sm font-medium text-muted underline">
+                  {locale === "es" ? "Limpiar" : "Clear"}
+                </button>
+              )}
+            </div>
+          )}
           {categories.map((c) => {
-            const catItems = items.filter((i) => i.category_id === c.id);
+            const catItems = items.filter((i) => i.category_id === c.id && matchesTags(i));
             if (catItems.length === 0) return null;
             return (
               <section
@@ -334,6 +368,11 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
               </section>
             );
           })}
+          {activeTags.length > 0 && !items.some(matchesTags) && (
+            <p className="py-12 text-center text-sm text-muted">
+              {locale === "es" ? "Ningún plato coincide con estos filtros." : "No dishes match those filters."}
+            </p>
+          )}
         </div>
 
         {/* Footer */}

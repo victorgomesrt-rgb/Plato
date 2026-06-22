@@ -25,6 +25,6 @@ export function CardMedia({
   if (mp4) return <VideoTile poster={poster} mp4Url={mp4} className={className} onPlay={onPlay} />;
   if (it.image_url)
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={it.image_url} alt="" className={className} />;
+    return <img src={it.image_url} alt={it.name} className={className} />;
   return <div className={className} style={{ background: `${accent}14` }} />;
 }

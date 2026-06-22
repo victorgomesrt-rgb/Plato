@@ -9,6 +9,7 @@ export const metadata: Metadata = { title: "Page", robots: { index: false } };
 type TenantRow = {
   description: string | null; address: string | null; logo_url: string | null; cover_url: string | null;
   phone: string | null; whatsapp: string | null; lat: number | null; lng: number | null;
+  accent_color: string | null;
   hours: Record<string, [string, string] | null> | null; links: TenantLink[] | null;
 };
 
@@ -24,7 +25,7 @@ export default async function PageSettings() {
     );
   }
   const { db, tenantId, impersonating } = res.ctx;
-  const t = ((await db.from("tenants").select("description, address, logo_url, cover_url, phone, whatsapp, lat, lng, hours, links").eq("id", tenantId).maybeSingle()).data ?? {}) as TenantRow;
+  const t = ((await db.from("tenants").select("description, address, logo_url, cover_url, phone, whatsapp, lat, lng, accent_color, hours, links").eq("id", tenantId).maybeSingle()).data ?? {}) as TenantRow;
   const link = (type: string) => (t.links ?? []).find((l) => l.type === type);
 
   return (
@@ -36,6 +37,7 @@ export default async function PageSettings() {
         readOnly={impersonating}
         description={t.description} address={t.address} logoUrl={t.logo_url} coverUrl={t.cover_url}
         phone={t.phone} whatsapp={t.whatsapp} lat={t.lat} lng={t.lng} hours={t.hours}
+        accentColor={t.accent_color}
         reservationUrl={link("reserve")?.url ?? null}
         websiteUrl={link("website")?.url ?? null}
         instagram={link("instagram")?.url ?? null}

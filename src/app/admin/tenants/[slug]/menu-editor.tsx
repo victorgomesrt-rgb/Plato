@@ -31,8 +31,7 @@ import {
   type ItemInput,
 } from "./actions";
 import { ItemMedia } from "./item-media";
-
-const TAGS = ["popular", "new", "spicy", "vegan", "gluten_free"];
+import { ALL_TAGS, tagLabel } from "@/lib/tags";
 
 type Category = {
   id: string;
@@ -305,7 +304,7 @@ function ItemRow({
             <span className="font-medium text-ink">{item.name}</span>
             <span className="text-sm text-muted">{price}</span>
             {(item.tags ?? []).map((t) => (
-              <span key={t} className="rounded-full bg-line px-2 py-0.5 text-[10px] uppercase text-muted">{t}</span>
+              <span key={t} className="rounded-full bg-line px-2 py-0.5 text-[10px] uppercase text-muted">{tagLabel(t, "en")}</span>
             ))}
           </div>
           {item.description && <p className="text-sm text-muted">{item.description}</p>}
@@ -402,14 +401,14 @@ function ItemForm({
         {tErr && <span className="text-xs text-accent-deep">{tErr}</span>}
       </div>
       <div className="flex flex-wrap gap-2">
-        {TAGS.map((t) => (
+        {ALL_TAGS.map((t) => (
           <label key={t} className="flex items-center gap-1 text-xs text-muted">
             <input
               type="checkbox"
               checked={tags.includes(t)}
               onChange={(e) => setTags((cur) => (e.target.checked ? [...cur, t] : cur.filter((x) => x !== t)))}
             />
-            {t}
+            {tagLabel(t, "en")}
           </label>
         ))}
       </div>

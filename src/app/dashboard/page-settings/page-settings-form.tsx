@@ -12,6 +12,19 @@ const DAY_LABEL: Record<string, string> = {
   sun: "Sunday", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday",
 };
 
+// True if white button text on this color clears WCAG AA (4.5:1) — used for a gentle hint.
+function whiteTextOk(hex: string): boolean {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return true;
+  const n = parseInt(m[1], 16);
+  const lin = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => {
+    const s = c / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  });
+  const L = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  return 1.05 / (L + 0.05) >= 4.5;
+}
+
 function ImageUploader({ tenantId, kind, current, aspect, readOnly }: { tenantId: string; kind: "logo" | "cover"; current: string | null; aspect: string; readOnly: boolean }) {
   const router = useRouter();
   const [url, setUrl] = useState(current);
@@ -68,7 +81,7 @@ type Props = {
   phone: string | null; whatsapp: string | null; lat: number | null; lng: number | null;
   hours: Record<string, [string, string] | null> | null;
   reservationUrl: string | null; websiteUrl: string | null; instagram: string | null;
-  wifiSsid: string | null; wifiPassword: string | null;
+  wifiSsid: string | null; wifiPassword: string | null; accentColor: string | null;
 };
 
 export function PageSettingsForm(p: Props) {
@@ -80,6 +93,7 @@ export function PageSettingsForm(p: Props) {
     phone: p.phone ?? "", whatsapp: p.whatsapp ?? "",
     reservationUrl: p.reservationUrl ?? "", websiteUrl: p.websiteUrl ?? "",
     instagram: p.instagram ?? "", wifiSsid: p.wifiSsid ?? "", wifiPassword: p.wifiPassword ?? "",
+    accentColor: p.accentColor ?? "#FB6A1A",
     lat: p.lat != null ? String(p.lat) : "", lng: p.lng != null ? String(p.lng) : "",
   });
   const set = (k: keyof typeof f, v: string) => setF((prev) => ({ ...prev, [k]: v }));
@@ -176,6 +190,21 @@ export function PageSettingsForm(p: Props) {
             <label className="text-sm font-medium text-ink">Longitude
               <input value={f.lng} onChange={(e) => set("lng", e.target.value)} inputMode="decimal" placeholder="-70.0426" className={field} />
             </label>
+          </div>
+        </section>
+
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Brand color</h2>
+          <p className="mt-1 text-sm text-muted">Your accent on the menu — buttons, highlights, and price chips.</p>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <input type="color" value={f.accentColor} disabled={!!p.readOnly} onChange={(e) => set("accentColor", e.target.value)}
+              className="h-10 w-14 shrink-0 cursor-pointer rounded-btn border border-line bg-surface p-1 disabled:opacity-60" aria-label="Brand color" />
+            <input value={f.accentColor} disabled={!!p.readOnly} onChange={(e) => set("accentColor", e.target.value)}
+              placeholder="#FB6A1A" className={`${field} max-w-[140px] uppercase`} />
+            <span className="inline-flex h-9 items-center rounded-btn px-4 text-sm font-semibold text-white" style={{ background: f.accentColor }}>Button</span>
+            {!whiteTextOk(f.accentColor) && (
+              <span className="text-xs text-accent-deep">Light color — white button text may be hard to read.</span>
+            )}
           </div>
         </section>
 

@@ -24,6 +24,7 @@ export type PageDetailsInput = {
   wifiPassword: string;
   lat: string;
   lng: string;
+  accentColor: string;
   hours: Hours;
 };
 
@@ -59,6 +60,9 @@ export async function updateTenantInfo(tenantId: string, input: PageDetailsInput
   if ((lat !== null && !Number.isFinite(lat)) || (lng !== null && !Number.isFinite(lng)))
     return { ok: false, error: "Map pin must be numbers, e.g. 12.5563, -70.0426." };
 
+  const accent = input.accentColor.trim() || "#FB6A1A";
+  if (!/^#[0-9a-fA-F]{6}$/.test(accent)) return { ok: false, error: "Accent color must be a hex like #FB6A1A." };
+
   // Auto-build the action-bar buttons from the filled fields, in a fixed order.
   const generated: TenantLink[] = [];
   if ((lat !== null && lng !== null) || address) generated.push({ type: "directions" });
@@ -88,6 +92,7 @@ export async function updateTenantInfo(tenantId: string, input: PageDetailsInput
     .update({
       description: input.description.trim() || null,
       address: address || null,
+      accent_color: accent,
       phone: phone || null,
       whatsapp: whatsapp || null,
       lat, lng, links,

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Compass, Phone, Share2 } from "lucide-react";
 import type { Item } from "@/lib/menu";
 import { LOCALE_LABELS, t as tr } from "@/lib/i18n";
+import { tagLabel } from "@/lib/tags";
 import type { DisplayCurrency } from "@/lib/currency";
 import { VideoTile } from "./video-tile";
 
@@ -135,7 +136,7 @@ export function ReelView({
                 <VideoTile poster={d.video_thumb_url ?? d.image_url} mp4Url={mp4} className="absolute inset-0 h-full w-full object-cover" onPlay={() => onPlay(d)} />
               ) : d.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={d.image_url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <img src={d.image_url} alt={d.name} className="absolute inset-0 h-full w-full object-cover" />
               ) : null}
               <div className="absolute inset-0" style={{ background: SHADE }} />
 
@@ -169,7 +170,7 @@ export function ReelView({
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <span className="rounded-full px-3 py-1 text-sm font-bold text-white" style={{ background: accent }}>{price(d)}</span>
                   {(d.tags ?? []).map((tag) => (
-                    <span key={tag} className="rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-medium backdrop-blur">{tag}</span>
+                    <span key={tag} className="rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-medium backdrop-blur">{tagLabel(tag, locale)}</span>
                   ))}
                 </div>
               </div>

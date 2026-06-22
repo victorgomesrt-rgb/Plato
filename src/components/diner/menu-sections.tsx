@@ -1,6 +1,7 @@
 "use client";
 
 import type { Item } from "@/lib/menu";
+import { tagLabel } from "@/lib/tags";
 import { CardMedia } from "./card-media";
 
 // Shared render props for every template's item layout. The same data, different
@@ -9,19 +10,20 @@ export type SectionView = {
   cdnHost: string;
   accent: string;
   soldOut: string;
+  locale: string;
   l: (base: string | null, i18n: Record<string, string> | null) => string;
   price: (it: Item) => string;
   onOpen: (it: Item) => void;
   onPlay: (it: Item) => void;
 };
 
-function Tags({ tags }: { tags: string[] | null }) {
+function Tags({ tags, locale }: { tags: string[] | null; locale: string }) {
   if (!tags?.length) return null;
   return (
     <div className="mt-1 flex flex-wrap gap-1">
       {tags.map((tag) => (
-        <span key={tag} className="rounded-full bg-line px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-muted">
-          {tag}
+        <span key={tag} className="rounded-full bg-line px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-muted">
+          {tagLabel(tag, locale)}
         </span>
       ))}
     </div>
@@ -43,7 +45,7 @@ export function GridList({ items, v }: { items: Item[]; v: SectionView }) {
             <p className="text-sm font-medium text-ink">{v.l(it.name, it.name_i18n)}</p>
             <p className="text-sm font-semibold" style={{ color: v.accent }}>{v.price(it)}</p>
             {!it.is_available && <p className="text-xs text-muted">{v.soldOut}</p>}
-            <Tags tags={it.tags} />
+            <Tags tags={it.tags} locale={v.locale} />
           </div>
         </button>
       ))}
@@ -68,7 +70,7 @@ export function ClassicList({ items, v }: { items: Item[]; v: SectionView }) {
                 <p className="text-sm text-muted">{v.l(it.description, it.description_i18n)}</p>
               )}
               {!it.is_available && <p className="text-xs text-muted">{v.soldOut}</p>}
-              <Tags tags={it.tags} />
+              <Tags tags={it.tags} locale={v.locale} />
             </div>
             <span className="shrink-0 font-semibold" style={{ color: v.accent }}>{v.price(it)}</span>
           </button>
@@ -95,7 +97,7 @@ export function SpotlightList({ items, v }: { items: Item[]; v: SectionView }) {
             <p className="text-sm text-muted">{v.l(hero.description, hero.description_i18n)}</p>
           )}
           <p className="mt-1 font-semibold" style={{ color: v.accent }}>{v.price(hero)}</p>
-          <Tags tags={hero.tags} />
+          <Tags tags={hero.tags} locale={v.locale} />
         </div>
       </button>
       {rest.length > 0 && <GridList items={rest} v={v} />}
