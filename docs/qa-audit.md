@@ -2,9 +2,9 @@
 
 Verdict legend: ✅ verified in code/live · ⚠️ partial / caveat · ❌ not implemented / fails · 🔍 needs manual, runtime, device, or ops verification (can't be proven by reading code).
 
-This records current status against `qa.md`; `qa.md` itself stays the pristine acceptance spec.
+This is the detailed evidence companion. As of 2026-06-22, `qa.md` itself carries the per-item ticks (verified items checked, the rest annotated).
 
-**Tally:** ✅ ~40 · ⚠️ 4 · ❌ 4 · 🔍 ~45. The build is solid on security, auth, analytics, billing-by-invoice, and the public page. The real gaps are **custom domains (not built)**, **Stripe (not wired)**, **admin impersonation (not built)**, and a large set of items that genuinely need a live 2-tenant test / real iPhone / ops config. (Slug-rename permanence and the owner set-password step were fixed 2026-06-22.)
+**Tally:** ✅ ~42 · ⚠️ 3 · ❌ 2 · 🔍 ~45. The build is solid on security, auth, analytics, billing-by-invoice, and the public page. The real not-built gaps are now just **custom domains** and **Stripe (card path)**; everything else is either verified or needs a live 2-tenant test / real iPhone / ops config. (Fixed 2026-06-22: slug-rename permanence, owner set-password step, and admin impersonation.)
 
 ---
 
@@ -18,7 +18,7 @@ This records current status against `qa.md`; `qa.md` itself stays the pristine a
 - ✅ Admin reads across tenants; non-admin cannot — `is_admin()` policies.
 - ✅ Member cannot self-grant `is_platform_admin` — `guard_profile_cols` trigger.
 - ✅ Member cannot change plan/status/published_at/custom_domain/slug — `guard_tenant_cols` trigger (blocks authenticated non-admins; service role/admin bypass).
-- ❌ Impersonation in admin logged & scoped — **no impersonation feature exists.**
+- ✅ Impersonation in admin logged & scoped — read-only "View as owner" (built 2026-06-22): logs to `admin_impersonations`, reads the tenant via the service role with explicit `tenant_id` scoping, banner + Exit, owner writes disabled. Cookie honored only after re-checking `is_platform_admin`.
 
 ## 2. Auth
 - ⚠️ "Sign up creates profile+tenant+membership" — **no public self-signup by design** (CLAUDE.md: team provisions). The admin New Client flow creates all three (line below).
