@@ -7,6 +7,7 @@ import { itemCap } from "@/lib/plans";
 import { startImpersonation } from "../../actions";
 import { MenuEditor } from "./menu-editor";
 import { TemplatePicker } from "./template-picker";
+import { TenantControls } from "./tenant-controls";
 
 export const metadata: Metadata = { title: "Manage menu", robots: { index: false } };
 
@@ -66,6 +67,8 @@ export default async function ManageTenantPage({
           </Link>
         </div>
       </div>
+
+      <TenantControls tenantId={tenant.id} slug={tenant.slug} plan={tenant.plan} status={tenant.status} />
 
       <div className="mt-3">
         <TemplatePicker tenantId={tenant.id} current={tenant.template ?? "grid"} />
