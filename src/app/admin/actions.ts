@@ -32,6 +32,7 @@ export type ProvisionInput = {
   slug: string;
   plan: string;
   email: string;
+  currency?: string;
 };
 export type ProvisionResult =
   | { ok: true; slug: string; ownerExisted: boolean }
@@ -47,6 +48,7 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
   const slug = input.slug?.trim().toLowerCase();
   const email = input.email?.trim().toLowerCase();
   const plan = PLANS.includes(input.plan) ? input.plan : "starter";
+  const currency = input.currency === "AWG" ? "AWG" : "USD";
 
   if (!name) return { ok: false, error: "Restaurant name is required" };
   if (!isValidSlug(slug))
@@ -89,7 +91,7 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
   // Create the tenant (status 'building', not public until published in admin).
   const { data: tenant, error: tErr } = await svc
     .from("tenants")
-    .insert({ slug, name, plan, status: "building" })
+    .insert({ slug, name, plan, base_currency: currency, status: "building" })
     .select("id")
     .single();
   if (tErr) return { ok: false, error: `Could not create tenant: ${tErr.message}` };
