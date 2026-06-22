@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, Receipt, LineChart, Mail, Megaphone } from "lucide-react";
+import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, QrCode, Receipt, LineChart, Mail, Megaphone } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
 import { PlatoMark } from "@/components/plato-logo";
 
@@ -13,13 +13,14 @@ const NAV = [
   { href: "/admin/requests", label: "Requests", icon: Inbox },
   { href: "/admin/hardware", label: "Hardware", icon: Package },
   { href: "/admin/tablets", label: "Tablets", icon: Tablet },
+  { href: "/admin/qr", label: "QR codes", icon: QrCode },
   { href: "/admin/billing", label: "Billing", icon: Receipt },
   { href: "/admin/revenue", label: "Revenue", icon: LineChart },
   { href: "/admin/leads", label: "Leads", icon: Mail },
   { href: "/admin/landing", label: "Landing", icon: Megaphone },
 ];
 
-export function AdminSidebar({ email }: { email: string }) {
+export function AdminSidebar({ email, requestCount = 0 }: { email: string; requestCount?: number }) {
   const path = usePathname();
   return (
     <aside className="bg-ink text-white md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col">
@@ -36,6 +37,9 @@ export function AdminSidebar({ email }: { email: string }) {
             <Link key={href} href={href}
               className={`flex shrink-0 items-center gap-2.5 rounded-btn px-3 py-2 text-sm font-medium ${active ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white"}`}>
               <Icon className="h-4 w-4" />{label}
+              {href === "/admin/requests" && requestCount > 0 && (
+                <span className="ml-auto grid h-5 min-w-[20px] place-items-center rounded-full bg-accent px-1.5 text-[11px] font-bold text-white">{requestCount}</span>
+              )}
             </Link>
           );
         })}
