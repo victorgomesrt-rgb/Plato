@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Eye, Video, QrCode, Navigation, Phone, ArrowUpRight } from "lucide-react";
 import { resolveDashboard } from "@/lib/dashboard-context";
 import { AreaTrend, Donut } from "@/components/charts";
+import { OwnerOnboarding } from "./onboarding";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false } };
 
@@ -50,7 +51,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   }
 
   const { db, tenantId } = res.ctx;
-  const tn = ((await db.from("tenants").select("name, slug").eq("id", tenantId).maybeSingle()).data ?? { name: "Your restaurant", slug: "" }) as { name: string; slug: string };
+  const tn = ((await db.from("tenants").select("name, slug, published_at, logo_url, cover_url, phone, whatsapp, hours").eq("id", tenantId).maybeSingle()).data ?? { name: "Your restaurant", slug: "" }) as {
+    name: string; slug: string; published_at?: string | null; logo_url?: string | null; cover_url?: string | null; phone?: string | null; whatsapp?: string | null; hours?: Record<string, unknown> | null;
+  };
   const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const curStart = addDays(todayStr, -(N - 1));
   const prevStart = addDays(todayStr, -(2 * N - 1));
@@ -113,6 +116,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const maxPlays = Math.max(1, ...topDishes.map((d) => d.plays));
   const monthName = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "America/Aruba" }).format(new Date());
 
+  const onboarding = {
+    live: !!tn.published_at,
+    branded: !!(tn.logo_url && tn.cover_url),
+    contact: !!((tn.phone || tn.whatsapp) && tn.hours),
+    firstView: metrics[0].value > 0,
+  };
+
   return (
     <main className="mx-auto max-w-5xl px-5 py-6 lg:px-8 lg:py-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -125,6 +135,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <Link href="/dashboard/requests" className="rounded-btn bg-accent px-3 py-2 text-sm font-medium text-white">Request a change</Link>
         </div>
       </div>
+
+      <div className="mt-5"><OwnerOnboarding tenantId={tenantId} slug={tn.slug} {...onboarding} /></div>
 
       <div className="mt-5 flex gap-1 text-sm">
         {[7, 30, 90].map((d) => (
