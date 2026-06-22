@@ -9,8 +9,10 @@ export const metadata: Metadata = { title: "Billing", robots: { index: false } }
 
 const money = (a: number, c = "USD") => new Intl.NumberFormat("en-US", { style: "currency", currency: c }).format(a);
 const fmtLong = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "America/Aruba" }).format(new Date(d)) : "—");
-const fmtMed = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "—");
 const fmtShort = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "America/Aruba" }).format(new Date(d)) : "—");
+// Invoice line date: period_start is a date-only column, so format in UTC (anchored at
+// noon) to avoid the Aruba offset rolling it back a day.
+const fmtDateOnly = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(d.length === 10 ? `${d}T12:00:00Z` : d)) : "—");
 
 const PLAN_FEATURES: Record<string, string[]> = {
   starter: ["Grid template", "USD & AWG", "Core analytics", "QR kit", "English & Spanish", "Email support"],
@@ -31,7 +33,7 @@ export default async function OwnerBillingPage() {
     const [{ data: t }, { data: s }, { data: inv }] = await Promise.all([
       db.from("tenants").select("slug, plan").eq("id", tenantId).maybeSingle(),
       db.from("subscriptions").select("plan, status, current_period_end").eq("tenant_id", tenantId).maybeSingle(),
-      db.from("invoices").select("number, amount, currency, description, status, period_start, paid_at, created_at, pdf_url").eq("tenant_id", tenantId).order("created_at", { ascending: false }).returns<Inv[]>(),
+      db.from("invoices").select("number, amount, currency, description, status, period_start, paid_at, created_at, pdf_url").eq("tenant_id", tenantId).order("period_start", { ascending: false, nullsFirst: false }).returns<Inv[]>(),
     ]);
     slug = (t as { slug: string } | null)?.slug ?? "";
     plan = (s as Sub | null)?.plan ?? (t as { plan: string } | null)?.plan ?? "premium";
@@ -95,7 +97,7 @@ export default async function OwnerBillingPage() {
           <div key={inv.number} className="grid grid-cols-[1.2fr_1.6fr_1fr_0.8fr_0.6fr] items-center gap-3 border-b border-line px-5 py-4 last:border-0">
             <div>
               <p className="font-semibold text-ink">{inv.number}</p>
-              <p className="text-xs text-muted">{fmtMed(inv.period_start ?? inv.created_at)}</p>
+              <p className="text-xs text-muted">{fmtDateOnly(inv.period_start ?? inv.created_at)}</p>
             </div>
             <span className="text-sm text-ink">{inv.description ?? "—"}</span>
             <span className="font-medium text-ink">{money(Number(inv.amount), inv.currency)}</span>
