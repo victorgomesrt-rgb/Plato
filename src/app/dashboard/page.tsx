@@ -119,7 +119,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     if (e.event_type !== "video_play" || !e.item_id) continue;
     plays.set(e.item_id, (plays.get(e.item_id) ?? 0) + 1);
   }
-  const topDishes = [...plays.entries()].map(([id, n]) => ({ name: itemMap.get(id)?.name ?? "-", img: itemMap.get(id)?.img ?? null, plays: n }))
+  const topDishes = [...plays.entries()]
+    .filter(([id]) => itemMap.has(id)) // drop plays for items that no longer resolve to a named dish
+    .map(([id, n]) => { const it = itemMap.get(id)!; return { name: it.name, img: it.img, plays: n }; })
     .sort((a, b) => b.plays - a.plays).slice(0, 4);
   const maxPlays = Math.max(1, ...topDishes.map((d) => d.plays));
   const monthName = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "America/Aruba" }).format(new Date());
