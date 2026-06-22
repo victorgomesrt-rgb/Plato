@@ -11,6 +11,7 @@ import { PlatoMark } from "@/components/plato-logo";
 import { EmailCapture } from "@/components/email-capture";
 import { TemplateSwitcher } from "@/components/landing/template-switcher";
 import { Reveal } from "@/components/reveal";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Plato: Video menus for Caribbean restaurants",
@@ -22,7 +23,9 @@ export const metadata: Metadata = {
 const WAITLIST = "#waitlist";
 const KB = (s: number) => ({ animation: `plato-kenburns ${s}s ease-in-out infinite alternate` });
 
-const TICKER = ["Brisa", "Zeerover", "Gostoso", "Pinchos Grill", "Madame Janette", "Flying Fishbone", "Quinta del Carmen", "Yemanja"];
+// Hero carousel names are admin-managed (see /admin/landing). ISR + revalidate-on-edit
+// keeps the landing statically cached while staying fresh when an admin changes the list.
+export const revalidate = 3600;
 
 const why = [
   { icon: Play, tint: "bg-accent/10 text-accent", title: "Food is the hero", body: "Short looping clips fill the screen. A dish in motion sells itself, far better than a line of text and a price." },
@@ -157,8 +160,11 @@ function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?:
   return <p className={`text-xs font-bold uppercase tracking-[0.18em] ${dark ? "text-accent" : "text-accent"}`}>{children}</p>;
 }
 
-export default function Landing() {
+export default async function Landing() {
   const year = new Date().getFullYear();
+  const { data: tickerRows } = await createAdminClient()
+    .from("ticker_items").select("name").order("position").returns<{ name: string }[]>();
+  const ticker = (tickerRows ?? []).map((t) => t.name);
   return (
     <div className="bg-ink text-white">
       {/* Nav, floating pill (fixed, centered, blurred) like the mockup */}
@@ -209,7 +215,7 @@ export default function Landing() {
         <div className="overflow-hidden pb-7 pt-1">
           <p className="mb-3 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">Now serving the island</p>
           <div className="flex w-max" style={{ animation: "plato-marquee 32s linear infinite" }}>
-            {[...TICKER, ...TICKER].map((n, i) => (
+            {[...ticker, ...ticker].map((n, i) => (
               <span key={i} className="flex items-center gap-9 whitespace-nowrap px-[18px] text-[20px] font-bold text-white/[0.62]">
                 {n}<span className="h-1.5 w-1.5 rounded-full bg-accent" />
               </span>

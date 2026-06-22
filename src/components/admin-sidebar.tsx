@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, Receipt, LineChart, Mail } from "lucide-react";
+import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, Receipt, LineChart, Mail, Megaphone } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
 import { PlatoMark } from "@/components/plato-logo";
 
@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/billing", label: "Billing", icon: Receipt },
   { href: "/admin/revenue", label: "Revenue", icon: LineChart },
   { href: "/admin/leads", label: "Leads", icon: Mail },
+  { href: "/admin/landing", label: "Landing", icon: Megaphone },
 ];
 
 export function AdminSidebar({ email }: { email: string }) {
