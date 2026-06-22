@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Eye, MessageSquare, DollarSign, AlertTriangle, Package } from "lucide-react";
+import { notFound } from "next/navigation";
+import { Eye, DollarSign, Plus } from "lucide-react";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { planPrice } from "@/lib/plans";
 import { AreaTrend, Donut } from "@/components/charts";
+import { AdminSearch } from "./search";
 
 export const metadata: Metadata = { title: "Admin · Overview", robots: { index: false } };
 
@@ -23,7 +25,7 @@ function relTime(ts: string, now: number) {
 }
 
 export default async function AdminOverviewPage() {
-  const admin = await currentAdmin();
+  if (!(await currentAdmin())) notFound();
   const svc = createAdminClient();
 
   const [{ data: tData }, { data: iData }] = await Promise.all([
@@ -72,33 +74,38 @@ export default async function AdminOverviewPage() {
     ...tenants.filter((t) => t.published_at).slice(0, 3).map((t): Act => ({ icon: "live", title: `${t.name} went live`, sub: t.plan, ts: t.published_at! })),
   ].sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime()).slice(0, 6);
 
-  const cards = [
-    { label: "MRR", value: usd(mrr), icon: DollarSign, foot: `${momPct >= 0 ? "▲" : "▼"} ${Math.abs(momPct)}% MoM`, good: momPct >= 0 },
-    { label: "Active tenants", value: active.length, icon: Eye, foot: "live pages" },
-    { label: "Past due", value: pastDue, icon: AlertTriangle, foot: "needs follow-up" },
-    { label: "Churn", value: churn, icon: MessageSquare, foot: "this month" },
-    { label: "New this month", value: newThis, icon: Package, foot: "provisioned" },
+  const cards: { label: string; value: string | number; pill?: string; pillGood?: boolean; sub: string }[] = [
+    { label: "MRR", value: usd(mrr), pill: `${momPct >= 0 ? "▲" : "▼"} ${Math.abs(momPct)}%`, pillGood: momPct >= 0, sub: "vs last month" },
+    { label: "Active tenants", value: active.length, sub: active.length === 1 ? "live page" : "live pages" },
+    { label: "Past due", value: pastDue, sub: "needs follow-up" },
+    { label: "Churn", value: churn, sub: "this month" },
+    { label: "New this month", value: newThis, sub: "provisioned" },
   ];
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-6 lg:px-8 lg:py-8">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="mr-auto">
           <h1 className="font-display text-2xl font-bold text-ink">Overview</h1>
           <p className="text-sm text-muted">Across all {tenants.length} menu {tenants.length === 1 ? "page" : "pages"}</p>
         </div>
-        <Link href="/admin/new-client" className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white">+ New client</Link>
+        <AdminSearch tenants={tenants.map((t) => ({ name: t.name, slug: t.slug, plan: t.plan }))} />
+        <Link href="/admin/new-client" className="inline-flex shrink-0 items-center gap-1.5 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">
+          <Plus className="h-4 w-4" /> New client
+        </Link>
       </div>
 
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {cards.map((c) => (
           <div key={c.label} className="rounded-card border border-line bg-surface p-4">
-            <div className="flex items-center justify-between text-muted">
-              <span className="text-xs">{c.label}</span>
-              <c.icon className="h-4 w-4 text-accent" />
-            </div>
+            <p className="text-xs text-muted">{c.label}</p>
             <p className="mt-2 font-display text-2xl font-bold text-ink">{c.value}</p>
-            <p className={`mt-1 text-xs ${c.good === undefined ? "text-muted" : c.good ? "text-emerald-600" : "text-accent-deep"}`}>{c.foot}</p>
+            <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
+              {c.pill && (
+                <span className={`rounded-full px-1.5 py-0.5 font-semibold ${c.pillGood ? "bg-emerald-100 text-emerald-700" : "bg-accent/10 text-accent-deep"}`}>{c.pill}</span>
+              )}
+              <span className="text-muted">{c.sub}</span>
+            </p>
           </div>
         ))}
       </div>
@@ -110,7 +117,10 @@ export default async function AdminOverviewPage() {
               <h2 className="font-display text-base font-semibold text-ink">Monthly recurring revenue</h2>
               <p className="text-xs text-muted">Trailing 12 months</p>
             </div>
-            <p className="font-display text-xl font-bold text-ink">{usd(mrr)}</p>
+            <div className="text-right">
+              <p className="font-display text-xl font-bold text-ink">{usd(mrr)}</p>
+              <p className={`text-xs font-semibold ${momPct >= 0 ? "text-emerald-600" : "text-accent-deep"}`}>{momPct >= 0 ? "▲" : "▼"} {Math.abs(momPct)}% MoM</p>
+            </div>
           </div>
           <div className="mt-3"><AreaTrend data={mrrTrend} gradId="mrr" height={210} suffix="" /></div>
         </section>
@@ -134,15 +144,18 @@ export default async function AdminOverviewPage() {
             ) : onboarding.map((o) => {
               const filled = Math.round((o.pct / 100) * 6);
               return (
-                <div key={o.name}>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-ink">{o.name}</span>
-                    <span className="text-muted">{o.label}</span>
-                  </div>
-                  <div className="mt-1.5 flex gap-1">
-                    {Array.from({ length: 6 }, (_, i) => (
-                      <span key={i} className={`h-1.5 flex-1 rounded-full ${i < filled ? "bg-accent" : "bg-line"}`} />
-                    ))}
+                <div key={o.name} className="flex items-start gap-3">
+                  <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-line text-xs font-bold text-ink">{o.name.charAt(0).toUpperCase()}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="font-medium text-ink">{o.name}</span>
+                      <span className="text-muted">{o.label}</span>
+                    </div>
+                    <div className="mt-1.5 flex gap-1">
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <span key={i} className={`h-1.5 flex-1 rounded-full ${i < filled ? "bg-accent" : "bg-line"}`} />
+                      ))}
+                    </div>
                   </div>
                 </div>
               );
@@ -170,8 +183,6 @@ export default async function AdminOverviewPage() {
           </ul>
         </section>
       </div>
-
-      <p className="mt-6 text-xs text-muted">Signed in as {admin?.email}</p>
     </main>
   );
 }
