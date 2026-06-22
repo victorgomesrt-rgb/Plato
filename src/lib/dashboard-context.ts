@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
@@ -22,15 +23,19 @@ export type Resolved =
 // service role (the admin is not an RLS member of it). The cookie alone grants nothing:
 // we re-check is_platform_admin on every load, so a forged cookie from a non-admin is ignored.
 // Everyone else sees their own tenant through the RLS session client (unchanged behaviour).
-export async function resolveDashboard(): Promise<Resolved> {
+// cache(): the layout and the page both call this in one render — dedupe to a single
+// auth+membership resolution per request. getClaims(): verifies the JWT locally (no
+// auth-server round-trip) when the project uses asymmetric keys, so navigation is fast.
+export const resolveDashboard = cache(async (): Promise<Resolved> => {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { state: "redirect" };
+  const { data, error } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub as string | undefined;
+  if (error || !userId) return { state: "redirect" };
 
   const impId = (await cookies()).get(IMP_COOKIE)?.value;
   if (impId) {
     const { data: profile } = await supabase
-      .from("profiles").select("is_platform_admin").eq("id", user.id).maybeSingle();
+      .from("profiles").select("is_platform_admin").eq("id", userId).maybeSingle();
     if (profile?.is_platform_admin) {
       const svc = createAdminClient();
       const { data: t } = await svc.from("tenants").select("id").eq("id", impId).maybeSingle();
@@ -42,4 +47,4 @@ export async function resolveDashboard(): Promise<Resolved> {
     .from("tenant_members").select("tenant_id").limit(1).maybeSingle();
   if (!mem) return { state: "no_tenant" };
   return { state: "ok", ctx: { db: supabase, tenantId: mem.tenant_id as string, impersonating: false } };
-}
+});

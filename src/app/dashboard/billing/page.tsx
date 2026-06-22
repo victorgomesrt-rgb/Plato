@@ -64,7 +64,7 @@ export default async function OwnerBillingPage() {
           </ul>
           <div className="mt-5 flex gap-2">
             <a href="/dashboard/requests" className="rounded-btn bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-white/90">Change plan</a>
-            <a href="mailto:billing@platodigital.io" className="rounded-btn border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">Contact billing</a>
+            <a href="mailto:adrian@platodigital.online" className="rounded-btn border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">Contact billing</a>
           </div>
         </section>
 

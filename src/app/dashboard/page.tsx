@@ -133,7 +133,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     <main className="mx-auto max-w-5xl px-5 py-6 lg:px-8 lg:py-8">
       <DashboardHeader title="Dashboard" subtitle={`How ${tn.name}'s menu is performing`} slug={tn.slug} />
 
-      <div className="mt-5"><OwnerOnboarding tenantId={tenantId} slug={tn.slug} {...onboarding} /></div>
+      {/* Floating bottom-right helper (fixed position, minimizable, auto-hides when complete). */}
+      <OwnerOnboarding tenantId={tenantId} slug={tn.slug} {...onboarding} />
 
       <div className="mt-5 flex items-center justify-between gap-3">
         <div className="flex gap-2 text-sm">

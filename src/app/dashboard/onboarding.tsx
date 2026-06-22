@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { Gauge, Check, ChevronRight } from "lucide-react";
+import { Gauge, Check, ChevronRight, Minus } from "lucide-react";
 
 // "Preview your menu" has no server signal (we can't see an owner viewing their own
 // page), so we remember it client-side once they open the preview.
@@ -19,12 +19,27 @@ function usePreviewed(id: string) {
   );
 }
 
+// Minimized state, persisted so it stays collapsed as the owner moves around.
+const minKey = (id: string) => `plato_onboard_min_${id}`;
+function setMinimized(id: string, v: boolean) {
+  try { localStorage.setItem(minKey(id), v ? "1" : "0"); } catch {}
+  window.dispatchEvent(new Event("plato-onboard-min"));
+}
+function useMinimized(id: string) {
+  return useSyncExternalStore(
+    (cb) => { window.addEventListener("plato-onboard-min", cb); return () => window.removeEventListener("plato-onboard-min", cb); },
+    () => { try { return localStorage.getItem(minKey(id)) === "1"; } catch { return false; } },
+    () => false,
+  );
+}
+
 type Step = { label: string; done: boolean; href?: string; external?: boolean; onClick?: () => void; pending?: boolean };
 
 export function OwnerOnboarding({ tenantId, slug, live, branded, contact, firstView }: {
   tenantId: string; slug: string; live: boolean; branded: boolean; contact: boolean; firstView: boolean;
 }) {
   const previewed = usePreviewed(tenantId);
+  const minimized = useMinimized(tenantId);
   const menuUrl = `/${slug}`;
 
   const steps: Step[] = [
@@ -38,38 +53,53 @@ export function OwnerOnboarding({ tenantId, slug, live, branded, contact, firstV
   const doneCount = steps.filter((s) => s.done).length;
   if (doneCount === steps.length) return null; // all done → auto-hide
 
+  // Collapsed: a small pill in the corner.
+  if (minimized) {
+    return (
+      <button
+        onClick={() => setMinimized(tenantId, false)}
+        className="fixed bottom-4 right-4 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-accent to-accent-deep px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_34px_-16px_rgba(251,106,26,0.95)]"
+      >
+        <Gauge className="h-4 w-4" />Setup {doneCount}/{steps.length}
+      </button>
+    );
+  }
+
   return (
-    <div className="rounded-card bg-gradient-to-br from-accent to-accent-deep p-5 text-white shadow-[0_18px_44px_-26px_rgba(251,106,26,0.8)]">
-      <div className="flex items-center gap-3">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white/15"><Gauge className="h-5 w-5" /></span>
-        <div>
-          <h2 className="font-display text-lg font-bold leading-tight">{doneCount >= steps.length - 1 ? "Almost there!" : "Let’s get your menu ready"}</h2>
-          <p className="text-xs text-white/75">{doneCount} of {steps.length} done</p>
+    <div className="fixed bottom-4 right-4 z-40 w-[330px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-card bg-gradient-to-br from-accent to-accent-deep text-white shadow-[0_18px_44px_-20px_rgba(251,106,26,0.9)]">
+      <div className="flex items-center gap-3 px-4 py-3">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/15"><Gauge className="h-5 w-5" /></span>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate font-display text-sm font-bold leading-tight">{doneCount >= steps.length - 1 ? "Almost there!" : "Let’s get your menu ready"}</h2>
+          <p className="text-[11px] text-white/75">{doneCount} of {steps.length} done</p>
         </div>
+        <button onClick={() => setMinimized(tenantId, true)} aria-label="Minimize" className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-white/80 hover:bg-white/15 hover:text-white">
+          <Minus className="h-4 w-4" />
+        </button>
       </div>
 
-      <ol className="mt-4 divide-y divide-white/10">
+      <ol className="px-2 pb-2">
         {steps.map((s, i) => {
           const num = (
-            <span className={`grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-semibold ${s.done ? "bg-white/25" : "bg-white/15"}`}>
-              {s.done ? <Check className="h-3.5 w-3.5" /> : i + 1}
+            <span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-[11px] font-semibold ${s.done ? "bg-white/25" : "bg-white/15"}`}>
+              {s.done ? <Check className="h-3 w-3" /> : i + 1}
             </span>
           );
           if (s.done)
             return (
-              <li key={i} className="flex items-center gap-3 py-2.5 text-white/55">
-                {num}<span className="text-sm">{s.label}</span>
+              <li key={i} className="flex items-center gap-2.5 rounded-btn px-2 py-1.5 text-white/55">
+                {num}<span className="text-[13px]">{s.label}</span>
               </li>
             );
           if (s.pending)
             return (
-              <li key={i} className="flex items-center gap-3 py-2.5">
-                {num}<span className="text-sm font-medium">{s.label}</span>
-                <span className="ml-auto text-xs text-white/65">We’re on it</span>
+              <li key={i} className="flex items-center gap-2.5 rounded-btn px-2 py-1.5">
+                {num}<span className="text-[13px] font-medium">{s.label}</span>
+                <span className="ml-auto text-[11px] text-white/65">We’re on it</span>
               </li>
             );
-          const inner = (<>{num}<span className="text-sm font-medium">{s.label}</span><ChevronRight className="ml-auto h-4 w-4 text-white/70" /></>);
-          const cls = "flex items-center gap-3 py-2.5 transition hover:text-white";
+          const inner = (<>{num}<span className="text-[13px] font-medium">{s.label}</span><ChevronRight className="ml-auto h-4 w-4 text-white/70" /></>);
+          const cls = "flex items-center gap-2.5 rounded-btn px-2 py-1.5 transition hover:bg-white/10";
           return s.external ? (
             <li key={i}><a href={s.href} target="_blank" rel="noopener noreferrer" onClick={s.onClick} className={cls}>{inner}</a></li>
           ) : (
