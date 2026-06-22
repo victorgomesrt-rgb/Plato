@@ -50,8 +50,8 @@ export default async function ManageTenantPage({
       <div className="mt-2 flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-semibold text-ink">{tenant.name}</h1>
-          <p className="text-sm text-muted">
-            /{tenant.slug} · {tenant.plan} · {tenant.status}
+          <p className="text-sm capitalize text-muted">
+            /{tenant.slug} · {tenant.plan} · {tenant.status === "past_due" ? "past due" : tenant.status}
             {tenant.published_at ? " · live" : ""}
           </p>
         </div>
