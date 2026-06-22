@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { planPrice } from "@/lib/plans";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { Toaster } from "@/components/toast";
+import { createClient } from "@/lib/supabase/server";
 import { resolveDashboard } from "@/lib/dashboard-context";
 import { stopImpersonation } from "@/app/admin/actions";
 
@@ -19,15 +20,34 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   let t: TenantBits | null = null;
   let impersonating = false;
+  let requestCount = 0;
   if (res.state === "ok") {
     impersonating = res.ctx.impersonating;
-    const { data } = await res.ctx.db
-      .from("tenants")
-      .select("name, slug, plan, status, published_at, trial_ends_at")
-      .eq("id", res.ctx.tenantId)
-      .maybeSingle();
+    const [{ data }, { count }] = await Promise.all([
+      res.ctx.db
+        .from("tenants")
+        .select("name, slug, plan, status, published_at, trial_ends_at")
+        .eq("id", res.ctx.tenantId)
+        .maybeSingle(),
+      res.ctx.db
+        .from("change_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("tenant_id", res.ctx.tenantId)
+        .neq("status", "done"),
+    ]);
     t = (data as TenantBits | null) ?? null;
+    requestCount = count ?? 0;
   }
+
+  // Owner identity for the sidebar account row.
+  const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  const ownerEmail = (claims?.claims?.email as string | undefined) ?? "";
+  const ownerId = (claims?.claims?.sub as string | undefined) ?? "";
+  const { data: profile } = ownerId
+    ? await supabase.from("profiles").select("full_name").eq("id", ownerId).maybeSingle()
+    : { data: null };
+  const ownerName = (profile?.full_name as string | null)?.trim() || ownerEmail.split("@")[0] || "Owner";
 
   const plan = t?.plan ?? "starter";
   const live = !!t?.published_at && !["building", "suspended", "canceled"].includes(t?.status ?? "");
@@ -51,6 +71,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         price={`$${planPrice(plan)}`}
         live={live}
         renews={renews}
+        requestCount={requestCount}
+        ownerName={ownerName}
+        ownerEmail={ownerEmail}
       />
       <div className="md:pl-60">
         {impersonating && (

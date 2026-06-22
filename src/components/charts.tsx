@@ -7,14 +7,22 @@ import {
 type TrendPoint = { label: string; value: number };
 
 export function AreaTrend({
-  data, color = "#FB6A1A", height = 220, gradId = "trend", suffix = "",
+  data, color = "#FB6A1A", height = 220, gradId = "trend", suffix = "", endDot = false,
 }: {
   data: TrendPoint[];
   color?: string;
   height?: number;
   gradId?: string;
   suffix?: string;
+  endDot?: boolean;
 }) {
+  const lastIndex = data.length - 1;
+  const renderDot = (p: { cx?: number; cy?: number; index?: number }) =>
+    p.index === lastIndex && p.cx != null && p.cy != null ? (
+      <circle key="end" cx={p.cx} cy={p.cy} r={4.5} fill="#fff" stroke={color} strokeWidth={2.5} />
+    ) : (
+      <g key={`d${p.index}`} />
+    );
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
@@ -32,7 +40,7 @@ export function AreaTrend({
           labelStyle={{ color: "#6B6660" }}
           formatter={(v: number) => [`${v.toLocaleString()}${suffix}`, ""]}
         />
-        <Area type="monotone" dataKey="value" stroke={color} strokeWidth={2.5} fill={`url(#${gradId})`} dot={false} activeDot={{ r: 4 }} />
+        <Area type="monotone" dataKey="value" stroke={color} strokeWidth={2.5} fill={`url(#${gradId})`} dot={endDot ? renderDot : false} activeDot={{ r: 4 }} />
       </AreaChart>
     </ResponsiveContainer>
   );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { SignOutButton } from "@/components/sign-out-button";
 import { ChangePassword } from "./settings-form";
 
 export const metadata: Metadata = { title: "Settings", robots: { index: false } };
@@ -16,8 +17,13 @@ export default async function SettingsPage() {
       <h1 className="font-display text-2xl font-bold text-ink">Settings</h1>
 
       <section className="mt-6 rounded-card border border-line bg-surface p-5">
-        <h2 className="font-display text-base font-semibold text-ink">Account</h2>
-        <p className="mt-1 text-sm text-muted">Signed in as {user.email}</p>
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-display text-base font-semibold text-ink">Account</h2>
+            <p className="mt-1 text-sm text-muted">Signed in as {user.email}</p>
+          </div>
+          <SignOutButton />
+        </div>
         <ChangePassword />
       </section>
 

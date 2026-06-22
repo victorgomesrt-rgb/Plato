@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Eye, Video, QrCode, Navigation, Phone, ArrowUpRight } from "lucide-react";
+import { Eye, Video, QrCode, Navigation, Phone, ArrowUpRight, MessageSquare } from "lucide-react";
 import { resolveDashboard } from "@/lib/dashboard-context";
 import { AreaTrend, Donut } from "@/components/charts";
 import { OwnerOnboarding } from "./onboarding";
@@ -75,15 +75,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const pct = (cur: number, prev: number) => (prev > 0 ? Math.round(((cur - prev) / prev) * 100) : cur > 0 ? 100 : 0);
 
   const metrics = [
-    { label: "Menu views", icon: Eye, k: "page_views" as const, ev: "page_view" },
-    { label: "Video plays", icon: Video, k: "video_plays" as const, ev: "video_play" },
-    { label: "QR scans", icon: QrCode, k: "qr_scans" as const, ev: "qr_scan" },
-    { label: "Directions", icon: Navigation, k: "directions_clicks" as const, ev: "directions_click" },
-    { label: "Calls", icon: Phone, k: "call_clicks" as const, ev: "call_click" },
+    { label: "Menu views", icon: Eye, k: "page_views" as const, ev: "page_view", fg: "#FB6A1A", bg: "rgba(251,106,26,0.12)" },
+    { label: "Video plays", icon: Video, k: "video_plays" as const, ev: "video_play", fg: "#FB6A1A", bg: "rgba(251,106,26,0.12)" },
+    { label: "QR scans", icon: QrCode, k: "qr_scans" as const, ev: "qr_scan", fg: "#0E5B5B", bg: "rgba(14,91,91,0.12)" },
+    { label: "Directions", icon: Navigation, k: "directions_clicks" as const, ev: "directions_click", fg: "#C99320", bg: "rgba(244,183,64,0.20)" },
+    { label: "Calls", icon: Phone, k: "call_clicks" as const, ev: "call_click", fg: "#16110E", bg: "rgba(22,17,14,0.07)" },
   ].map((m) => {
     const cur = sumK(curRows, m.k) + live(m.ev);
     const prev = sumK(prevRows, m.k);
-    return { label: m.label, icon: m.icon, value: cur, pct: pct(cur, prev) };
+    return { label: m.label, icon: m.icon, value: cur, pct: pct(cur, prev), fg: m.fg, bg: m.bg };
   });
 
   // Trend (menu views per day in the current window).
@@ -139,30 +139,39 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <p className="text-sm text-muted">How {tn.name}&apos;s menu is performing</p>
         </div>
         <div className="flex gap-2">
-          <a href={`/${tn.slug}`} target="_blank" rel="noopener noreferrer" className="rounded-btn border border-line bg-surface px-3 py-2 text-sm font-medium text-ink hover:border-ink/20">View live menu</a>
-          <Link href="/dashboard/requests" className="rounded-btn bg-accent px-3 py-2 text-sm font-medium text-white">Request a change</Link>
+          <a href={`/${tn.slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-btn border border-line bg-surface px-3 py-2 text-sm font-medium text-ink hover:border-ink/20">
+            <Eye className="h-4 w-4" />View live menu
+          </a>
+          <Link href="/dashboard/requests" className="inline-flex items-center gap-2 rounded-btn bg-accent px-3 py-2 text-sm font-medium text-white hover:bg-accent-deep">
+            <MessageSquare className="h-4 w-4" />Request a change
+          </Link>
         </div>
       </div>
 
       <div className="mt-5"><OwnerOnboarding tenantId={tenantId} slug={tn.slug} {...onboarding} /></div>
 
-      <div className="mt-5 flex gap-1 text-sm">
-        {[7, 30, 90].map((d) => (
-          <Link key={d} href={`/dashboard?days=${d}`} className={`rounded-full px-3 py-1 font-medium ${d === N ? "bg-accent text-white" : "bg-line text-ink"}`}>
-            {d} days
-          </Link>
-        ))}
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="flex gap-2 text-sm">
+          {[7, 30, 90].map((d) => (
+            <Link key={d} href={`/dashboard?days=${d}`} className={`rounded-full px-3 py-1 font-medium ${d === N ? "bg-accent text-white" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>
+              {d} days
+            </Link>
+          ))}
+        </div>
+        <span className="hidden text-sm text-muted sm:block">Updated just now</span>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {metrics.map((m) => (
           <div key={m.label} className="rounded-card border border-line bg-surface p-4">
-            <div className="flex items-center justify-between text-muted">
-              <span className="text-xs">{m.label}</span>
-              <m.icon className="h-4 w-4 text-accent" />
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-ink">{m.label}</span>
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg" style={{ background: m.bg }}>
+                <m.icon className="h-4 w-4" style={{ color: m.fg }} />
+              </span>
             </div>
-            <p className="mt-2 font-display text-2xl font-bold text-ink">{m.value.toLocaleString()}</p>
-            <div className="mt-1"><Delta pct={m.pct} /></div>
+            <p className="mt-2 font-display text-[26px] font-bold leading-none text-ink">{m.value.toLocaleString()}</p>
+            <div className="mt-2"><Delta pct={m.pct} /></div>
           </div>
         ))}
       </div>
@@ -176,7 +185,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             </div>
             <p className="font-display text-xl font-bold text-ink">{viewsTotal.toLocaleString()}</p>
           </div>
-          <div className="mt-3"><AreaTrend data={series} gradId="views" height={210} /></div>
+          <div className="mt-3"><AreaTrend data={series} gradId="views" height={210} endDot /></div>
         </section>
 
         <section className="rounded-card border border-line bg-surface p-5">
@@ -217,8 +226,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </div>
         </section>
 
-        <section className="rounded-card bg-ink p-5 text-white">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">Monthly recap</p>
+        <section className="relative overflow-hidden rounded-card bg-ink p-5 text-white" style={{ backgroundImage: "radial-gradient(130% 130% at 100% 100%, rgba(251,106,26,0.22), transparent 55%)" }}>
+          <span className="inline-flex rounded-full bg-accent/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-accent">Monthly recap</span>
           <h2 className="mt-2 font-display text-lg font-semibold">Your {monthName} numbers</h2>
           <ul className="mt-3 space-y-2 text-sm text-white/80">
             <li>✓ {viewsTotal.toLocaleString()} menu views in the last {N} days</li>
