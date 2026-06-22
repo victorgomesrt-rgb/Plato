@@ -63,7 +63,8 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
   let ownerExisted = false;
 
   const { data: invited, error: inviteErr } = await svc.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/dashboard`,
+    // Land invited owners on the set-password screen first, then the dashboard.
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password`,
   });
 
   if (invited?.user) {

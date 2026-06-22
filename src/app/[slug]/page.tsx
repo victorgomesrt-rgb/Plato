@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   getTenantBySlug,
   getTenantByPreviousSlug,
@@ -54,7 +54,7 @@ export default async function TenantPage({ params }: Props) {
 
   if (!tenant) {
     const renamed = await getTenantByPreviousSlug(slug);
-    if (renamed) redirect(`/${renamed.slug}`);
+    if (renamed) permanentRedirect(`/${renamed.slug}`); // 308: old slug → new, permanent for SEO
   }
 
   const state = publicState(tenant);
