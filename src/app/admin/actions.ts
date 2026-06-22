@@ -160,13 +160,21 @@ export async function changeTenantPlan(
 
 export async function startImpersonation(tenantId: string): Promise<void> {
   const admin = await currentAdmin();
-  if (!admin) return;
-  const svc = createAdminClient();
-  // Log it (scoped audit trail) + set the cookie the dashboard resolver honours for admins.
-  await svc.from("admin_impersonations").insert({ admin_id: admin.id, tenant_id: tenantId });
-  (await cookies()).set(IMP_COOKIE, tenantId, {
-    httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 2,
-  });
+  if (!admin) redirect("/admin?imperr=notadmin");
+  let stage = "start";
+  try {
+    stage = "insert";
+    const svc = createAdminClient();
+    // Log it (scoped audit trail) + set the cookie the dashboard resolver honours for admins.
+    const { error } = await svc.from("admin_impersonations").insert({ admin_id: admin!.id, tenant_id: tenantId });
+    if (error) throw new Error(error.message);
+    stage = "cookie";
+    (await cookies()).set(IMP_COOKIE, tenantId, {
+      httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 2,
+    });
+  } catch (e) {
+    redirect("/admin?imperr=" + encodeURIComponent(stage + ": " + (e as Error).message));
+  }
   redirect("/dashboard");
 }
 
