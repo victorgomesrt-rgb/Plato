@@ -19,7 +19,7 @@ export function BookForm() {
   const [err, setErr] = useState<string | null>(null);
   const [f, setF] = useState({
     restaurant: "", area: "", cuisine: "", name: "", phone: "", email: "",
-    menuSize: "20-40", plan: "Growth", timing: "This week", notes: "",
+    menuSize: "20-40", plan: "Growth", timing: "This week", notes: "", company: "",
   });
   const set = (k: keyof typeof f, v: string) => setF((p) => ({ ...p, [k]: v }));
 
@@ -47,6 +47,10 @@ export function BookForm() {
   return (
     <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
       <form onSubmit={submit} className="rounded-card bg-surface p-6 text-ink">
+        <input
+          type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true"
+          value={f.company} onChange={(e) => set("company", e.target.value)}
+          className="absolute left-[-9999px] h-0 w-0 overflow-hidden" />
         <p className="text-sm font-semibold uppercase tracking-wide text-accent">Your restaurant</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="text-sm">Restaurant name<input required value={f.restaurant} onChange={(e) => set("restaurant", e.target.value)} placeholder="e.g. Brisa" className={field} /></label>

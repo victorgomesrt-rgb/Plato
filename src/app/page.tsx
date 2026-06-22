@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Plato: Video menus for Caribbean restaurants",
   description:
     "We come to your restaurant, film every dish, and build a beautiful menu page where the food actually moves. Diners scan, watch, and decide.",
+  alternates: { canonical: "/" },
 };
 
 const WAITLIST = "#waitlist";

@@ -8,6 +8,7 @@ import { submitLead } from "@/app/lead-actions";
 export function EmailCapture({ variant = "dark" }: { variant?: "dark" | "light" }) {
   const [pending, start] = useTransition();
   const [email, setEmail] = useState("");
+  const [company, setCompany] = useState(""); // honeypot
   const [done, setDone] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const dark = variant === "dark";
@@ -16,7 +17,7 @@ export function EmailCapture({ variant = "dark" }: { variant?: "dark" | "light" 
     e.preventDefault();
     setErr(null);
     start(async () => {
-      const r = await submitLead(email);
+      const r = await submitLead(email, company);
       if (r.ok) { setDone(true); setEmail(""); }
       else setErr(r.error);
     });
@@ -31,6 +32,10 @@ export function EmailCapture({ variant = "dark" }: { variant?: "dark" | "light" 
 
   return (
     <form onSubmit={submit} className="mx-auto w-full max-w-md">
+      <input
+        type="text" name="company" tabIndex={-1} autoComplete="off" aria-hidden="true"
+        value={company} onChange={(e) => setCompany(e.target.value)}
+        className="absolute left-[-9999px] h-0 w-0 overflow-hidden" />
       <div className="flex flex-col gap-3">
         <input
           type="email"

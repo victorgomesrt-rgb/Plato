@@ -13,6 +13,7 @@ export type BookingInput = {
   plan: string;
   timing: string;
   notes: string;
+  company?: string; // honeypot
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,6 +22,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function submitBooking(
   input: BookingInput
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  // Honeypot: real users never fill the hidden "company" field; bots do. Drop silently.
+  if (input.company && input.company.trim() !== "") return { ok: true };
+
   const restaurant = input.restaurant?.trim();
   const email = input.email?.trim();
   if (!restaurant) return { ok: false, error: "Please add your restaurant name." };
