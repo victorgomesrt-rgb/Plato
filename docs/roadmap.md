@@ -6,9 +6,10 @@ Already done (verified): **logo in QR center** (qr-code-styling, `imageSize 0.28
 
 ---
 
-## 1. Accessibility — pragmatic AA pass  ·  Priority 1  ·  IN PROGRESS
-Fix the AA issues that matter; no formal conformance paperwork.
-- **Contrast**: white-on-orange `#FB6A1A` ≈ 2.9:1 fails AA (needs 4.5:1). Use a darker orange for text-bearing surfaces (an `accent-strong` ≈ `#C2410C`, ~5:1 with white) on primary buttons/badges; keep bright `#FB6A1A` for decorative fills/dots/borders (3:1 UI threshold). Bump faded text (`text-white/55-60`) to ≥ `/70`.
+## 1. Accessibility — pragmatic AA pass  ·  Priority 1  ·  DONE (with one accepted exception)
+Fixed the AA issues that matter; no formal conformance paperwork.
+- ✅ Image alt text (dish name), ✅ global `:focus-visible` keyboard ring.
+- **Contrast — ACCEPTED AS-IS (decision 2026-06-22)**: white-on-orange `#FB6A1A` ≈ 2.9:1 is below AA 4.5:1 but kept deliberately to preserve the brand/mockup look (used in ~21 CTAs + onboarding card). Documented in qa-audit.md §11 rather than changed. If revisited later: darker `#C2410C` CTAs (white text) or ink text on the bright orange.
 - **Keyboard**: every interactive control reachable + visible focus; no carousel traps.
 - **ARIA/labels**: `aria-label` on icon-only buttons, `aria-hidden` on decorative icons + the marquee, meaningful `alt` (dish name) on dish images.
 - **Structure**: one `<h1>` per page; landmarks; optional skip link.

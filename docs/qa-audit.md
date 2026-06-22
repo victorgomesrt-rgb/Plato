@@ -118,11 +118,12 @@ This is the detailed evidence companion. As of 2026-06-22, `qa.md` itself carrie
 - ✅ Suspend / activate / change plan take effect — `setTenantStatus` / `changeTenantPlan`.
 
 ## 11. Accessibility & polish
-- 🔍 Contrast AA on accent over white / photo overlays.
-- 🔍 Keyboard navigation across dashboard.
+- ⚠️ Contrast: **white-on-orange CTAs are a KNOWN, ACCEPTED brand exception** (decision 2026-06-22 — keep `#FB6A1A` + white text per the mockups; ~2.9:1, below AA 4.5:1; used in ~21 primary buttons + the onboarding card). Other text/contrast is fine.
+- ✅ Image alt text — dish images now use the dish name (`card-media`, `reel-view`); was `alt=""`.
+- ✅ Keyboard focus — global `:focus-visible` ring added in globals.css. (Full keyboard walkthrough still 🔍 manual.)
 - ✅ Tap targets ≥44px — h-11/h-12 controls.
 - ✅ Loading/error states on async actions (mostly).
-- 🔍 No console errors in production (runtime).
+- 🔍 No console errors in production (runtime; landing + diner verified clean via headless render).
 
 ## 12. Localization & currency
 - ⚠️ EN+ES complete — public page ✅; **editor/dashboard labels are largely EN-only**.

@@ -116,8 +116,8 @@ Multi-tenant data isolation is the thing you cannot get wrong.
 - [x] Suspend, activate, change plan all take effect.
 
 ## 11. Accessibility and polish
-- [ ] Contrast passes AA on accent over white and over photo overlays. (manual)
-- [ ] Keyboard navigation across the dashboard. (manual)
+- [ ] Contrast: white-on-orange CTAs are a KNOWN, ACCEPTED brand exception (decision 2026-06-22 — keep `#FB6A1A` + white per the mockups; ~2.9:1, below AA 4.5:1). Other text/contrast OK. (Dish image alt text + a global keyboard focus ring were added.)
+- [ ] Keyboard navigation across the dashboard. (manual; global :focus-visible ring added)
 - [x] Tap targets at least 44px.
 - [x] Loading and error states on every async action.
 - [ ] No console errors in a production build. (runtime check)
