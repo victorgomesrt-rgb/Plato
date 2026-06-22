@@ -12,7 +12,7 @@ const DAY_LABEL: Record<string, string> = {
   sun: "Sunday", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday",
 };
 
-function ImageUploader({ tenantId, kind, current, aspect }: { tenantId: string; kind: "logo" | "cover"; current: string | null; aspect: string }) {
+function ImageUploader({ tenantId, kind, current, aspect, readOnly }: { tenantId: string; kind: "logo" | "cover"; current: string | null; aspect: string; readOnly: boolean }) {
   const router = useRouter();
   const [url, setUrl] = useState(current);
   const [busy, setBusy] = useState(false);
@@ -43,17 +43,19 @@ function ImageUploader({ tenantId, kind, current, aspect }: { tenantId: string; 
         )}
         {busy && <div className="absolute inset-0 grid place-items-center bg-black/40 text-sm font-medium text-white">Uploading…</div>}
       </div>
-      <div className="mt-2 flex items-center gap-3 text-sm">
-        <label className="cursor-pointer font-medium text-accent hover:text-accent-deep">
-          {url ? "Replace" : "Upload"}
-          <input type="file" accept="image/*,.heic,.heif" className="hidden" disabled={busy}
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
-        </label>
-        {url && (
-          <button type="button" disabled={busy} onClick={async () => { setBusy(true); await removeBrandImage(tenantId, kind); setUrl(null); setBusy(false); router.refresh(); }}
-            className="inline-flex items-center gap-1 text-muted hover:text-accent-deep"><Trash2 className="h-3.5 w-3.5" /> Remove</button>
-        )}
-      </div>
+      {!readOnly && (
+        <div className="mt-2 flex items-center gap-3 text-sm">
+          <label className="cursor-pointer font-medium text-accent hover:text-accent-deep">
+            {url ? "Replace" : "Upload"}
+            <input type="file" accept="image/*,.heic,.heif" className="hidden" disabled={busy}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) onFile(f); e.target.value = ""; }} />
+          </label>
+          {url && (
+            <button type="button" disabled={busy} onClick={async () => { setBusy(true); await removeBrandImage(tenantId, kind); setUrl(null); setBusy(false); router.refresh(); }}
+              className="inline-flex items-center gap-1 text-muted hover:text-accent-deep"><Trash2 className="h-3.5 w-3.5" /> Remove</button>
+          )}
+        </div>
+      )}
       {err && <p className="mt-1 text-sm text-accent-deep">{err}</p>}
     </div>
   );
@@ -61,6 +63,7 @@ function ImageUploader({ tenantId, kind, current, aspect }: { tenantId: string; 
 
 type Props = {
   tenantId: string;
+  readOnly?: boolean;
   description: string | null; address: string | null; logoUrl: string | null; coverUrl: string | null;
   phone: string | null; whatsapp: string | null; lat: number | null; lng: number | null;
   hours: Record<string, [string, string] | null> | null;
@@ -91,6 +94,7 @@ export function PageSettingsForm(p: Props) {
 
   function save(e: React.FormEvent) {
     e.preventDefault();
+    if (p.readOnly) return;
     setMsg(null);
     const hoursPayload: Record<string, [string, string] | null> = {};
     for (const d of DAY_KEYS) { const h = hours[d]; hoursPayload[d] = h.open && h.close ? [h.open, h.close] : null; }
@@ -109,11 +113,11 @@ export function PageSettingsForm(p: Props) {
         <div className="mt-4 grid gap-5 sm:grid-cols-[160px_1fr]">
           <div>
             <p className="mb-1.5 text-sm font-medium text-ink">Logo</p>
-            <ImageUploader tenantId={p.tenantId} kind="logo" current={p.logoUrl} aspect="aspect-square w-40" />
+            <ImageUploader tenantId={p.tenantId} kind="logo" current={p.logoUrl} aspect="aspect-square w-40" readOnly={!!p.readOnly} />
           </div>
           <div>
             <p className="mb-1.5 text-sm font-medium text-ink">Cover</p>
-            <ImageUploader tenantId={p.tenantId} kind="cover" current={p.coverUrl} aspect="aspect-[16/9]" />
+            <ImageUploader tenantId={p.tenantId} kind="cover" current={p.coverUrl} aspect="aspect-[16/9]" readOnly={!!p.readOnly} />
           </div>
         </div>
       </section>
@@ -197,7 +201,7 @@ export function PageSettingsForm(p: Props) {
         </section>
 
         <div className="flex items-center gap-3">
-          <button type="submit" disabled={pending} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          <button type="submit" disabled={pending || !!p.readOnly} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
             {pending ? "Saving…" : "Save changes"}
           </button>
           {msg && <p className="text-sm text-muted">{msg}</p>}

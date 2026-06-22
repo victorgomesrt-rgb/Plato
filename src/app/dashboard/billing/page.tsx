@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { resolveDashboard } from "@/lib/dashboard-context";
 
 export const metadata: Metadata = { title: "Billing", robots: { index: false } };
 
@@ -10,23 +10,21 @@ const money = (a: number, c = "USD") =>
 const fmt = (d: string | null) =>
   d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "-";
 
-export default async function OwnerBillingPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+type Sub = { plan: string; status: string; current_period_end: string | null; tenants: { name: string } | null };
+type Inv = { number: string; amount: number; currency: string; status: string; due_date: string | null; tenants: { name: string } | null };
 
-  // RLS scopes both to the tenants this owner belongs to.
-  const { data: subs } = await supabase
-    .from("subscriptions")
-    .select("plan, status, current_period_end, tenants(name)")
-    .returns<{ plan: string; status: string; current_period_end: string | null; tenants: { name: string } | null }[]>();
-  const { data: invoices } = await supabase
-    .from("invoices")
-    .select("number, amount, currency, status, due_date, tenants(name)")
-    .order("created_at", { ascending: false })
-    .returns<{ number: string; amount: number; currency: string; status: string; due_date: string | null; tenants: { name: string } | null }[]>();
+export default async function OwnerBillingPage() {
+  const res = await resolveDashboard();
+  if (res.state === "redirect") redirect("/login");
+
+  // Explicit tenant filter (not RLS-only) so this is safe when reading via the service
+  // role during admin impersonation, and scoped to the one resolved tenant.
+  let subs: Sub[] = [], invoices: Inv[] = [];
+  if (res.state === "ok") {
+    const { db, tenantId } = res.ctx;
+    subs = (await db.from("subscriptions").select("plan, status, current_period_end, tenants(name)").eq("tenant_id", tenantId).returns<Sub[]>()).data ?? [];
+    invoices = (await db.from("invoices").select("number, amount, currency, status, due_date, tenants(name)").eq("tenant_id", tenantId).order("created_at", { ascending: false }).returns<Inv[]>()).data ?? [];
+  }
 
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-10">

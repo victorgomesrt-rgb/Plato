@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { resolveDashboard } from "@/lib/dashboard-context";
 
 export const metadata: Metadata = { title: "Analytics", robots: { index: false } };
 
@@ -34,18 +34,9 @@ export default async function AnalyticsPage({
   const { days } = await searchParams;
   const N = [7, 30, 90].includes(Number(days)) ? Number(days) : 30;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: mem } = await supabase
-    .from("tenant_members")
-    .select("tenant_id, tenants(name)")
-    .limit(1)
-    .maybeSingle();
-  if (!mem) {
+  const res = await resolveDashboard();
+  if (res.state === "redirect") redirect("/login");
+  if (res.state === "no_tenant") {
     return (
       <main className="mx-auto w-full max-w-2xl px-6 py-10">
         <h1 className="font-display text-2xl font-semibold text-ink">Analytics</h1>
@@ -55,34 +46,34 @@ export default async function AnalyticsPage({
       </main>
     );
   }
-  const tenantId = mem.tenant_id;
-  const tenantName = (mem.tenants as unknown as { name: string } | null)?.name ?? "";
+  const { db, tenantId } = res.ctx;
+  const tenantName = ((await db.from("tenants").select("name").eq("id", tenantId).maybeSingle()).data as { name: string } | null)?.name ?? "";
 
   const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const sinceStr = addDays(todayStr, -(N - 1));
 
   const [{ data: daily }, { data: todayEvents }, { data: itemEvents }, { data: menuItems }] =
     await Promise.all([
-      supabase
+      db
         .from("analytics_daily")
         .select("*")
         .eq("tenant_id", tenantId)
         .gte("day", sinceStr)
         .order("day")
         .returns<Daily[]>(),
-      supabase
+      db
         .from("analytics_events")
         .select("event_type, session_id")
         .eq("tenant_id", tenantId)
         .gte("created_at", arubaStartUTC(todayStr)),
-      supabase
+      db
         .from("analytics_events")
         .select("item_id, event_type")
         .eq("tenant_id", tenantId)
         .not("item_id", "is", null)
         .in("event_type", ["item_view", "video_play"])
         .gte("created_at", arubaStartUTC(sinceStr)),
-      supabase.from("menu_items").select("id, name").eq("tenant_id", tenantId),
+      db.from("menu_items").select("id, name").eq("tenant_id", tenantId),
     ]);
 
   // Today's live counts (not yet rolled up).

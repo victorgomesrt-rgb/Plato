@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Eye, Video, QrCode, Navigation, Phone, ArrowUpRight } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { resolveDashboard } from "@/lib/dashboard-context";
 import { AreaTrend, Donut } from "@/components/charts";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false } };
@@ -35,17 +35,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const { days } = await searchParams;
   const N = [7, 30, 90].includes(Number(days)) ? Number(days) : 30;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const res = await resolveDashboard();
+  if (res.state === "redirect") redirect("/login");
 
-  const { data: mem } = await supabase
-    .from("tenant_members")
-    .select("tenant_id, tenants(name, slug)")
-    .limit(1)
-    .maybeSingle();
-
-  if (!mem) {
+  if (res.state === "no_tenant") {
     return (
       <main className="mx-auto max-w-5xl px-5 py-10 lg:px-8">
         <h1 className="font-display text-2xl font-semibold text-ink">Dashboard</h1>
@@ -56,17 +49,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     );
   }
 
-  const tenantId = mem.tenant_id as string;
-  const tn = mem.tenants as unknown as { name: string; slug: string };
+  const { db, tenantId } = res.ctx;
+  const tn = ((await db.from("tenants").select("name, slug").eq("id", tenantId).maybeSingle()).data ?? { name: "Your restaurant", slug: "" }) as { name: string; slug: string };
   const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const curStart = addDays(todayStr, -(N - 1));
   const prevStart = addDays(todayStr, -(2 * N - 1));
 
   const [{ data: daily }, { data: todayEvents }, { data: itemEvents }, { data: menuItems }] = await Promise.all([
-    supabase.from("analytics_daily").select("*").eq("tenant_id", tenantId).gte("day", prevStart).order("day").returns<Daily[]>(),
-    supabase.from("analytics_events").select("event_type, session_id").eq("tenant_id", tenantId).gte("created_at", arubaStartUTC(todayStr)),
-    supabase.from("analytics_events").select("item_id, event_type").eq("tenant_id", tenantId).not("item_id", "is", null).in("event_type", ["item_view", "video_play"]).gte("created_at", arubaStartUTC(curStart)),
-    supabase.from("menu_items").select("id, name, image_url").eq("tenant_id", tenantId),
+    db.from("analytics_daily").select("*").eq("tenant_id", tenantId).gte("day", prevStart).order("day").returns<Daily[]>(),
+    db.from("analytics_events").select("event_type, session_id").eq("tenant_id", tenantId).gte("created_at", arubaStartUTC(todayStr)),
+    db.from("analytics_events").select("item_id, event_type").eq("tenant_id", tenantId).not("item_id", "is", null).in("event_type", ["item_view", "video_play"]).gte("created_at", arubaStartUTC(curStart)),
+    db.from("menu_items").select("id, name, image_url").eq("tenant_id", tenantId),
   ]);
 
   const rows = daily ?? [];

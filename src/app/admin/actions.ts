@@ -1,9 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isReservedSlug, isValidSlug } from "@/lib/reserved-slugs";
+import { IMP_COOKIE } from "@/lib/dashboard-context";
 
 const PLANS = ["starter", "growth", "premium"];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -139,4 +142,23 @@ export async function changeTenantPlan(
   await svc.from("subscriptions").update({ plan }).eq("tenant_id", tenantId);
   revalidatePath("/admin");
   return { ok: true };
+}
+
+/* ---------- Impersonation: read-only "view as owner" (qa §1, logged + scoped) ---------- */
+
+export async function startImpersonation(tenantId: string): Promise<void> {
+  const admin = await currentAdmin();
+  if (!admin) return;
+  const svc = createAdminClient();
+  // Log it (scoped audit trail) + set the cookie the dashboard resolver honours for admins.
+  await svc.from("admin_impersonations").insert({ admin_id: admin.id, tenant_id: tenantId });
+  (await cookies()).set(IMP_COOKIE, tenantId, {
+    httpOnly: true, secure: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 2,
+  });
+  redirect("/dashboard");
+}
+
+export async function stopImpersonation(): Promise<void> {
+  (await cookies()).delete(IMP_COOKIE);
+  redirect("/admin");
 }

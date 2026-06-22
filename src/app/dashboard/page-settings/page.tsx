@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { resolveDashboard } from "@/lib/dashboard-context";
 import type { TenantLink } from "@/lib/tenant";
 import { PageSettingsForm } from "./page-settings-form";
 
@@ -13,15 +13,9 @@ type TenantRow = {
 };
 
 export default async function PageSettings() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: mem } = await supabase
-    .from("tenant_members")
-    .select("tenant_id, tenants(description, address, logo_url, cover_url, phone, whatsapp, lat, lng, hours, links)")
-    .limit(1).maybeSingle();
-  if (!mem) {
+  const res = await resolveDashboard();
+  if (res.state === "redirect") redirect("/login");
+  if (res.state === "no_tenant") {
     return (
       <main className="mx-auto max-w-3xl px-5 py-8 lg:px-8">
         <h1 className="font-display text-2xl font-bold text-ink">Page</h1>
@@ -29,7 +23,8 @@ export default async function PageSettings() {
       </main>
     );
   }
-  const t = mem.tenants as unknown as TenantRow;
+  const { db, tenantId, impersonating } = res.ctx;
+  const t = ((await db.from("tenants").select("description, address, logo_url, cover_url, phone, whatsapp, lat, lng, hours, links").eq("id", tenantId).maybeSingle()).data ?? {}) as TenantRow;
   const link = (type: string) => (t.links ?? []).find((l) => l.type === type);
 
   return (
@@ -37,7 +32,8 @@ export default async function PageSettings() {
       <h1 className="font-display text-2xl font-bold text-ink">Page</h1>
       <p className="text-sm text-muted">Your logo, cover, contact details, hours, and location. Each detail you fill becomes a button on your menu.</p>
       <PageSettingsForm
-        tenantId={mem.tenant_id as string}
+        tenantId={tenantId}
+        readOnly={impersonating}
         description={t.description} address={t.address} logoUrl={t.logo_url} coverUrl={t.cover_url}
         phone={t.phone} whatsapp={t.whatsapp} lat={t.lat} lng={t.lng} hours={t.hours}
         reservationUrl={link("reserve")?.url ?? null}

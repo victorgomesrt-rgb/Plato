@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { resolveDashboard } from "@/lib/dashboard-context";
 import { RequestForm } from "./request-form";
 
 export const metadata: Metadata = { title: "Request a change", robots: { index: false } };
@@ -14,13 +14,11 @@ const fmt = (d: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium
 type Req = { id: string; kind: string; message: string; status: string; created_at: string };
 
 export default async function RequestsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: mem } = await supabase.from("tenant_members").select("tenant_id").limit(1).maybeSingle();
-  const reqs = mem
-    ? (await supabase.from("change_requests").select("id, kind, message, status, created_at").eq("tenant_id", mem.tenant_id).order("created_at", { ascending: false }).returns<Req[]>()).data ?? []
+  const res = await resolveDashboard();
+  if (res.state === "redirect") redirect("/login");
+  const impersonating = res.state === "ok" && res.ctx.impersonating;
+  const reqs = res.state === "ok"
+    ? (await res.ctx.db.from("change_requests").select("id, kind, message, status, created_at").eq("tenant_id", res.ctx.tenantId).order("created_at", { ascending: false }).returns<Req[]>()).data ?? []
     : [];
 
   return (
@@ -28,7 +26,7 @@ export default async function RequestsPage() {
       <h1 className="font-display text-2xl font-bold text-ink">Request a change</h1>
       <p className="mt-1 text-sm text-muted">Tell us what to update and our team handles it, usually same day.</p>
 
-      <div className="mt-5"><RequestForm /></div>
+      <div className="mt-5"><RequestForm readOnly={impersonating} /></div>
 
       <h2 className="mt-8 font-display text-lg font-semibold text-ink">Your requests</h2>
       {reqs.length === 0 ? (

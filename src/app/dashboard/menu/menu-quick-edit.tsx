@@ -8,12 +8,13 @@ import { setItemAvailable, setItemPrice } from "./actions";
 export type QItem = { id: string; name: string; price: number | null; price_text: string | null; is_available: boolean; category_id: string | null };
 export type QCat = { id: string; name: string };
 
-function PriceField({ item, currency }: { item: QItem; currency: string }) {
+function PriceField({ item, currency, readOnly }: { item: QItem; currency: string; readOnly: boolean }) {
   const router = useRouter();
   const [val, setVal] = useState(item.price != null ? String(item.price) : "");
   const [saving, setSaving] = useState(false);
 
   async function save() {
+    if (readOnly) return;
     const next = val.trim() === "" ? null : Number(val);
     if (next != null && Number.isNaN(next)) { setVal(item.price != null ? String(item.price) : ""); return; }
     if (next === item.price) return;
@@ -28,24 +29,25 @@ function PriceField({ item, currency }: { item: QItem; currency: string }) {
       <span className="text-xs text-muted">{currency}</span>
       <input
         inputMode="decimal"
+        disabled={readOnly}
         value={val}
         onChange={(e) => setVal(e.target.value)}
         onBlur={save}
         onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
         placeholder={item.price_text || "-"}
-        className={`h-11 w-20 rounded-btn border px-2 text-sm text-ink outline-none focus:border-accent ${saving ? "border-accent" : "border-line"}`}
+        className={`h-11 w-20 rounded-btn border px-2 text-sm text-ink outline-none focus:border-accent disabled:opacity-60 ${saving ? "border-accent" : "border-line"}`}
       />
     </div>
   );
 }
 
-function SoldOutToggle({ item }: { item: QItem }) {
+function SoldOutToggle({ item, readOnly }: { item: QItem; readOnly: boolean }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const available = item.is_available;
   return (
     <button
-      disabled={pending}
+      disabled={pending || readOnly}
       onClick={() => start(async () => { const r = await setItemAvailable(item.id, !available); if (r.ok) { toast(available ? "Marked sold out" : "Marked available"); router.refresh(); } })}
       className="grid h-11 w-11 place-items-center disabled:opacity-60"
       aria-label={available ? "Available, tap to mark sold out" : "Sold out, tap to mark available"}
@@ -57,7 +59,7 @@ function SoldOutToggle({ item }: { item: QItem }) {
   );
 }
 
-export function MenuQuickEdit({ categories, items, currency }: { categories: QCat[]; items: QItem[]; currency: string }) {
+export function MenuQuickEdit({ categories, items, currency, readOnly = false }: { categories: QCat[]; items: QItem[]; currency: string; readOnly?: boolean }) {
   const byCat = (cid: string) => items.filter((i) => i.category_id === cid);
   const uncategorized = items.filter((i) => !i.category_id);
 
@@ -72,10 +74,10 @@ export function MenuQuickEdit({ categories, items, currency }: { categories: QCa
               {g.list.map((item) => (
                 <li key={item.id} className="flex items-center justify-between gap-3 px-4 py-3">
                   <span className={`min-w-0 flex-1 truncate text-sm ${item.is_available ? "text-ink" : "text-muted line-through"}`}>{item.name}</span>
-                  <PriceField item={item} currency={currency} />
+                  <PriceField item={item} currency={currency} readOnly={readOnly} />
                   <div className="flex items-center gap-2">
                     <span className="hidden text-xs text-muted sm:inline">{item.is_available ? "Available" : "Sold out"}</span>
-                    <SoldOutToggle item={item} />
+                    <SoldOutToggle item={item} readOnly={readOnly} />
                   </div>
                 </li>
               ))}

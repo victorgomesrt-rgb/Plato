@@ -12,7 +12,7 @@ const KINDS = [
   { v: "general", label: "Something else" },
 ];
 
-export function RequestForm() {
+export function RequestForm({ readOnly = false }: { readOnly?: boolean }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [kind, setKind] = useState("menu");
@@ -22,6 +22,7 @@ export function RequestForm() {
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (readOnly) return;
     setErr(null);
     start(async () => {
       const r = await submitChangeRequest({ kind, message });
@@ -43,7 +44,7 @@ export function RequestForm() {
       </label>
       {err && <p className="mt-2 text-sm text-accent-deep">{err}</p>}
       {ok && <p className="mt-2 text-sm text-sea">Sent, our team will take care of it.</p>}
-      <button type="submit" disabled={pending} className="mt-4 rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+      <button type="submit" disabled={pending || readOnly} className="mt-4 rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
         {pending ? "Sending…" : "Send request"}
       </button>
     </form>

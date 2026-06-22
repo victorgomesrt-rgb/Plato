@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { resolveDashboard } from "@/lib/dashboard-context";
 import { MenuQuickEdit, type QItem, type QCat } from "./menu-quick-edit";
 
 export const metadata: Metadata = { title: "My menu", robots: { index: false } };
 
 export default async function MenuPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const { data: mem } = await supabase.from("tenant_members").select("tenant_id, tenants(slug, base_currency)").limit(1).maybeSingle();
-  if (!mem) {
+  const res = await resolveDashboard();
+  if (res.state === "redirect") redirect("/login");
+  if (res.state === "no_tenant") {
     return (
       <main className="mx-auto max-w-3xl px-5 py-8 lg:px-8">
         <h1 className="font-display text-2xl font-bold text-ink">My menu</h1>
@@ -20,10 +17,11 @@ export default async function MenuPage() {
       </main>
     );
   }
-  const tenant = mem.tenants as unknown as { slug: string; base_currency: string };
+  const { db, tenantId, impersonating } = res.ctx;
+  const tenant = ((await db.from("tenants").select("slug, base_currency").eq("id", tenantId).maybeSingle()).data ?? { slug: "", base_currency: "USD" }) as { slug: string; base_currency: string };
   const [{ data: cats }, { data: items }] = await Promise.all([
-    supabase.from("menu_categories").select("id, name").eq("tenant_id", mem.tenant_id).order("sort_order").returns<QCat[]>(),
-    supabase.from("menu_items").select("id, name, price, price_text, is_available, category_id").eq("tenant_id", mem.tenant_id).order("sort_order").returns<QItem[]>(),
+    db.from("menu_categories").select("id, name").eq("tenant_id", tenantId).order("sort_order").returns<QCat[]>(),
+    db.from("menu_items").select("id, name, price, price_text, is_available, category_id").eq("tenant_id", tenantId).order("sort_order").returns<QItem[]>(),
   ]);
 
   return (
@@ -38,7 +36,7 @@ export default async function MenuPage() {
       {(items ?? []).length === 0 ? (
         <p className="mt-6 rounded-card border border-line bg-surface p-6 text-muted">No items yet. Our team adds them from your shoot.</p>
       ) : (
-        <MenuQuickEdit categories={cats ?? []} items={items ?? []} currency={tenant.base_currency ?? "USD"} />
+        <MenuQuickEdit categories={cats ?? []} items={items ?? []} currency={tenant.base_currency ?? "USD"} readOnly={impersonating} />
       )}
     </main>
   );
