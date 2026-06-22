@@ -1,0 +1,32 @@
+# roadmap.md — post-launch enhancements (planned 2026-06-22)
+
+Advisory plans for ideas raised after the core build. Priority order. Status updated as built.
+
+Already done (verified): **logo in QR center** (qr-code-styling, `imageSize 0.28`, "with logo" toggle); **per-restaurant theme rendering** (diner page consumes `tenants.accent_color` via `--color-accent`).
+
+---
+
+## 1. Accessibility — pragmatic AA pass  ·  Priority 1  ·  IN PROGRESS
+Fix the AA issues that matter; no formal conformance paperwork.
+- **Contrast**: white-on-orange `#FB6A1A` ≈ 2.9:1 fails AA (needs 4.5:1). Use a darker orange for text-bearing surfaces (an `accent-strong` ≈ `#C2410C`, ~5:1 with white) on primary buttons/badges; keep bright `#FB6A1A` for decorative fills/dots/borders (3:1 UI threshold). Bump faded text (`text-white/55-60`) to ≥ `/70`.
+- **Keyboard**: every interactive control reachable + visible focus; no carousel traps.
+- **ARIA/labels**: `aria-label` on icon-only buttons, `aria-hidden` on decorative icons + the marquee, meaningful `alt` (dish name) on dish images.
+- **Structure**: one `<h1>` per page; landmarks; optional skip link.
+- Done when: Lighthouse a11y ≥ 95, 0 serious axe violations, keyboard walkthrough works.
+
+## 2. Dietary filter chips  ·  Priority 2  ·  PLANNED
+Diners filter the menu by dietary needs. (Tags already display on dishes + are editable in the admin editor; only the diner filter UI + vocab are missing.)
+- Expand tag vocab: `vegetarian, vegan, gluten_free, dairy_free, nut_free, raw, halal` (filterable) vs `popular, new, spicy` (promo badges). EN/ES labels.
+- Filter chip bar on the diner page, showing only tags present in this tenant's menu; client-side filter (reuse locale/currency state); empty categories collapse.
+- Decision: **AND** filtering (diner with restrictions wants dishes matching all).
+- Done when: chips filter every template, empty categories hide, EN/ES labels render.
+
+## 3. Theme-color edit UI  ·  Priority 3  ·  PLANNED
+Each restaurant sets its own accent (rendering already works).
+- Color field in Page Settings → `updateTenantInfo` → `tenants.accent_color` (unguarded column, owner-editable). Gentle contrast warning (ties to #1).
+- Done when: changing the color updates the live diner page after revalidation.
+
+## 4. DB index tune-up  ·  Priority 4  ·  LOW URGENCY (defer to scale)
+Hot paths already indexed (analytics_events, menu_items ×2, menu_categories, change_requests; slug/custom_domain unique; subscriptions PK by tenant). Add when data grows:
+- `invoices(tenant_id, created_at desc)`, confirm `analytics_daily` PK `(tenant_id, day)`, `analytics_events(item_id)` for top-dishes, minor `leads`/`hardware_orders`.
+- Done when: `EXPLAIN ANALYZE` on dashboard/rollup queries shows index scans. Not needed pre-launch.
