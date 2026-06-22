@@ -139,7 +139,7 @@ This records current status against `qa.md`; `qa.md` itself stays the pristine a
 - 🔍 Supabase backups enabled.
 - ✅ First platform admin flag set; no self-grant.
 - ✅ Terms, Privacy, client agreement published + linked — live.
-- 🔍 Resend domain SPF/DKIM; invite + receipt emails land (note: invites currently use Supabase's built-in mailer, not Resend).
+- ✅ Resend domain verified; **Supabase Auth wired to Resend SMTP** (`smtp.resend.com`, sender `hello@platodigital.io`) and verified end-to-end 2026-06-22 (auth 235 + message accepted). Transactional emails (invoice/lead/booking) go via Resend API. (Correction: an earlier note here wrongly said invites used Supabase's built-in mailer — they go via Resend.)
 - 🔍 Error monitoring.
 - 🔍 Flagship restaurant live + filmed.
 - 🔍 Sales one-pager / price sheet / demo link.
