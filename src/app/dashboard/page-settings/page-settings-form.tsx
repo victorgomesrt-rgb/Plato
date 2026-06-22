@@ -4,7 +4,13 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ImagePlus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { DAY_KEYS } from "@/lib/hours";
 import { updateTenantInfo, processBrandImage, removeBrandImage } from "./actions";
+
+const field = "mt-1 h-11 w-full rounded-btn border border-line bg-surface px-3 text-sm text-ink outline-none focus:border-accent";
+const DAY_LABEL: Record<string, string> = {
+  sun: "Sunday", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday",
+};
 
 function ImageUploader({ tenantId, kind, current, aspect }: { tenantId: string; kind: "logo" | "cover"; current: string | null; aspect: string }) {
   const router = useRouter();
@@ -53,20 +59,43 @@ function ImageUploader({ tenantId, kind, current, aspect }: { tenantId: string; 
   );
 }
 
-export function PageSettingsForm({ tenantId, description, address, logoUrl, coverUrl }: {
-  tenantId: string; description: string | null; address: string | null; logoUrl: string | null; coverUrl: string | null;
-}) {
+type Props = {
+  tenantId: string;
+  description: string | null; address: string | null; logoUrl: string | null; coverUrl: string | null;
+  phone: string | null; whatsapp: string | null; lat: number | null; lng: number | null;
+  hours: Record<string, [string, string] | null> | null;
+  reservationUrl: string | null; websiteUrl: string | null; instagram: string | null;
+  wifiSsid: string | null; wifiPassword: string | null;
+};
+
+export function PageSettingsForm(p: Props) {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [desc, setDesc] = useState(description ?? "");
-  const [addr, setAddr] = useState(address ?? "");
   const [msg, setMsg] = useState<string | null>(null);
+  const [f, setF] = useState({
+    description: p.description ?? "", address: p.address ?? "",
+    phone: p.phone ?? "", whatsapp: p.whatsapp ?? "",
+    reservationUrl: p.reservationUrl ?? "", websiteUrl: p.websiteUrl ?? "",
+    instagram: p.instagram ?? "", wifiSsid: p.wifiSsid ?? "", wifiPassword: p.wifiPassword ?? "",
+    lat: p.lat != null ? String(p.lat) : "", lng: p.lng != null ? String(p.lng) : "",
+  });
+  const set = (k: keyof typeof f, v: string) => setF((prev) => ({ ...prev, [k]: v }));
+
+  const [hours, setHours] = useState<Record<string, { open: string; close: string }>>(() => {
+    const init: Record<string, { open: string; close: string }> = {};
+    for (const d of DAY_KEYS) { const r = p.hours?.[d]; init[d] = { open: r?.[0] ?? "", close: r?.[1] ?? "" }; }
+    return init;
+  });
+  const setDay = (d: string, part: "open" | "close", v: string) =>
+    setHours((prev) => ({ ...prev, [d]: { ...prev[d], [part]: v } }));
 
   function save(e: React.FormEvent) {
     e.preventDefault();
     setMsg(null);
+    const hoursPayload: Record<string, [string, string] | null> = {};
+    for (const d of DAY_KEYS) { const h = hours[d]; hoursPayload[d] = h.open && h.close ? [h.open, h.close] : null; }
     start(async () => {
-      const r = await updateTenantInfo(tenantId, { description: desc, address: addr });
+      const r = await updateTenantInfo(p.tenantId, { ...f, hours: hoursPayload });
       setMsg(r.ok ? "Saved." : r.error);
       if (r.ok) router.refresh();
     });
@@ -80,30 +109,99 @@ export function PageSettingsForm({ tenantId, description, address, logoUrl, cove
         <div className="mt-4 grid gap-5 sm:grid-cols-[160px_1fr]">
           <div>
             <p className="mb-1.5 text-sm font-medium text-ink">Logo</p>
-            <ImageUploader tenantId={tenantId} kind="logo" current={logoUrl} aspect="aspect-square w-40" />
+            <ImageUploader tenantId={p.tenantId} kind="logo" current={p.logoUrl} aspect="aspect-square w-40" />
           </div>
           <div>
             <p className="mb-1.5 text-sm font-medium text-ink">Cover</p>
-            <ImageUploader tenantId={tenantId} kind="cover" current={coverUrl} aspect="aspect-[16/9]" />
+            <ImageUploader tenantId={p.tenantId} kind="cover" current={p.coverUrl} aspect="aspect-[16/9]" />
           </div>
         </div>
       </section>
 
-      <form onSubmit={save} className="rounded-card border border-line bg-surface p-5">
-        <h2 className="font-display text-base font-semibold text-ink">Details</h2>
-        <label className="mt-3 block text-sm font-medium text-ink">Description
-          <textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} placeholder="Beachfront Caribbean kitchen, fresh catch, island classics."
-            className="mt-1 w-full rounded-card border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-accent" />
-        </label>
-        <label className="mt-3 block text-sm font-medium text-ink">Address
-          <input value={addr} onChange={(e) => setAddr(e.target.value)} placeholder="J.E. Irausquin Blvd 230, Palm Beach, Aruba"
-            className="mt-1 h-11 w-full rounded-btn border border-line px-3 text-sm text-ink outline-none focus:border-accent" />
-          <span className="mt-1 block text-xs text-muted">This drives your Directions button and the map on your page.</span>
-        </label>
-        {msg && <p className="mt-2 text-sm text-muted">{msg}</p>}
-        <button type="submit" disabled={pending} className="mt-4 rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
-          {pending ? "Saving…" : "Save details"}
-        </button>
+      <form onSubmit={save} className="space-y-6">
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Details</h2>
+          <label className="mt-3 block text-sm font-medium text-ink">Description
+            <textarea value={f.description} onChange={(e) => set("description", e.target.value)} rows={3}
+              placeholder="Beachfront Caribbean kitchen, fresh catch, island classics."
+              className="mt-1 w-full rounded-card border border-line bg-surface px-3 py-2.5 text-sm text-ink outline-none focus:border-accent" />
+          </label>
+          <label className="mt-3 block text-sm font-medium text-ink">Address
+            <input value={f.address} onChange={(e) => set("address", e.target.value)} placeholder="J.E. Irausquin Blvd 230, Palm Beach, Aruba" className={field} />
+            <span className="mt-1 block text-xs text-muted">Drives your Directions button and the map on your page.</span>
+          </label>
+        </section>
+
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Contact & buttons</h2>
+          <p className="mt-1 text-sm text-muted">Each field you fill becomes a button on your menu&apos;s action bar.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-medium text-ink">Phone (Call button)
+              <input value={f.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+297 586 1234" className={field} />
+            </label>
+            <label className="text-sm font-medium text-ink">WhatsApp number
+              <input value={f.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} placeholder="+297 560 1234" className={field} />
+            </label>
+            <label className="text-sm font-medium text-ink">Reservation link
+              <input value={f.reservationUrl} onChange={(e) => set("reservationUrl", e.target.value)} placeholder="https://…" className={field} />
+            </label>
+            <label className="text-sm font-medium text-ink">Website
+              <input value={f.websiteUrl} onChange={(e) => set("websiteUrl", e.target.value)} placeholder="https://…" className={field} />
+            </label>
+            <label className="text-sm font-medium text-ink">Instagram
+              <input value={f.instagram} onChange={(e) => set("instagram", e.target.value)} placeholder="@yourrestaurant" className={field} />
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="text-sm font-medium text-ink">WiFi network
+                <input value={f.wifiSsid} onChange={(e) => set("wifiSsid", e.target.value)} placeholder="Network name" className={field} />
+              </label>
+              <label className="text-sm font-medium text-ink">WiFi password
+                <input value={f.wifiPassword} onChange={(e) => set("wifiPassword", e.target.value)} placeholder="Optional" className={field} />
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Map pin</h2>
+          <p className="mt-1 text-sm text-muted">Optional. Exact coordinates place the pin precisely; otherwise the map uses your address. In Google Maps, right-click your spot to copy the latitude and longitude.</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <label className="text-sm font-medium text-ink">Latitude
+              <input value={f.lat} onChange={(e) => set("lat", e.target.value)} inputMode="decimal" placeholder="12.5563" className={field} />
+            </label>
+            <label className="text-sm font-medium text-ink">Longitude
+              <input value={f.lng} onChange={(e) => set("lng", e.target.value)} inputMode="decimal" placeholder="-70.0426" className={field} />
+            </label>
+          </div>
+        </section>
+
+        <section className="rounded-card border border-line bg-surface p-5">
+          <h2 className="font-display text-base font-semibold text-ink">Opening hours</h2>
+          <p className="mt-1 text-sm text-muted">Leave a day blank to show it as closed. Times are in Aruba time.</p>
+          <div className="mt-3 space-y-2">
+            {DAY_KEYS.map((d) => {
+              const closed = !hours[d].open || !hours[d].close;
+              return (
+                <div key={d} className="flex items-center gap-3">
+                  <span className="w-24 text-sm text-ink">{DAY_LABEL[d]}</span>
+                  <input type="time" value={hours[d].open} onChange={(e) => setDay(d, "open", e.target.value)}
+                    className="h-10 rounded-btn border border-line bg-surface px-2 text-sm text-ink outline-none focus:border-accent" />
+                  <span className="text-muted">–</span>
+                  <input type="time" value={hours[d].close} onChange={(e) => setDay(d, "close", e.target.value)}
+                    className="h-10 rounded-btn border border-line bg-surface px-2 text-sm text-ink outline-none focus:border-accent" />
+                  {closed && <span className="text-xs text-muted">Closed</span>}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <div className="flex items-center gap-3">
+          <button type="submit" disabled={pending} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+            {pending ? "Saving…" : "Save changes"}
+          </button>
+          {msg && <p className="text-sm text-muted">{msg}</p>}
+        </div>
       </form>
     </div>
   );

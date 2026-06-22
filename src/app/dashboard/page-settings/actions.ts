@@ -5,8 +5,36 @@ import convert from "heic-convert";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { DAY_KEYS } from "@/lib/hours";
+import type { TenantLink } from "@/lib/tenant";
 
 type Res<T = unknown> = { ok: true; data?: T } | { ok: false; error: string };
+
+type Hours = Record<string, [string, string] | null>;
+
+export type PageDetailsInput = {
+  description: string;
+  address: string;
+  phone: string;
+  whatsapp: string;
+  reservationUrl: string;
+  websiteUrl: string;
+  instagram: string;
+  wifiSsid: string;
+  wifiPassword: string;
+  lat: string;
+  lng: string;
+  hours: Hours;
+};
+
+// Action-bar button types this form manages; others (share, reviews, …) are preserved.
+const MANAGED = new Set(["directions", "call", "whatsapp", "reserve", "website", "instagram", "wifi"]);
+
+function instaUrl(v: string): string {
+  const s = v.trim();
+  if (!s) return "";
+  return /^https?:\/\//i.test(s) ? s : `https://instagram.com/${s.replace(/^@+/, "")}`;
+}
 
 // Gate to a signed-in member of this tenant; returns the slug for revalidation.
 async function requireMember(tenantId: string): Promise<string> {
@@ -20,13 +48,54 @@ async function requireMember(tenantId: string): Promise<string> {
   return slug;
 }
 
-export async function updateTenantInfo(tenantId: string, input: { description: string; address: string }): Promise<Res> {
+export async function updateTenantInfo(tenantId: string, input: PageDetailsInput): Promise<Res> {
   const supabase = await createClient(); // RLS enforces membership + the privileged-column guard
+
+  const phone = input.phone.trim();
+  const whatsapp = input.whatsapp.trim();
+  const address = input.address.trim();
+  const lat = input.lat.trim() === "" ? null : Number(input.lat);
+  const lng = input.lng.trim() === "" ? null : Number(input.lng);
+  if ((lat !== null && !Number.isFinite(lat)) || (lng !== null && !Number.isFinite(lng)))
+    return { ok: false, error: "Map pin must be numbers, e.g. 12.5563, -70.0426." };
+
+  // Auto-build the action-bar buttons from the filled fields, in a fixed order.
+  const generated: TenantLink[] = [];
+  if ((lat !== null && lng !== null) || address) generated.push({ type: "directions" });
+  if (phone) generated.push({ type: "call" });
+  if (whatsapp) generated.push({ type: "whatsapp" });
+  if (input.reservationUrl.trim()) generated.push({ type: "reserve", url: input.reservationUrl.trim() });
+  if (input.websiteUrl.trim()) generated.push({ type: "website", url: input.websiteUrl.trim() });
+  if (input.instagram.trim()) generated.push({ type: "instagram", url: instaUrl(input.instagram) });
+  const ssid = input.wifiSsid.trim(), pass = input.wifiPassword.trim();
+  if (ssid || pass) generated.push({ type: "wifi", ssid: ssid || undefined, password: pass || undefined });
+
+  // Preserve any link types this form doesn't manage (e.g. share, reviews).
+  const { data: cur } = await supabase.from("tenants").select("links").eq("id", tenantId).maybeSingle();
+  const preserved = ((cur?.links as TenantLink[] | null) ?? []).filter((l) => !MANAGED.has(l.type));
+  const links = [...generated, ...preserved];
+
+  // Normalize hours: a valid [open, close] pair per open day, null for closed days.
+  const hours: Hours = {};
+  for (const d of DAY_KEYS) {
+    const r = input.hours?.[d];
+    hours[d] = r && r[0] && r[1] ? [r[0], r[1]] : null;
+  }
+  const anyHours = Object.values(hours).some((v) => v !== null);
+
   const { error } = await supabase
     .from("tenants")
-    .update({ description: input.description.trim() || null, address: input.address.trim() || null })
+    .update({
+      description: input.description.trim() || null,
+      address: address || null,
+      phone: phone || null,
+      whatsapp: whatsapp || null,
+      lat, lng, links,
+      hours: anyHours ? hours : null,
+    })
     .eq("id", tenantId);
   if (error) return { ok: false, error: error.message };
+
   const slug = await requireMember(tenantId);
   revalidatePath(`/${slug}`);
   revalidatePath("/dashboard/page-settings");
