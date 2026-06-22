@@ -36,10 +36,10 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
   const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const since = addDays(todayStr, -(N - 1));
 
-  const [{ data: daily }, { data: todayEvents }, { data: playEvents }, { data: menuItems }] = await Promise.all([
+  const [{ data: daily }, { data: todayEvents }, { data: playRows }, { data: menuItems }] = await Promise.all([
     db.from("analytics_daily").select("day, page_views, video_plays, qr_scans, nfc_taps, directions_clicks, call_clicks").eq("tenant_id", tenantId).gte("day", since).order("day").returns<Daily[]>(),
     db.from("analytics_events").select("event_type").eq("tenant_id", tenantId).gte("created_at", arubaStartUTC(todayStr)),
-    db.from("analytics_events").select("item_id").eq("tenant_id", tenantId).eq("event_type", "video_play").not("item_id", "is", null).gte("created_at", arubaStartUTC(since)),
+    db.rpc("item_play_counts", { p_tenant: tenantId, p_since: arubaStartUTC(since) }),
     db.from("menu_items").select("id, name, image_url").eq("tenant_id", tenantId),
   ]);
 
@@ -70,9 +70,8 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
 
   // Dishes by video plays.
   const meta = new Map((menuItems ?? []).map((m) => [m.id, { name: m.name, img: m.image_url as string | null }]));
-  const plays = new Map<string, number>();
-  for (const e of playEvents ?? []) { const id = (e as { item_id: string }).item_id; plays.set(id, (plays.get(id) ?? 0) + 1); }
-  const dishes = [...plays.entries()].filter(([id]) => meta.has(id)).map(([id, n]) => ({ name: meta.get(id)!.name, img: meta.get(id)!.img, plays: n })).sort((a, b) => b.plays - a.plays).slice(0, 6);
+  const playList = (playRows ?? []) as unknown as { item_id: string; plays: number }[];
+  const dishes = playList.filter((r) => meta.has(r.item_id)).map((r) => ({ name: meta.get(r.item_id)!.name, img: meta.get(r.item_id)!.img, plays: Number(r.plays) })).sort((a, b) => b.plays - a.plays).slice(0, 6);
   const dishMax = Math.max(1, ...dishes.map((d) => d.plays));
 
   const csvRows = series.map((s, i) => { const d = addDays(since, i); const r = byDay.get(d); return { day: d, views: s.views, plays: s.plays, qr: Number(r?.qr_scans ?? 0), nfc: Number(r?.nfc_taps ?? 0), directions: Number(r?.directions_clicks ?? 0), calls: Number(r?.call_clicks ?? 0) }; });

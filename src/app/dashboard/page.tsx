@@ -59,10 +59,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const curStart = addDays(todayStr, -(N - 1));
   const prevStart = addDays(todayStr, -(2 * N - 1));
 
-  const [{ data: daily }, { data: todayEvents }, { data: itemEvents }, { data: menuItems }, { data: shortLinks }] = await Promise.all([
+  const [{ data: daily }, { data: todayEvents }, { data: playRows }, { data: menuItems }, { data: shortLinks }] = await Promise.all([
     db.from("analytics_daily").select("*").eq("tenant_id", tenantId).gte("day", prevStart).order("day").returns<Daily[]>(),
     db.from("analytics_events").select("event_type, session_id").eq("tenant_id", tenantId).gte("created_at", arubaStartUTC(todayStr)),
-    db.from("analytics_events").select("item_id, event_type").eq("tenant_id", tenantId).not("item_id", "is", null).in("event_type", ["item_view", "video_play"]).gte("created_at", arubaStartUTC(curStart)),
+    db.rpc("item_play_counts", { p_tenant: tenantId, p_since: arubaStartUTC(curStart) }),
     db.from("menu_items").select("id, name, image_url").eq("tenant_id", tenantId),
     db.from("short_links").select("placement, scans").eq("tenant_id", tenantId).returns<{ placement: string | null; scans: number }[]>(),
   ]);
@@ -113,16 +113,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     .sort((a, b) => b.value - a.value);
   const totalScans = scanPlaces.reduce((a, s) => a + s.value, 0);
 
-  // Most-played dishes.
+  // Most-played dishes (DB-side aggregate; drops plays for items that no longer resolve).
   const itemMap = new Map((menuItems ?? []).map((m) => [m.id, { name: m.name, img: m.image_url as string | null }]));
-  const plays = new Map<string, number>();
-  for (const e of itemEvents ?? []) {
-    if (e.event_type !== "video_play" || !e.item_id) continue;
-    plays.set(e.item_id, (plays.get(e.item_id) ?? 0) + 1);
-  }
-  const topDishes = [...plays.entries()]
-    .filter(([id]) => itemMap.has(id)) // drop plays for items that no longer resolve to a named dish
-    .map(([id, n]) => { const it = itemMap.get(id)!; return { name: it.name, img: it.img, plays: n }; })
+  const topDishes = ((playRows ?? []) as unknown as { item_id: string; plays: number }[])
+    .filter((r) => itemMap.has(r.item_id))
+    .map((r) => { const it = itemMap.get(r.item_id)!; return { name: it.name, img: it.img, plays: Number(r.plays) }; })
     .sort((a, b) => b.plays - a.plays).slice(0, 4);
   const maxPlays = Math.max(1, ...topDishes.map((d) => d.plays));
   const monthName = new Intl.DateTimeFormat("en-US", { month: "long", timeZone: "America/Aruba" }).format(new Date());

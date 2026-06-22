@@ -34,14 +34,14 @@ export default async function MenuPage() {
 
   const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const since30 = addDays(todayStr, -29);
-  const [{ data: cats }, { data: items }, { data: playEvents }] = await Promise.all([
+  const [{ data: cats }, { data: items }, { data: playRows }] = await Promise.all([
     db.from("menu_categories").select("id, name, name_i18n, sort_order").eq("tenant_id", tenantId).order("sort_order").returns<CatRow[]>(),
     db.from("menu_items").select("id, name, description, price, price_text, is_available, image_url, video_id, tags, category_id, sort_order").eq("tenant_id", tenantId).order("sort_order").returns<ItemRow[]>(),
-    db.from("analytics_events").select("item_id").eq("tenant_id", tenantId).eq("event_type", "video_play").not("item_id", "is", null).gte("created_at", arubaStartUTC(since30)),
+    db.rpc("item_play_counts", { p_tenant: tenantId, p_since: arubaStartUTC(since30) }),
   ]);
 
   const plays = new Map<string, number>();
-  for (const e of playEvents ?? []) { const id = (e as { item_id: string }).item_id; plays.set(id, (plays.get(id) ?? 0) + 1); }
+  for (const r of (playRows ?? []) as unknown as { item_id: string; plays: number }[]) plays.set(r.item_id, Number(r.plays));
 
   const qItems: QItem[] = (items ?? []).map((i) => ({
     id: i.id, name: i.name, description: i.description, price: i.price, price_text: i.price_text,
