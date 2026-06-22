@@ -150,3 +150,17 @@ export async function removeBrandImage(tenantId: string, kind: "logo" | "cover")
   revalidatePath("/dashboard/page-settings");
   return { ok: true };
 }
+
+const TEMPLATES = new Set(["reel", "grid", "classic", "spotlight"]);
+
+// Switch the public menu template. Not a privileged column, so the RLS client is fine.
+export async function setTemplate(tenantId: string, template: string): Promise<Res> {
+  if (!TEMPLATES.has(template)) return { ok: false, error: "Unknown template" };
+  const supabase = await createClient();
+  const { error } = await supabase.from("tenants").update({ template }).eq("id", tenantId);
+  if (error) return { ok: false, error: error.message };
+  const slug = await requireMember(tenantId);
+  revalidatePath(`/${slug}`);
+  revalidatePath("/dashboard/page-settings");
+  return { ok: true };
+}

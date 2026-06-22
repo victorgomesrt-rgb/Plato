@@ -120,7 +120,7 @@ export function PageSettingsForm(p: Props) {
   }
 
   return (
-    <div className="mt-6 space-y-6">
+    <div className="space-y-4">
       <section className="rounded-card border border-line bg-surface p-5">
         <h2 className="font-display text-base font-semibold text-ink">Logo & cover</h2>
         <p className="mt-1 text-sm text-muted">Shown at the top of your menu. We optimize images automatically.</p>
@@ -136,7 +136,7 @@ export function PageSettingsForm(p: Props) {
         </div>
       </section>
 
-      <form onSubmit={save} className="space-y-6">
+      <form onSubmit={save} className="space-y-4">
         <section className="rounded-card border border-line bg-surface p-5">
           <h2 className="font-display text-base font-semibold text-ink">Details</h2>
           <label className="mt-3 block text-sm font-medium text-ink">Description
@@ -151,8 +151,8 @@ export function PageSettingsForm(p: Props) {
         </section>
 
         <section className="rounded-card border border-line bg-surface p-5">
-          <h2 className="font-display text-base font-semibold text-ink">Contact & buttons</h2>
-          <p className="mt-1 text-sm text-muted">Each field you fill becomes a button on your menu&apos;s action bar.</p>
+          <h2 className="font-display text-base font-semibold text-ink">Action bar</h2>
+          <p className="mt-1 text-sm text-muted">The one-tap buttons diners see at the top of your menu. Each field you fill becomes a button.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <label className="text-sm font-medium text-ink">Phone (Call button)
               <input value={f.phone} onChange={(e) => set("phone", e.target.value)} placeholder="+297 586 1234" className={field} />

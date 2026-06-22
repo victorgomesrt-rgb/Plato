@@ -46,6 +46,39 @@ export function AreaTrend({
   );
 }
 
+// Two-series trend: menu views (ink line, no fill) over video plays (orange, filled).
+// Used on the Insights page ("Views & video plays over time").
+export function ViewsPlaysTrend({ data, height = 360 }: { data: { label: string; views: number; plays: number }[]; height?: number }) {
+  const last = data.length - 1;
+  const endDot = (color: string) => (p: { cx?: number; cy?: number; index?: number }) =>
+    p.index === last && p.cx != null && p.cy != null ? (
+      <circle key="d" cx={p.cx} cy={p.cy} r={5} fill="#fff" stroke={color} strokeWidth={2.5} />
+    ) : (
+      <g key={`g${p.index}`} />
+    );
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id="vpPlays" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#FB6A1A" stopOpacity={0.18} />
+            <stop offset="100%" stopColor="#FB6A1A" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "#6B6660" }} interval="preserveStartEnd" minTickGap={40} />
+        <YAxis hide domain={[0, "dataMax + 4"]} />
+        <Tooltip
+          contentStyle={{ borderRadius: 12, border: "1px solid #ECE7E1", fontSize: 12, padding: "6px 10px" }}
+          labelStyle={{ color: "#6B6660" }}
+          formatter={(v: number, n: string) => [v.toLocaleString(), n === "views" ? "Menu views" : "Video plays"]}
+        />
+        <Area type="monotone" dataKey="plays" stroke="#FB6A1A" strokeWidth={2.5} fill="url(#vpPlays)" dot={endDot("#FB6A1A")} activeDot={{ r: 4 }} />
+        <Area type="monotone" dataKey="views" stroke="#16110E" strokeWidth={2.5} fill="none" dot={endDot("#16110E")} activeDot={{ r: 4 }} />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
 export type Slice = { name: string; value: number; color: string };
 
 export function Donut({
