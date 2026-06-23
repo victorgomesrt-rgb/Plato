@@ -31,3 +31,10 @@ Each restaurant sets its own accent (rendering already works).
 Hot paths already indexed (analytics_events, menu_items ×2, menu_categories, change_requests; slug/custom_domain unique; subscriptions PK by tenant). Add when data grows:
 - `invoices(tenant_id, created_at desc)`, confirm `analytics_daily` PK `(tenant_id, day)`, `analytics_events(item_id)` for top-dishes, minor `leads`/`hardware_orders`.
 - Done when: `EXPLAIN ANALYZE` on dashboard/rollup queries shows index scans. Not needed pre-launch.
+
+## 5. Plato Card — Apple Wallet coalition loyalty  ·  NEW (planned 2026-06-23)
+A Plato-branded wallet pass diners add once; standing member discount at partnered
+restaurants + admin-curated and restaurant-paid push blasts. New revenue + retention moat.
+Full build plan in **[plato-card.md](plato-card.md)** (v1 = shared pass; per-diner points
+deferred to Phase 2). Built on PassBuddy. Blocked on a few confirmations (hosted pass URL
+format, PassBuddy plan limits, blast pricing) — see that doc §10.
