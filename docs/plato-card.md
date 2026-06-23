@@ -106,6 +106,40 @@ on the diner page; all PassBuddy calls server-only; clean production build, no c
    scan / redemption logging (logging pushes toward Phase 2).
 6. **Apple-only** acceptable for v1 (Android diners excluded).
 
+## 12. Verified findings (2026-06-23, live API test — the real Plato Card exists)
+Created the actual Plato Card with the live key (free plan, 1-pass slot used; fully
+refinable via PATCH). Learnings that change the build:
+- **Created card:** `passId=k575wdz0kj187tvs975eybbywx897p46`, `slug=plato-card`,
+  `passShareId=share-1392f159-ff50-445a-9b11-54c187e7fec9`, `organizationId=org_3FVJXVYSywcPPnSeBnljcoA9wJY`. Store these in `wallet_passes` when building 1a.
+- **Logo must be ≤160px wide** (1x) or create 500s (`PKPASS_GENERATION_FAILED`). Host a
+  properly-sized 1x/2x/3x logo on platodigital.io for prod (currently using a weserv
+  proxy resize as a stopgap — replace it; don't depend on a 3rd-party image proxy).
+- **`stripImage` is REQUIRED** despite the docs marking it optional (375×144). Need a
+  *designed* Plato strip banner (currently a placeholder: white mark on ink). 
+- **The API does NOT return the hosted .pkpass / Add-to-Wallet URL.** GET on a pass is
+  405; no public URL pattern resolves. The shareable link lives in the PassBuddy
+  dashboard (keyed off `passShareId`). **Blocker for the diner button: get the real
+  share URL from the dashboard once, then we hardcode/store the pattern.**
+- **Plan fit:** Free = 1 pass + 15,000 notifications/mo → **covers all of v1** (v1 uses
+  exactly 1 pass). Pro (3 passes / 150k notif) only needed for Phase 2 or extra cards.
+- **Notification budget = the real constraint.** A blast pushes to every device with the
+  card; confirm with PassBuddy whether the quota counts **per send (1)** or **per device
+  (N)**. If per-device, audience × sends burns the quota (e.g. 15k free ≈ 3 blasts to a
+  5k-member base) — this caps how many paid blasts you can fulfill and informs pricing +
+  the cadence cap. *Confirm before pricing is finalized.*
+
+## 13. Blast pricing — recommendation + comparables
+Marginal cost of a wallet push is ~$0, so price on **value**, not cost. Comparables:
+SMS marketing ≈ $0.008–0.05 per text (Twilio ~$0.0079; Attentive/Klaviyo all-in higher);
+local "featured"/promoted placements $25–$200; loyalty/marketing SaaS (Square Marketing,
+Thanx, Yotpo) $15–$300+/mo. Wallet push is premium (lock-screen visibility, you curate,
+exclusive channel). Recommended start:
+- **$75 flat per promoted blast**, positioned "reach every Plato member in Aruba, one tap,
+  higher engagement than SMS or boosting a post."
+- **$199/mo "always promoting" bundle** (up to 4 blasts/mo) for predictable revenue.
+- **Premium plan perk:** 1 free blast/mo (drives plan upgrades).
+Adjust from real data; ensure price comfortably exceeds the per-blast notification cost.
+
 ## 11. Future — Phase 2 (per-diner points), only if traction warrants
 Unique pass per diner → real cross-restaurant points + individual targeting. Needs:
 unique passes (`wallet_passes.kind='member'`), a points ledger, a staff "scan to award"
