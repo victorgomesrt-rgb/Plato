@@ -188,7 +188,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-2xl pb-10">
+      <div className="mx-auto w-full max-w-2xl pb-28">
         {/* Cover */}
         <div ref={coverRef} className="relative h-56 w-full overflow-hidden sm:h-64">
           {tenant.cover_url ? (
@@ -252,30 +252,6 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
         <div className="px-4">
           {tenant.description && <p className="mt-3 text-sm text-muted">{tenant.description}</p>}
-
-          {/* Action bar (+ Plato Card entry for partner restaurants) */}
-          {((tenant.links?.length ?? 0) > 0 || tenant.wallet_partner) && (
-            <div className="mt-4">
-              <ActionBar
-                tenantId={tenant.id}
-                links={[
-                  ...(tenant.wallet_partner ? [{ type: "plato_card", url: "/card", label: "Plato Card" }] : []),
-                  ...(tenant.links ?? []),
-                ]}
-                tenant={{
-                  name: tenant.name,
-                  lat: tenant.lat,
-                  lng: tenant.lng,
-                  phone: tenant.phone,
-                  whatsapp: tenant.whatsapp,
-                  address: tenant.address,
-                }}
-                locale={locale}
-                shareUrl={shareUrl}
-                accent={accent}
-              />
-            </div>
-          )}
 
           {/* Featured band */}
           {shownFeatured.length > 0 && (
@@ -427,6 +403,26 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           </p>
         </footer>
       </div>
+
+      {/* Floating glass action bar — frosts over the menu as it scrolls behind */}
+      {((tenant.links?.length ?? 0) > 0 || tenant.wallet_partner) && (
+        <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-2xl px-3 pb-[max(env(safe-area-inset-bottom),10px)] pt-2">
+          <div className="rounded-2xl border border-white/50 bg-surface/70 px-3 py-2 shadow-[0_10px_34px_-14px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+            <ActionBar
+              tenantId={tenant.id}
+              links={[
+                ...(tenant.wallet_partner ? [{ type: "plato_card", url: "/card", label: "Plato Card" }] : []),
+                ...(tenant.links ?? []),
+              ]}
+              tenant={{ name: tenant.name, lat: tenant.lat, lng: tenant.lng, phone: tenant.phone, whatsapp: tenant.whatsapp, address: tenant.address }}
+              locale={locale}
+              shareUrl={shareUrl}
+              accent={accent}
+              dockBottom
+            />
+          </div>
+        </div>
+      )}
 
       {/* Item modal */}
       {selected && (

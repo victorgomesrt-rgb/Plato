@@ -116,7 +116,7 @@ function ActionButton({
 }
 
 export function ActionBar({
-  links, tenant, tenantId, locale, shareUrl, accent,
+  links, tenant, tenantId, locale, shareUrl, accent, dockBottom = false,
 }: {
   links: TenantLink[];
   tenant: TenantBits;
@@ -124,6 +124,7 @@ export function ActionBar({
   locale: string;
   shareUrl: string;
   accent: string;
+  dockBottom?: boolean;
 }) {
   const [wifiFor, setWifiFor] = useState<TenantLink | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -164,7 +165,7 @@ export function ActionBar({
       </div>
 
       {wifiFor && (
-        <div className="mt-2 rounded-card border border-line bg-surface p-3 text-sm">
+        <div className={`rounded-card border border-line bg-surface p-3 text-sm ${dockBottom ? "absolute inset-x-0 bottom-full mb-2 shadow-lg" : "mt-2"}`}>
           {wifiFor.ssid ? (
             <>
               <p className="text-ink"><span className="text-muted">Network:</span> {wifiFor.ssid}</p>
@@ -179,7 +180,7 @@ export function ActionBar({
       )}
 
       {toast && (
-        <div className="absolute left-1/2 top-full mt-2 -translate-x-1/2 rounded-full bg-ink px-3 py-1 text-xs text-white">
+        <div className={`absolute left-1/2 -translate-x-1/2 rounded-full bg-ink px-3 py-1 text-xs text-white ${dockBottom ? "bottom-full mb-2" : "top-full mt-2"}`}>
           {toast}
         </div>
       )}
