@@ -61,10 +61,11 @@ const BRAND: Record<string, string> = {
 
 function Circle({ Icon, type, primary, accent }: { Icon: Icon; type: string; primary: boolean; accent: string }) {
   const brand = BRAND[type];
+  const card = type === "plato_card";
   return (
     <span
-      className={`grid h-12 w-12 place-items-center rounded-full transition ${primary ? "text-white" : "bg-line"}`}
-      style={primary ? { background: accent } : brand ? { color: brand } : { color: "var(--color-ink)" }}
+      className={`grid h-12 w-12 place-items-center rounded-full transition ${primary ? "text-white" : card ? "border border-white/15 text-white shadow-sm backdrop-blur-md" : "bg-line"}`}
+      style={primary ? { background: accent } : card ? { background: "rgba(22,17,14,0.92)" } : brand ? { color: brand } : { color: "var(--color-ink)" }}
     >
       <Icon className="h-[22px] w-[22px]" />
     </span>
@@ -84,7 +85,7 @@ function ActionButton({
 }) {
   const Icon = ICONS[link.type];
   const label = link.label || t(locale, link.type);
-  const primary = link.type === "directions" || link.type === "plato_card";
+  const primary = link.type === "directions";
   const inner = (
     <>
       <Circle Icon={Icon} type={link.type} primary={primary} accent={accent} />

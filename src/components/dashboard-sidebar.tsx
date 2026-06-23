@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, List, BarChart3, MessageSquare, AppWindow, CreditCard, ExternalLink } from "lucide-react";
+import { LayoutDashboard, List, BarChart3, MessageSquare, AppWindow, CreditCard, Wallet, ExternalLink } from "lucide-react";
 
 type Item = { href: string; label: string; icon: typeof LayoutDashboard; badge?: number };
 
@@ -27,6 +27,7 @@ export function DashboardSidebar({
     { href: "/dashboard/analytics", label: "Insights", icon: BarChart3 },
     { href: "/dashboard/requests", label: "Requests", icon: MessageSquare, badge: requestCount },
     { href: "/dashboard/page-settings", label: "Your page", icon: AppWindow },
+    { href: "/dashboard/plato-card", label: "Plato Card", icon: Wallet },
     { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
   ];
   const initial = name.trim().charAt(0).toUpperCase() || "•";

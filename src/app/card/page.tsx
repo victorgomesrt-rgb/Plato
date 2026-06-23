@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Apple } from "lucide-react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { passShareUrl } from "@/lib/passbuddy";
+import { AppleLogoIcon } from "@/components/diner/brand-icons";
 
 export const revalidate = 300;
 
@@ -54,7 +54,7 @@ export default async function PlatoCardPage() {
           {addUrl ? (
             <a href={addUrl} target="_blank" rel="noopener noreferrer"
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-black/55 py-3.5 text-base font-semibold text-white backdrop-blur-md transition hover:bg-black/70">
-              <Apple className="h-5 w-5" />Add to Apple Wallet
+              <AppleLogoIcon className="h-[18px] w-[18px]" />Add to Apple Wallet
             </a>
           ) : (
             <p className="mt-5 rounded-2xl border border-white/15 bg-white/[0.06] py-3.5 text-center text-sm text-white/70">Coming soon to Apple Wallet.</p>

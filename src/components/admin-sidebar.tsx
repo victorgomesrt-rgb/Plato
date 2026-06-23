@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, QrCode, Receipt, LineChart, Mail, Megaphone } from "lucide-react";
+import { LayoutGrid, Building2, UserPlus, Inbox, Package, Tablet, QrCode, Receipt, LineChart, Mail, Megaphone, Wallet } from "lucide-react";
 import { SignOutButton } from "@/components/sign-out-button";
 import { PlatoMark } from "@/components/plato-logo";
 
@@ -14,6 +14,7 @@ const NAV = [
   { href: "/admin/hardware", label: "Hardware", icon: Package },
   { href: "/admin/tablets", label: "Tablets", icon: Tablet },
   { href: "/admin/qr", label: "QR codes", icon: QrCode },
+  { href: "/admin/plato-card", label: "Plato Card", icon: Wallet },
   { href: "/admin/billing", label: "Billing", icon: Receipt },
   { href: "/admin/revenue", label: "Revenue", icon: LineChart },
   { href: "/admin/leads", label: "Leads", icon: Mail },
