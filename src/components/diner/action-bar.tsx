@@ -2,7 +2,7 @@
 
 import { useState, type ComponentType } from "react";
 import {
-  MapPin, Phone, Globe, CalendarCheck, ShoppingBag, Mail, Star, FileText, Wifi, Share2,
+  MapPin, Phone, Globe, CalendarCheck, ShoppingBag, Mail, Star, FileText, Wifi, Share2, Wallet,
 } from "lucide-react";
 import { t } from "@/lib/i18n";
 import { track } from "@/lib/track-client";
@@ -15,7 +15,7 @@ const ICONS: Record<string, Icon> = {
   directions: MapPin, call: Phone, whatsapp: WhatsAppIcon, website: Globe,
   reserve: CalendarCheck, order: ShoppingBag, email: Mail, instagram: InstagramIcon,
   tiktok: TikTokIcon, facebook: FacebookIcon, reviews: Star, menu_pdf: FileText,
-  wifi: Wifi, share: Share2,
+  wifi: Wifi, share: Share2, plato_card: Wallet,
 };
 
 function eventFor(type: string): string {

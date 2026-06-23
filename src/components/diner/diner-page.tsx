@@ -253,12 +253,15 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         <div className="px-4">
           {tenant.description && <p className="mt-3 text-sm text-muted">{tenant.description}</p>}
 
-          {/* Action bar */}
-          {tenant.links && tenant.links.length > 0 && (
+          {/* Action bar (+ Plato Card entry for partner restaurants) */}
+          {((tenant.links?.length ?? 0) > 0 || tenant.wallet_partner) && (
             <div className="mt-4">
               <ActionBar
                 tenantId={tenant.id}
-                links={tenant.links}
+                links={[
+                  ...(tenant.links ?? []),
+                  ...(tenant.wallet_partner ? [{ type: "plato_card", url: "/card", label: "Plato Card" }] : []),
+                ]}
                 tenant={{
                   name: tenant.name,
                   lat: tenant.lat,

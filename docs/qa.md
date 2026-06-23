@@ -129,7 +129,27 @@ Multi-tenant data isolation is the thing you cannot get wrong.
 - [x] Fallback to default locale when a translation is missing.
 - [x] Currency toggle and date formats correct in both currencies.
 
-## 13. Launch checklist
+## 13. Plato Card — Apple Wallet coalition loyalty (NEW, building 2026-06-23)
+Full spec: [plato-card.md](plato-card.md). v1 = one shared pass + member discount + admin/paid blasts.
+- [ ] PassBuddy keys are server-only (`PASSBUDDY_USER_ID`/`PASSBUDDY_API_KEY` never in the client bundle). (build)
+- [ ] `lib/passbuddy.ts` wraps create/update/notify; maps error codes; a PassBuddy outage never blocks menu render. (build)
+- [ ] `wallet_passes` + `wallet_blasts` tables with RLS (admin/service write; owners insert + read only their own blasts). (build)
+- [ ] `tenants.wallet_partner` + `wallet_discount` are owner-editable (unguarded columns). (build)
+- [ ] Diner `/card` page renders the card, the Add-to-Wallet link (`passbuddy.xyz/share/pass/<shareId>`), and the partner list. (build)
+- [ ] "Plato Card" entry in the diner action bar links to `/card`. (build)
+- [ ] Add-to-Wallet actually installs the pass in Apple Wallet. (manual/device)
+- [ ] Glass surfaces stay legible (AA) with no scroll jank on a real device; solid fallback if blur stutters. (manual/device)
+- [ ] Owner sets member discount + "listed" toggle → reflected on `/card` and the diner page. (build)
+- [ ] Owner promo request → admin queue → approve/send pushes + raises a $75 invoice; decline closes it. (build)
+- [ ] Admin network blast (now + scheduled) sends and is received in Wallet. (build + manual)
+- [ ] Admin-only push enforced; owners cannot push directly (RLS + route gate). (build)
+- [ ] Weekly blast cadence cap enforced server-side. (build)
+- [ ] Notification budget surfaced in admin; `NOTIFICATION_LIMIT_EXCEEDED` handled gracefully. (build)
+- [ ] Pricing wired: $75/blast, $199/mo bundle (4), 1 free/mo on Premium. (build/ops)
+- [ ] Apple Wallet only for v1; Android/Google Wallet deferred. (scope)
+- [ ] Pre-launch: replace the weserv proxy logo/strip with hosted ≤160px assets on the live card. (build/ops)
+
+## 14. Launch checklist
 - [x] Production Supabase with RLS verified.
 - [ ] platodigital.io live with SSL. Custom domain flow and per-domain SSL working. (site SSL live; custom-domain flow NOT BUILT)
 - [ ] Stripe in live mode with webhooks pointed at production. (NOT WIRED)
