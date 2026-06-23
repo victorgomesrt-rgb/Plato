@@ -76,7 +76,7 @@ export async function approveBlast(id: string): Promise<Result> {
       const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
       const { data: inv, error } = await svc.from("invoices").insert({
         tenant_id: b.tenant_id, number: `PLATO-${year}-${String(seq).padStart(4, "0")}`,
-        amount: BLAST_PRICE, currency: "USD", description: "Promoted special — wallet blast",
+        amount: BLAST_PRICE, currency: "USD", description: "Promoted special · wallet blast",
         method: "manual", status: "sent", period_start: today, period_end: today, due_date: today, sent_at: new Date().toISOString(),
       }).select("id").maybeSingle();
       if (!error) { invoiceId = (inv as { id: string } | null)?.id ?? null; break; }

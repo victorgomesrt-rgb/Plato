@@ -8,7 +8,7 @@ import { AppleLogoIcon } from "@/components/diner/brand-icons";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "The Plato Card — member perks across Aruba",
+  title: "The Plato Card · member perks across Aruba",
   description: "Add the Plato Card to Apple Wallet for member discounts at restaurants across Aruba.",
 };
 

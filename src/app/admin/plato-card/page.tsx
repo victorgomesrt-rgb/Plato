@@ -23,7 +23,7 @@ export default async function AdminPlatoCardPage() {
 
   return (
     <main className="mx-auto max-w-4xl px-5 py-6 lg:px-8 lg:py-8">
-      <AdminHeader title="Plato Card" subtitle="Apple Wallet loyalty — blasts, promos, partners" tenants={tenants ?? []} />
+      <AdminHeader title="Plato Card" subtitle="Apple Wallet loyalty · blasts, promos and partners" tenants={tenants ?? []} />
       <PlatoCardAdmin blasts={blasts ?? []} partnerCount={partnerCount ?? 0} sentThisWeek={sentThisWeek ?? 0} weeklyCap={WEEKLY_CAP} />
     </main>
   );

@@ -19,8 +19,8 @@ function headers() {
 // Friendlier text for the documented error codes.
 const FRIENDLY: Record<string, string> = {
   UNAUTHORIZED: "Wallet service auth failed (check PassBuddy keys).",
-  PASS_LIMIT_EXCEEDED: "PassBuddy pass limit reached — upgrade the plan.",
-  NOTIFICATION_LIMIT_EXCEEDED: "Monthly notification limit reached — upgrade the plan or wait for the reset.",
+  PASS_LIMIT_EXCEEDED: "PassBuddy pass limit reached. Upgrade the plan.",
+  NOTIFICATION_LIMIT_EXCEEDED: "Monthly notification limit reached. Upgrade the plan or wait for the reset.",
   FORBIDDEN: "No access to that pass.",
   PASS_NOT_FOUND: "That pass no longer exists.",
 };
