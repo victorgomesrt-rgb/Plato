@@ -50,12 +50,15 @@ export function AreaTrend({
 // Used on the Insights page ("Views & video plays over time").
 export function ViewsPlaysTrend({ data, height = 360 }: { data: { label: string; views: number; plays: number }[]; height?: number }) {
   const last = data.length - 1;
-  const endDot = (color: string) => (p: { cx?: number; cy?: number; index?: number }) =>
-    p.index === last && p.cx != null && p.cy != null ? (
-      <circle key="d" cx={p.cx} cy={p.cy} r={5} fill="#fff" stroke={color} strokeWidth={2.5} />
-    ) : (
-      <g key={`g${p.index}`} />
-    );
+  type DotP = { cx?: number; cy?: number; index?: number };
+  const playsDot = (p: DotP) =>
+    p.index === last && p.cx != null && p.cy != null
+      ? <circle key="d" cx={p.cx} cy={p.cy} r={5} fill="#fff" stroke="#FB6A1A" strokeWidth={2.5} />
+      : <g key={`g${p.index}`} />;
+  const viewsDot = (p: DotP) =>
+    p.index === last && p.cx != null && p.cy != null
+      ? <circle key="d" cx={p.cx} cy={p.cy} r={5} fill="#fff" stroke="#16110E" strokeWidth={2.5} />
+      : <g key={`g${p.index}`} />;
   return (
     <ResponsiveContainer width="100%" height={height}>
       <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -72,8 +75,8 @@ export function ViewsPlaysTrend({ data, height = 360 }: { data: { label: string;
           labelStyle={{ color: "#6B6660" }}
           formatter={(v: number, n: string) => [v.toLocaleString(), n === "views" ? "Menu views" : "Video plays"]}
         />
-        <Area type="monotone" dataKey="plays" stroke="#FB6A1A" strokeWidth={2.5} fill="url(#vpPlays)" dot={endDot("#FB6A1A")} activeDot={{ r: 4 }} />
-        <Area type="monotone" dataKey="views" stroke="#16110E" strokeWidth={2.5} fill="none" dot={endDot("#16110E")} activeDot={{ r: 4 }} />
+        <Area type="monotone" dataKey="plays" stroke="#FB6A1A" strokeWidth={2.5} fill="url(#vpPlays)" dot={playsDot} activeDot={{ r: 4 }} />
+        <Area type="monotone" dataKey="views" stroke="#16110E" strokeWidth={2.5} fill="none" dot={viewsDot} activeDot={{ r: 4 }} />
       </AreaChart>
     </ResponsiveContainer>
   );

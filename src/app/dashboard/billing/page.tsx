@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Check, FileText, Mail } from "lucide-react";
 import { resolveDashboard } from "@/lib/dashboard-context";
@@ -63,7 +64,7 @@ export default async function OwnerBillingPage() {
             ))}
           </ul>
           <div className="mt-5 flex gap-2">
-            <a href="/dashboard/requests" className="rounded-btn bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-white/90">Change plan</a>
+            <Link href="/dashboard/requests" className="rounded-btn bg-white px-4 py-2 text-sm font-semibold text-ink hover:bg-white/90">Change plan</Link>
             <a href="mailto:adrian@platodigital.online" className="rounded-btn border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">Contact billing</a>
           </div>
         </section>

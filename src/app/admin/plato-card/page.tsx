@@ -12,6 +12,7 @@ const WEEKLY_CAP = 7;
 export default async function AdminPlatoCardPage() {
   if (!(await currentAdmin())) notFound();
   const svc = createAdminClient();
+  // eslint-disable-next-line react-hooks/purity -- server component; "now" is intentional
   const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
 
   const [{ data: blasts }, { count: partnerCount }, { count: sentThisWeek }, { data: tenants }] = await Promise.all([
