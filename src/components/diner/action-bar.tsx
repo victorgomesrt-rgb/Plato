@@ -84,7 +84,7 @@ function ActionButton({
 }) {
   const Icon = ICONS[link.type];
   const label = link.label || t(locale, link.type);
-  const primary = link.type === "directions";
+  const primary = link.type === "directions" || link.type === "plato_card";
   const inner = (
     <>
       <Circle Icon={Icon} type={link.type} primary={primary} accent={accent} />

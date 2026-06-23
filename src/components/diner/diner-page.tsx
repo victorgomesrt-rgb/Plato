@@ -259,8 +259,8 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
               <ActionBar
                 tenantId={tenant.id}
                 links={[
-                  ...(tenant.links ?? []),
                   ...(tenant.wallet_partner ? [{ type: "plato_card", url: "/card", label: "Plato Card" }] : []),
+                  ...(tenant.links ?? []),
                 ]}
                 tenant={{
                   name: tenant.name,
