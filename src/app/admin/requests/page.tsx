@@ -12,7 +12,7 @@ export default async function AdminRequestsPage() {
   const svc = createAdminClient();
 
   const [{ data: crs }, { data: hws }, { data: tenants }] = await Promise.all([
-    svc.from("change_requests").select("id, kind, message, status, created_at, tenants(name, slug)").order("created_at", { ascending: false }).limit(100).returns<ChangeReq[]>(),
+    svc.from("change_requests").select("id, kind, message, status, created_at, owner_reply, tenants(name, slug)").order("created_at", { ascending: false }).limit(100).returns<ChangeReq[]>(),
     svc.from("hardware_orders").select("id, item_type, quantity, notes, status, created_at, tenants(name, slug)").order("created_at", { ascending: false }).limit(100).returns<HardwareReq[]>(),
     svc.from("tenants").select("name, slug, plan").order("name").returns<{ name: string; slug: string; plan: string }[]>(),
   ]);

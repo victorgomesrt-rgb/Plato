@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/components/toast";
 import { setChangeRequestStatus, setHardwareStatus } from "./actions";
 
-export type ChangeReq = { id: string; kind: string; message: string; status: string; created_at: string; tenants: { name: string; slug: string } | null };
+export type ChangeReq = { id: string; kind: string; message: string; status: string; created_at: string; owner_reply: string | null; tenants: { name: string; slug: string } | null };
 export type HardwareReq = { id: string; item_type: string; quantity: number; notes: string | null; status: string; created_at: string; tenants: { name: string; slug: string } | null };
 
 const fmt = (d: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d));
@@ -41,6 +41,9 @@ export function RequestsAdmin({ changeRequests, hardwareOrders }: { changeReques
                     <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLE[r.status] ?? "bg-line text-muted"}`}>{r.status.replace("_", " ")}</span>
                   </div>
                   <p className="mt-1.5 text-sm text-ink">{r.message}</p>
+                  {r.owner_reply && (
+                    <p className="mt-2 rounded-btn border-l-2 border-accent bg-line/40 px-3 py-1.5 text-sm text-ink"><span className="font-medium">Owner replied:</span> {r.owner_reply}</p>
+                  )}
                   <div className="mt-2 flex items-center justify-between">
                     <span className="text-xs text-muted">{fmt(r.created_at)}</span>
                     {next && <button disabled={pending} onClick={() => run(setChangeRequestStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{next.label}</button>}

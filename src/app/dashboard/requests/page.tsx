@@ -6,6 +6,7 @@ import type { ComponentType } from "react";
 import { resolveDashboard } from "@/lib/dashboard-context";
 import { DashboardHeader } from "../dashboard-header";
 import { RequestForm } from "./request-form";
+import { RequestReply } from "./request-reply";
 
 export const metadata: Metadata = { title: "Requests", robots: { index: false } };
 
@@ -33,7 +34,7 @@ const STATUS: Record<string, { label: string; pill: string; meta: string }> = {
 };
 const statusCfg = (s: string) => STATUS[s] ?? STATUS.open;
 
-type Req = { id: string; kind: string; title: string | null; message: string; status: string; created_at: string };
+type Req = { id: string; kind: string; title: string | null; message: string; status: string; created_at: string; owner_reply: string | null };
 const FILTERS = [{ v: "all", label: "All" }, { v: "open", label: "Open" }, { v: "done", label: "Done" }];
 
 export default async function RequestsPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
@@ -45,7 +46,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
   const impersonating = res.state === "ok" && res.ctx.impersonating;
   const slug = res.state === "ok" ? ((await res.ctx.db.from("tenants").select("slug").eq("id", res.ctx.tenantId).maybeSingle()).data as { slug: string } | null)?.slug ?? "" : "";
   const all = res.state === "ok"
-    ? (await res.ctx.db.from("change_requests").select("id, kind, title, message, status, created_at").eq("tenant_id", res.ctx.tenantId).order("created_at", { ascending: false }).returns<Req[]>()).data ?? []
+    ? (await res.ctx.db.from("change_requests").select("id, kind, title, message, status, created_at, owner_reply").eq("tenant_id", res.ctx.tenantId).order("created_at", { ascending: false }).returns<Req[]>()).data ?? []
     : [];
   const reqs = all.filter((r) => f === "all" || (f === "done" ? r.status === "done" : r.status !== "done"));
 
@@ -79,6 +80,10 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
                         </div>
                         {r.title && r.message && <p className="mt-1 text-sm text-muted">{r.message}</p>}
                         <p className="mt-1.5 text-xs text-muted">{fmt(r.created_at)} · {s.meta}</p>
+                        {r.owner_reply && (
+                          <p className="mt-2 rounded-btn border-l-2 border-accent bg-line/40 px-3 py-1.5 text-sm text-ink"><span className="font-medium">You replied:</span> {r.owner_reply}</p>
+                        )}
+                        {!impersonating && r.status !== "done" && <RequestReply id={r.id} canApprove={r.status === "open"} />}
                       </div>
                     </div>
                   </li>
