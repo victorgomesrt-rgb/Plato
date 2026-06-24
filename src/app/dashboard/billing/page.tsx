@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Check, FileText, Mail } from "lucide-react";
 import { resolveDashboard } from "@/lib/dashboard-context";
-import { planPrice } from "@/lib/plans";
+import { planPrice, planFeatures } from "@/lib/plans";
 import { DashboardHeader } from "../dashboard-header";
 
 export const metadata: Metadata = { title: "Billing", robots: { index: false } };
@@ -15,11 +15,6 @@ const fmtShort = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { m
 // noon) to avoid the Aruba offset rolling it back a day.
 const fmtDateOnly = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "UTC" }).format(new Date(d.length === 10 ? `${d}T12:00:00Z` : d)) : "—");
 
-const PLAN_FEATURES: Record<string, string[]> = {
-  starter: ["Grid template", "USD & AWG", "Core analytics", "QR kit", "English & Spanish", "Email support"],
-  growth: ["All four templates", "USD & AWG", "Full analytics", "QR + NFC kit", "English & Spanish", "Custom domain"],
-  premium: ["All four templates", "USD & AWG", "Quarterly re-shoot", "English & Spanish", "Full analytics", "QR + NFC kit"],
-};
 
 type Sub = { plan: string; status: string; current_period_end: string | null };
 type Inv = { number: string; amount: number; currency: string; description: string | null; status: string; period_start: string | null; paid_at: string | null; created_at: string; pdf_url: string | null };
@@ -43,7 +38,7 @@ export default async function OwnerBillingPage() {
   }
 
   const price = planPrice(plan);
-  const features = PLAN_FEATURES[plan] ?? PLAN_FEATURES.premium;
+  const features = planFeatures(plan);
   const renews = sub?.current_period_end ?? null;
 
   return (

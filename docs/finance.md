@@ -17,8 +17,11 @@ Setup fee covers the first on-site capture session and the menu build. Price it 
 Add-ons, one time or recurring:
 - Extra capture or re-shoot session: $150 to $400 per visit, by scope.
 - Tablet display, rented. See section 5.
-- Extra hardware: at cost plus margin.
+- Extra hardware (window decal, extra QR/NFC, table stand): at cost plus margin.
 - Flyer or extra print design on lower tiers: $75 each.
+- Plato Card promoted blast (Apple Wallet): $75 each, or a $199/mo "always promoting" bundle (up to 4 blasts). Premium includes 1 free blast/mo. See section 10.
+
+All add-ons are billable from the admin Billing screen via the **Charge** preset on the New-invoice form (Subscription, Setup fee, Plato Card blast, Plato Card promotions, Tablet rental, Re-shoot, Window decal/hardware, Custom). Amounts prefill from the defaults above and stay editable; the line description shows on the owner's invoice.
 
 Re-shoot cadence by plan: Starter pays per re-shoot, Growth one included per year, Premium quarterly included. This protects your time.
 
@@ -150,7 +153,25 @@ Per Growth customer ($249/mo):
 - Sell the filming service as a recurring quarterly refresh.
 - Bundle hardware into setup so it is margin, not a giveaway.
 - Add the Discovery directory and charge for featured placement once traffic is real.
+- Sell Plato Card promoted blasts ($75 each / $199-mo bundle). Near-100% margin, and it makes Plato the owner of the diner audience. See section 10.
 - License the platform to operators on other islands rather than running every island yourself.
 
 ## 9. What to track weekly
 - New trials, trial to paid conversion, active customers, MRR, churn, setup revenue, hardware revenue, video delivery cost. Build these into the admin Overview.
+
+## 10. Plato Card — Apple Wallet loyalty (new revenue line)
+
+A Plato-branded Apple Wallet card diners add once (anonymous, no login). The perk is a member discount at partnered restaurants; only the admin pushes notifications. It is both a retention/re-engagement channel Plato owns and a paid marketing product sold back to restaurants.
+
+Pricing:
+- $75 per promoted blast (a one-time push to every Plato member).
+- $199/mo "always promoting" bundle, up to 4 blasts/mo (~$50 each).
+- Premium plan includes 1 free blast/mo (an upgrade driver).
+
+Cost + margin:
+- Built on PassBuddy. Wallet push has ~$0 marginal cost, so price on value, not cost.
+- Plan: free tier (1 pass + 15,000 notifications/mo) covers the launch period; PassBuddy Pro (3 passes + 150,000 notifications/mo) only needed once the member base × send volume grows. The notification budget, not delivery cost, is the constraint.
+- Comparable channels: SMS marketing ≈ $40 per 1,000 messages; a blast to a 3,000-member base would cost ~$90–150 via SMS. Wallet blasts are cheaper to send and higher-visibility (lock screen).
+- Effective margin per blast is near 100% until the Pro tier is needed; even then, 150k notifications/mo covers ~50 blasts to a 3k base, so per-blast cost stays trivial.
+
+Operational: restaurants request a blast from their dashboard; the admin reviews, sends, and the invoice is raised automatically ($75 line). Network blasts (Plato's own "this week on Plato") are admin-authored and capped at 7/week to protect the diner experience. Apple Wallet only for now (Android is a later phase).

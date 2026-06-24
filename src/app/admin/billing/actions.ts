@@ -50,6 +50,7 @@ export async function createInvoice(input: {
   periodStart: string;
   periodEnd: string;
   dueDate: string;
+  description?: string;
 }): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
   const svc = createAdminClient();
@@ -68,6 +69,7 @@ export async function createInvoice(input: {
       number,
       amount: input.amount,
       currency: "USD",
+      description: input.description?.trim() || null,
       period_start: input.periodStart,
       period_end: input.periodEnd,
       due_date: input.dueDate,

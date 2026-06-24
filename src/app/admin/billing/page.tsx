@@ -17,7 +17,7 @@ export default async function BillingPage() {
     svc.from("tenants").select("id, name, slug, plan").order("name").returns<TenantRow[]>(),
     svc
       .from("invoices")
-      .select("id, number, amount, currency, created_at, due_date, status, pdf_url, tenants(name)")
+      .select("id, number, amount, currency, description, created_at, due_date, status, pdf_url, tenants(name)")
       .order("created_at", { ascending: false })
       .returns<Invoice[]>(),
   ]);

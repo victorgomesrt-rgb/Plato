@@ -63,6 +63,17 @@ Hardware is tied to the plan, since content capture and a stand come with every 
 - Quarterly menu refresh. Seasonal items, holiday specials. Keeps the page alive and gives a reason to film again.
 - Monthly analytics email. Top dishes, views, scans. Keeps the value visible.
 - Respond fast. Local, same day support is a moat against foreign tools.
+- The Plato Card (see section 8a). A diner who scans a QR menu is gone after one visit; a diner with the Plato Card in their wallet is an audience Plato can reach again. This is the strongest retention + lock-in lever we have.
+
+## 8a. The Plato Card — coalition loyalty + a paid channel
+
+A Plato-branded Apple Wallet card diners add once and present for member discounts at any partner restaurant. No plain-QR-menu competitor can copy it, because they do not own a diner audience.
+
+- Positioning: "Your video menu + a card diners keep, and specials that land on their lock screen." Turns a one-time scan into a channel.
+- For restaurants: list a member perk to get foot traffic, and buy a promoted blast to reach every Plato member island-wide. Only Plato sends, so quality stays high.
+- Revenue: $75/blast or $199/mo bundle; Premium gets 1 free/mo. See finance.md section 10.
+- The network effect: every new partner restaurant grows the member base, which makes a blast worth more, which makes partnering more attractive. Plato becomes the hub.
+- v1 is the broadcast/discount card. Per-diner accumulating points (scan to earn) is a later phase if traction warrants. Apple Wallet only for now; Android later.
 
 ## 9. Expansion path
 - Win Aruba first. Aim for 40 in year 1, 90 in year 2.

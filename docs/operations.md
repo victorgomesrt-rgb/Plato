@@ -69,3 +69,15 @@ After the visit:
 - Track two numbers: hours per capture and build, and how many live menus you can hold per week.
 - When capture fills your week, hire a part-time shooter and hand them the capture visit and this runbook. Keep the build and publish steps until quality is proven.
 - Watch Starter margin. A $99 plan with a full shoot is thin. Use a short minimum term or a higher setup fee if utilization runs low.
+
+## 11. Plato Card (Apple Wallet loyalty)
+
+A single shared "Plato Card" pass (PassBuddy) that diners add to Apple Wallet from any partner menu (the action bar's Plato Card button → `/card`) or from `/card` directly. No diner login. The member perk is a standing discount the restaurant sets in their dashboard.
+
+Run it from admin → Plato Card:
+- Onboard a partner: the owner sets their member discount + "listed" toggle in their dashboard (or you set it). Listed partners appear on `/card` and get the action-bar button.
+- Promo blasts: a restaurant requests a promo from their dashboard → it lands in the admin Promo-requests queue → you review and **Approve & send** (pushes to every member, raises a $75 invoice automatically) or **Decline**.
+- Network blasts: you can author and send (or schedule) a "this week on Plato" push to all members. Cap is 7 admin network blasts/week to avoid fatigue.
+- Members metric = tracked "Add to Apple Wallet" taps (cookieless, no PII).
+
+Keys + assets: `PASSBUDDY_USER_ID` / `PASSBUDDY_API_KEY` live in env (server only; also set in Vercel). The pass logo/strip are hosted on platodigital.io (`/brand/plato-pass-icon.png`, `/brand/plato-pass-strip.png`). Pass content (name, colors, fields) is editable via the API and can be refreshed any time. Apple Wallet only for now.

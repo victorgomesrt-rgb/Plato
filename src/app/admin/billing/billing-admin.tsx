@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { planPrice } from "@/lib/plans";
+import { planPrice, PLAN_SETUP, ADDON_PRESETS } from "@/lib/plans";
 import { createInvoice, sendInvoice, markPaid, sendReminder, voidInvoice, invoiceSignedUrl } from "./actions";
 
 type Tenant = { id: string; name: string; slug: string; plan: string };
@@ -11,6 +11,7 @@ export type Invoice = {
   number: string;
   amount: number;
   currency: string;
+  description: string | null;
   created_at: string | null;
   due_date: string | null;
   status: string;
@@ -39,19 +40,33 @@ export function BillingAdmin({ tenants, invoices }: { tenants: Tenant[]; invoice
   const [pending, start] = useTransition();
   const [err, setErr] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const firstPlan = tenants[0]?.plan ?? "starter";
   const [tenantId, setTenantId] = useState(tenants[0]?.id ?? "");
-  const [amount, setAmount] = useState(String(planPrice(tenants[0]?.plan ?? "starter")));
+  const [charge, setCharge] = useState("subscription");
+  const [amount, setAmount] = useState(String(planPrice(firstPlan)));
+  const [description, setDescription] = useState(`${firstPlan.charAt(0).toUpperCase()}${firstPlan.slice(1)} · monthly`);
   const [periodStart, setPeriodStart] = useState(monthStart());
   const [periodEnd, setPeriodEnd] = useState(monthEnd());
   const [dueDate, setDueDate] = useState(plusDays(14));
+
+  // Prefill amount + description from a charge preset, deriving plan-based ones per tenant.
+  function applyCharge(key: string, tid: string) {
+    setCharge(key);
+    const preset = ADDON_PRESETS.find((p) => p.key === key);
+    const t = tenants.find((x) => x.id === tid);
+    if (!preset || !t) return;
+    const planLabel = `${t.plan.charAt(0).toUpperCase()}${t.plan.slice(1)}`;
+    if (key === "subscription") { setAmount(String(planPrice(t.plan))); setDescription(`${planLabel} · monthly`); }
+    else if (key === "setup") { setAmount(String(PLAN_SETUP[t.plan as keyof typeof PLAN_SETUP] ?? 199)); setDescription(preset.description); }
+    else { if (preset.price != null) setAmount(String(preset.price)); setDescription(preset.description); }
+  }
 
   const run = (p: Promise<{ ok: boolean; error?: string }>) =>
     start(async () => { const r = await p; setErr(r.ok ? null : (r.error ?? "Something went wrong")); if (r.ok) router.refresh(); });
 
   function onTenant(id: string) {
     setTenantId(id);
-    const t = tenants.find((x) => x.id === id);
-    if (t) setAmount(String(planPrice(t.plan)));
+    applyCharge(charge, id);
   }
   async function viewPdf(id: string) {
     const r = await invoiceSignedUrl(id);
@@ -98,12 +113,19 @@ export function BillingAdmin({ tenants, invoices }: { tenants: Tenant[]; invoice
                 {tenants.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.plan})</option>)}
               </select>
             </label>
+            <label className="text-sm text-ink">Charge
+              <select value={charge} onChange={(e) => applyCharge(e.target.value, tenantId)} className={`mt-1 w-full ${field}`}>
+                {ADDON_PRESETS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+              </select>
+            </label>
             <label className="text-sm text-ink">Amount (USD)<input value={amount} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" className={`mt-1 w-full ${field}`} /></label>
+            <label className="text-sm text-ink sm:col-span-2 lg:col-span-3">Description <span className="text-muted">(shown on the invoice)</span>
+              <input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="e.g. Tablet rental · monthly" className={`mt-1 w-full ${field}`} /></label>
             <label className="text-sm text-ink">Due date<input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className={`mt-1 w-full ${field}`} /></label>
             <label className="text-sm text-ink">Period start<input type="date" value={periodStart} onChange={(e) => setPeriodStart(e.target.value)} className={`mt-1 w-full ${field}`} /></label>
             <label className="text-sm text-ink">Period end<input type="date" value={periodEnd} onChange={(e) => setPeriodEnd(e.target.value)} className={`mt-1 w-full ${field}`} /></label>
           </div>
-          <button disabled={pending || !tenantId} onClick={() => run(createInvoice({ tenantId, amount: Number(amount), periodStart, periodEnd, dueDate }))}
+          <button disabled={pending || !tenantId} onClick={() => run(createInvoice({ tenantId, amount: Number(amount), periodStart, periodEnd, dueDate, description }))}
             className="mt-3 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{pending ? "Working…" : "Create draft"}</button>
         </div>
       )}
@@ -126,7 +148,10 @@ export function BillingAdmin({ tenants, invoices }: { tenants: Tenant[]; invoice
               const s = eff(inv);
               return (
                 <tr key={inv.id} className="border-b border-line/60 last:border-0 hover:bg-line/20">
-                  <td className="px-4 py-3 font-medium text-ink">{inv.number}</td>
+                  <td className="px-4 py-3">
+                    <span className="font-medium text-ink">{inv.number}</span>
+                    {inv.description && <span className="block text-xs text-muted">{inv.description}</span>}
+                  </td>
                   <td className="px-3 py-3 text-ink">{inv.tenants?.name ?? "—"}</td>
                   <td className="px-3 py-3 font-medium text-ink">{money(Number(inv.amount), inv.currency)}</td>
                   <td className="px-3 py-3 text-muted">{fmtDay(inv.created_at)}</td>
