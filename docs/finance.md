@@ -21,7 +21,7 @@ Add-ons, one time or recurring:
 - Flyer or extra print design on lower tiers: $75 each.
 - Plato Card promoted blast (Apple Wallet): $75 each, or a $199/mo "always promoting" bundle (up to 4 blasts). Premium includes 1 free blast/mo. See section 10.
 
-All add-ons are billable from the admin Billing screen via the **Charge** preset on the New-invoice form (Subscription, Setup fee, Plato Card blast, Plato Card promotions, Tablet rental, Re-shoot, Window decal/hardware, Custom). Amounts prefill from the defaults above and stay editable; the line description shows on the owner's invoice.
+All add-ons are billable from the admin Billing screen. An invoice is built from **multiple line items** (each `quantity × unit price`, auto-summed to the total). Add-on prices live in an **editable service catalog** (admin Billing → **Manage services & prices**: add, rename, remove, reprice — e.g. Plato Card blast, Tablet rental, decal/hardware, re-shoot, NFC/QR pack, flyer). Subscription and Setup lines stay plan-derived (PLAN_PRICES / PLAN_SETUP, not in the catalog). Line items show itemized on the owner's invoice and PDF.
 
 Re-shoot cadence by plan: Starter pays per re-shoot, Growth one included per year, Premium quarterly included. This protects your time.
 

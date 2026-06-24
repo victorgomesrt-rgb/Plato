@@ -17,24 +17,37 @@ const fmtDateOnly = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", 
 
 
 type Sub = { plan: string; status: string; current_period_end: string | null };
-type Inv = { number: string; amount: number; currency: string; description: string | null; status: string; period_start: string | null; paid_at: string | null; created_at: string; pdf_url: string | null };
+type Inv = { id: string; number: string; amount: number; currency: string; description: string | null; status: string; period_start: string | null; paid_at: string | null; created_at: string; pdf_url: string | null };
+type LineItem = { invoice_id: string; description: string; quantity: number; unit_price: number; amount: number };
 
 export default async function OwnerBillingPage() {
   const res = await resolveDashboard();
   if (res.state === "redirect") redirect("/login");
 
   let sub: Sub | null = null, invoices: Inv[] = [], slug = "", plan = "premium";
+  const lineMap: Record<string, LineItem[]> = {};
   if (res.state === "ok") {
     const { db, tenantId } = res.ctx;
     const [{ data: t }, { data: s }, { data: inv }] = await Promise.all([
       db.from("tenants").select("slug, plan").eq("id", tenantId).maybeSingle(),
       db.from("subscriptions").select("plan, status, current_period_end").eq("tenant_id", tenantId).maybeSingle(),
-      db.from("invoices").select("number, amount, currency, description, status, period_start, paid_at, created_at, pdf_url").eq("tenant_id", tenantId).order("period_start", { ascending: false, nullsFirst: false }).returns<Inv[]>(),
+      db.from("invoices").select("id, number, amount, currency, description, status, period_start, paid_at, created_at, pdf_url").eq("tenant_id", tenantId).order("period_start", { ascending: false, nullsFirst: false }).returns<Inv[]>(),
     ]);
     slug = (t as { slug: string } | null)?.slug ?? "";
     plan = (s as Sub | null)?.plan ?? (t as { plan: string } | null)?.plan ?? "premium";
     sub = (s as Sub | null) ?? null;
     invoices = inv ?? [];
+
+    const ids = invoices.map((i) => i.id);
+    if (ids.length) {
+      const { data: li } = await db
+        .from("invoice_line_items")
+        .select("invoice_id, description, quantity, unit_price, amount")
+        .in("invoice_id", ids)
+        .order("sort_order")
+        .returns<LineItem[]>();
+      for (const row of li ?? []) (lineMap[row.invoice_id] ??= []).push(row);
+    }
   }
 
   const price = planPrice(plan);
@@ -95,7 +108,21 @@ export default async function OwnerBillingPage() {
               <p className="font-semibold text-ink">{inv.number}</p>
               <p className="text-xs text-muted">{fmtDateOnly(inv.period_start ?? inv.created_at)}</p>
             </div>
-            <span className="text-sm text-ink">{inv.description ?? "—"}</span>
+            <div className="min-w-0">
+              {(lineMap[inv.id]?.length ?? 0) > 0 ? (
+                <ul className="space-y-0.5">
+                  {lineMap[inv.id].map((li, idx) => (
+                    <li key={`${inv.id}-${idx}`} className="text-sm text-ink">
+                      {li.description}
+                      {Number(li.quantity) !== 1 && <span className="text-muted"> × {Number(li.quantity)}</span>}
+                      <span className="text-muted"> · {money(Number(li.amount), inv.currency)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <span className="text-sm text-ink">{inv.description ?? "—"}</span>
+              )}
+            </div>
             <span className="font-medium text-ink">{money(Number(inv.amount), inv.currency)}</span>
             <span>
               <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${inv.status === "paid" ? "bg-emerald-100 text-emerald-700" : inv.status === "overdue" || inv.status === "past_due" ? "bg-accent/10 text-accent-deep" : "bg-citrus/25 text-ink"}`}>

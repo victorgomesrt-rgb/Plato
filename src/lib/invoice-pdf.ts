@@ -1,6 +1,13 @@
 import "server-only";
 import { jsPDF } from "jspdf";
 
+export type InvoiceLine = {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  amount: number;
+};
+
 export type InvoiceData = {
   number: string;
   restaurant: string;
@@ -10,6 +17,7 @@ export type InvoiceData = {
   dueDate: string;
   planLabel: string;
   paymentInstructions: string;
+  lines?: InvoiceLine[];
 };
 
 function money(amount: number, currency: string): string {
@@ -40,14 +48,25 @@ export function buildInvoicePdf(d: InvoiceData): Buffer {
   y += 8;
   doc.text(`Period: ${d.periodLabel}`, left, y);
 
-  // Line item
+  // Line items
   y += 16;
   doc.setDrawColor(236, 231, 225);
   doc.line(left, y, 190, y);
   y += 8;
-  doc.text(`Plato ${d.planLabel} subscription`, left, y);
-  doc.text(money(d.amount, d.currency), 190, y, { align: "right" });
-  y += 6;
+  const lines: InvoiceLine[] =
+    d.lines && d.lines.length
+      ? d.lines
+      : [{ description: `Plato ${d.planLabel} subscription`, quantity: 1, unitPrice: d.amount, amount: d.amount }];
+  for (const li of lines) {
+    const label =
+      li.quantity && li.quantity !== 1
+        ? `${li.description}  (${li.quantity} x ${money(li.unitPrice, d.currency)})`
+        : li.description;
+    const wrapped = doc.splitTextToSize(label, 140) as string[];
+    doc.text(wrapped, left, y);
+    doc.text(money(li.amount, d.currency), 190, y, { align: "right" });
+    y += 6 * wrapped.length + 2;
+  }
   doc.line(left, y, 190, y);
   y += 9;
   doc.setFontSize(13);

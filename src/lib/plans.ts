@@ -50,17 +50,10 @@ export function planFeatures(plan: string): string[] {
   return PLAN_META[(plan as Plan) in PLAN_META ? (plan as Plan) : "starter"].features;
 }
 
-// À-la-carte charges the admin can bill (finance.md §1/§3a + Plato Card). `price: null`
-// is derived from the tenant's plan at form time (subscription / setup). Amounts are
-// defaults the admin can edit (e.g. re-shoot $150–400, hardware at cost + margin).
-export type AddonPreset = { key: string; label: string; price: number | null; description: string };
-export const ADDON_PRESETS: AddonPreset[] = [
-  { key: "subscription", label: "Subscription (monthly)", price: null, description: "" },
-  { key: "setup", label: "Setup fee", price: null, description: "Setup · first capture & build" },
-  { key: "card_blast", label: "Plato Card blast", price: 75, description: "Promoted special · wallet blast" },
-  { key: "card_monthly", label: "Plato Card promotions (monthly)", price: 199, description: "Plato Card promotions · monthly" },
-  { key: "tablet", label: "Tablet rental (monthly)", price: 35, description: "Tablet rental · monthly" },
-  { key: "reshoot", label: "Extra capture / re-shoot", price: 250, description: "Extra capture / re-shoot" },
-  { key: "hardware", label: "Window decal / hardware", price: 25, description: "Window decal / hardware" },
-  { key: "custom", label: "Custom", price: 0, description: "" },
-];
+// À-la-carte add-on prices now live in the editable `billing_services` catalog (admin
+// Billing → Manage services). Only the two plan-derived line types stay in code, since
+// their amount comes from the tenant's plan (PLAN_PRICES / PLAN_SETUP), not the catalog.
+export const DERIVED_LINE_TYPES = [
+  { key: "subscription", label: "Subscription (monthly)" },
+  { key: "setup", label: "Setup fee" },
+] as const;

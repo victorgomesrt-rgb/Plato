@@ -44,15 +44,38 @@ async function ownerEmail(svc: ReturnType<typeof createAdminClient>, tenantId: s
   return (data?.profiles as unknown as { email: string | null } | null)?.email ?? null;
 }
 
+type LineInput = { serviceId: string | null; description: string; quantity: number; unitPrice: number };
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
 export async function createInvoice(input: {
   tenantId: string;
-  amount: number;
   periodStart: string;
   periodEnd: string;
   dueDate: string;
-  description?: string;
+  lines: LineInput[];
 }): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+
+  // Sanitize + price the lines on the server (never trust the UI total).
+  const lines = (input.lines ?? [])
+    .map((l, i) => {
+      const quantity = Number(l.quantity) || 0;
+      const unit_price = round2(Number(l.unitPrice) || 0);
+      return {
+        service_id: l.serviceId || null,
+        description: (l.description ?? "").trim(),
+        quantity,
+        unit_price,
+        amount: round2(quantity * unit_price),
+        sort_order: i,
+      };
+    })
+    .filter((l) => l.description && l.quantity > 0);
+  if (lines.length === 0) return { ok: false, error: "Add at least one line item" };
+  const total = round2(lines.reduce((a, l) => a + l.amount, 0));
+  const summary =
+    lines.length === 1 ? lines[0].description : `${lines[0].description} +${lines.length - 1} more`;
+
   const svc = createAdminClient();
   const year = arubaYear();
   const { count } = await svc
@@ -64,29 +87,74 @@ export async function createInvoice(input: {
   let seq = (count ?? 0) + 1;
   for (let attempt = 0; attempt < 5; attempt++) {
     const number = `PLATO-${year}-${String(seq).padStart(4, "0")}`;
-    const { error } = await svc.from("invoices").insert({
-      tenant_id: input.tenantId,
-      number,
-      amount: input.amount,
-      currency: "USD",
-      description: input.description?.trim() || null,
-      period_start: input.periodStart,
-      period_end: input.periodEnd,
-      due_date: input.dueDate,
-      method: "manual",
-      status: "draft",
-    });
-    if (!error) {
+    const { data: inv, error } = await svc
+      .from("invoices")
+      .insert({
+        tenant_id: input.tenantId,
+        number,
+        amount: total,
+        currency: "USD",
+        description: summary,
+        period_start: input.periodStart,
+        period_end: input.periodEnd,
+        due_date: input.dueDate,
+        method: "manual",
+        status: "draft",
+      })
+      .select("id")
+      .single();
+    if (!error && inv) {
+      const { error: liErr } = await svc
+        .from("invoice_line_items")
+        .insert(lines.map((l) => ({ invoice_id: inv.id, ...l })));
+      if (liErr) return { ok: false, error: liErr.message };
       revalidatePath("/admin/billing");
       return { ok: true };
     }
-    if (error.code === "23505") {
+    if (error?.code === "23505") {
       seq++;
       continue;
     }
-    return { ok: false, error: error.message };
+    return { ok: false, error: error?.message ?? "Could not create the invoice" };
   }
   return { ok: false, error: "Could not assign an invoice number" };
+}
+
+// Add-on service catalog (admin Billing → Manage services). Editable prices.
+export async function saveService(input: {
+  id?: string;
+  name: string;
+  description: string;
+  unitPrice: number;
+  unit: string;
+  active?: boolean;
+}): Promise<Result> {
+  if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+  const name = (input.name ?? "").trim();
+  if (!name) return { ok: false, error: "Name is required" };
+  const svc = createAdminClient();
+  const row = {
+    name,
+    description: (input.description ?? "").trim(),
+    unit_price: round2(Number(input.unitPrice) || 0),
+    unit: input.unit || "each",
+    active: input.active ?? true,
+  };
+  const { error } = input.id
+    ? await svc.from("billing_services").update(row).eq("id", input.id)
+    : await svc.from("billing_services").insert({ ...row, sort_order: 100 });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/billing");
+  return { ok: true };
+}
+
+export async function deleteService(id: string): Promise<Result> {
+  if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+  const svc = createAdminClient();
+  const { error } = await svc.from("billing_services").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/billing");
+  return { ok: true };
 }
 
 export async function sendInvoice(invoiceId: string): Promise<Result> {
@@ -103,6 +171,18 @@ export async function sendInvoice(invoiceId: string): Promise<Result> {
   const to = await ownerEmail(svc, inv.tenant_id);
   if (!to) return { ok: false, error: "That tenant has no owner email" };
 
+  const { data: liData } = await svc
+    .from("invoice_line_items")
+    .select("description, quantity, unit_price, amount")
+    .eq("invoice_id", invoiceId)
+    .order("sort_order");
+  const lines = (liData ?? []).map((l) => ({
+    description: l.description as string,
+    quantity: Number(l.quantity),
+    unitPrice: Number(l.unit_price),
+    amount: Number(l.amount),
+  }));
+
   const pdf = buildInvoicePdf({
     number: inv.number,
     restaurant: tenant.name,
@@ -112,6 +192,7 @@ export async function sendInvoice(invoiceId: string): Promise<Result> {
     dueDate: fmtDate(inv.due_date),
     planLabel: tenant.plan,
     paymentInstructions: PAYMENT_INSTRUCTIONS,
+    lines,
   });
 
   const path = `${inv.tenant_id}/${inv.number}.pdf`;
