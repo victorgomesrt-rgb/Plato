@@ -8,6 +8,20 @@ export const metadata: Metadata = {
   description:
     "Tell us about your restaurant. We'll confirm a capture time and have your filmed video menu live before your next dinner service.",
   alternates: { canonical: "/book" },
+  openGraph: {
+    title: "Book your free demo",
+    description: "We'll confirm a capture time and have your filmed video menu live before your next dinner service.",
+    url: "https://platodigital.io/book",
+    siteName: "Plato",
+    type: "website",
+    images: [{ url: "/og-book.png", width: 1200, height: 630, alt: "Book your free Plato demo" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Book your free demo",
+    description: "Filmed in one visit. Your menu goes live in a day.",
+    images: ["/og-book.png"],
+  },
 };
 
 export default function BookPage() {

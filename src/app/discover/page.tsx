@@ -9,6 +9,20 @@ export const metadata: Metadata = {
   title: "Discover restaurants",
   description: "Browse video menus from restaurants across Aruba on Plato. Watch the dishes, then go.",
   alternates: { canonical: "/discover" },
+  openGraph: {
+    title: "Discover restaurants on Plato",
+    description: "Browse Aruba's restaurants with menus that actually move. Watch the dishes, then go.",
+    url: "https://platodigital.io/discover",
+    siteName: "Plato",
+    type: "website",
+    images: [{ url: "/og-discover.png", width: 1200, height: 630, alt: "Discover restaurants on Plato" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Discover restaurants on Plato",
+    description: "Browse Aruba's restaurants with menus that actually move.",
+    images: ["/og-discover.png"],
+  },
 };
 
 export default async function DiscoverPage() {
