@@ -10,6 +10,14 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "The Plato Card · member perks across Aruba",
   description: "Add the Plato Card to Apple Wallet for member discounts at restaurants across Aruba.",
+  alternates: { canonical: "/card" },
+  openGraph: {
+    title: "The Plato Card",
+    description: "Member perks at restaurants across Aruba, in your Apple Wallet.",
+    url: "https://platodigital.io/card",
+    siteName: "Plato",
+    type: "website",
+  },
 };
 
 type Partner = { name: string; slug: string; wallet_discount: string | null };
