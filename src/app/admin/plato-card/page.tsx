@@ -12,20 +12,24 @@ const WEEKLY_CAP = 7;
 export default async function AdminPlatoCardPage() {
   if (!(await currentAdmin())) notFound();
   const svc = createAdminClient();
-  // eslint-disable-next-line react-hooks/purity -- server component; "now" is intentional
-  const since = new Date(Date.now() - 7 * 86_400_000).toISOString();
+  const now = new Date();
+  const since = new Date(now.getTime() - 7 * 86_400_000).toISOString();
+  const ym = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba", year: "numeric", month: "2-digit" }).format(now);
+  const monthStart = `${ym}-01T04:00:00.000Z`;
 
-  const [{ data: blasts }, { count: partnerCount }, { count: sentThisWeek }, { data: tenants }] = await Promise.all([
+  const [{ data: blasts }, { count: partnerCount }, { count: sentThisWeek }, { count: members }, { count: membersThisMonth }, { data: tenants }] = await Promise.all([
     svc.from("wallet_blasts").select("id, tenant_id, message, status, scheduled_at, sent_at, created_at, tenants(name)").order("created_at", { ascending: false }).limit(60).returns<Blast[]>(),
     svc.from("tenants").select("id", { count: "exact", head: true }).eq("wallet_partner", true),
     svc.from("wallet_blasts").select("id", { count: "exact", head: true }).eq("status", "sent").gte("sent_at", since),
+    svc.from("wallet_card_adds").select("id", { count: "exact", head: true }),
+    svc.from("wallet_card_adds").select("id", { count: "exact", head: true }).gte("created_at", monthStart),
     svc.from("tenants").select("name, slug, plan").order("name").returns<{ name: string; slug: string; plan: string }[]>(),
   ]);
 
   return (
     <main className="mx-auto max-w-4xl px-5 py-6 lg:px-8 lg:py-8">
       <AdminHeader title="Plato Card" subtitle="Apple Wallet loyalty · blasts, promos and partners" tenants={tenants ?? []} />
-      <PlatoCardAdmin blasts={blasts ?? []} partnerCount={partnerCount ?? 0} sentThisWeek={sentThisWeek ?? 0} weeklyCap={WEEKLY_CAP} />
+      <PlatoCardAdmin blasts={blasts ?? []} partnerCount={partnerCount ?? 0} sentThisWeek={sentThisWeek ?? 0} weeklyCap={WEEKLY_CAP} members={members ?? 0} membersThisMonth={membersThisMonth ?? 0} />
     </main>
   );
 }

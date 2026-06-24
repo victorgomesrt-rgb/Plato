@@ -60,7 +60,7 @@ export default async function PlatoCardPage() {
           </div>
 
           {addUrl ? (
-            <a href={addUrl} target="_blank" rel="noopener noreferrer"
+            <a href="/api/card/add" target="_blank" rel="noopener noreferrer"
               className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/20 bg-black/55 py-3.5 text-base font-semibold text-white backdrop-blur-md transition hover:bg-black/70">
               <AppleLogoIcon className="h-[18px] w-[18px]" />Add to Apple Wallet
             </a>

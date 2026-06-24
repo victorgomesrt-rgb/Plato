@@ -17,7 +17,7 @@ const STATUS: Record<string, string> = {
   requested: "bg-citrus/25 text-ink", scheduled: "bg-sea/10 text-sea", sent: "bg-emerald-100 text-emerald-700", declined: "bg-line text-muted",
 };
 
-export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap }: { blasts: Blast[]; partnerCount: number; sentThisWeek: number; weeklyCap: number }) {
+export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap, members, membersThisMonth }: { blasts: Blast[]; partnerCount: number; sentThisWeek: number; weeklyCap: number; members: number; membersThisMonth: number }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [msg, setMsg] = useState("");
@@ -39,15 +39,17 @@ export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap }
 
   return (
     <div className="mt-5 space-y-4">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
-          { label: "Partners", value: String(partnerCount) },
-          { label: "Blasts this week", value: `${sentThisWeek} / ${weeklyCap}` },
-          { label: "Notifications", value: "15k / mo" },
+          { label: "Members", value: members.toLocaleString(), sub: membersThisMonth > 0 ? `+${membersThisMonth.toLocaleString()} this month` : "card adds" },
+          { label: "Partners", value: String(partnerCount), sub: "" },
+          { label: "Blasts this week", value: `${sentThisWeek} / ${weeklyCap}`, sub: "" },
+          { label: "Notifications", value: "15k / mo", sub: "" },
         ].map((m) => (
           <div key={m.label} className="rounded-card border border-line bg-surface p-4">
             <p className="text-xs text-muted">{m.label}</p>
             <p className="mt-1 font-display text-2xl font-bold text-ink">{m.value}</p>
+            {m.sub && <p className="text-[11px] text-emerald-600">{m.sub}</p>}
           </div>
         ))}
       </div>
