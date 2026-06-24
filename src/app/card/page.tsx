@@ -17,6 +17,13 @@ export const metadata: Metadata = {
     url: "https://platodigital.io/card",
     siteName: "Plato",
     type: "website",
+    images: [{ url: "/og-card.png", width: 1200, height: 630, alt: "The Plato Card — member perks across Aruba" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Plato Card",
+    description: "Member perks at restaurants across Aruba, in your Apple Wallet.",
+    images: ["/og-card.png"],
   },
 };
 
