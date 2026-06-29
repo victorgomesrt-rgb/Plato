@@ -48,7 +48,7 @@ const steps = [
   { n: "3", icon: CheckCircle2, title: "You go live", body: "We place your QR and NFC, hand you the link, and show it on your phone. Need a change? Ask. It lands in our queue." },
 ];
 
-const stats = [["63", "Live menu pages"], ["4", "Menu templates"], ["2", "Languages · EN & ES"], ["1", "Day from shoot to live"]];
+const stats = [["4", "Menu templates"], ["2", "Languages · EN & ES"], ["4-8s", "Dish video loops"], ["1", "Day from shoot to live"]];
 
 const plans = [
   { name: "Starter", tagline: "For cafes & casual spots", price: 99, cta: "Get started", dark: false,
@@ -341,7 +341,7 @@ export default async function Landing() {
         <div className="mx-auto max-w-6xl px-5 py-20">
           <Reveal className="text-center">
             <Eyebrow>Simple pricing</Eyebrow>
-            <h2 className="mt-3 font-display text-section font-extrabold">One monthly price. We do the work.</h2>
+            <h2 className="mt-3 font-display text-section font-extrabold">Pick your plan. We do the work.</h2>
             <p className="mt-3 text-muted">Plus a one-time on-site capture fee. No contracts, cancel anytime.</p>
           </Reveal>
           <div className="mt-12 grid items-start gap-5 md:grid-cols-3">
