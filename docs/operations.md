@@ -80,4 +80,12 @@ Run it from admin → Plato Card:
 - Network blasts: you can author and send (or schedule) a "this week on Plato" push to all members. Cap is 7 admin network blasts/week to avoid fatigue.
 - Members metric = tracked "Add to Apple Wallet" taps (cookieless, no PII).
 
+## 12. Review Cards
+
+A payment-gated redirect (QR/NFC/decal) to a restaurant's Google review page. Run it from admin → tenant detail → Review Card:
+- Set up: paste the Google review URL, toggle Active, set Paid through, and Generate review code. Print the shown `platodigital.io/r/<code>` on the QR/decal/NFC.
+- Live vs paused: it redirects to Google only while Active AND paid through today (AST); otherwise diners see a neutral paused page (`/review-unavailable`). The printed card never changes, only the gate.
+- Billing: "Bill 1 month" raises a draft invoice (Review card line). Send it from admin Billing; marking it paid extends paid-through one month. To stop a non-payer immediately, toggle Active off.
+- The gate columns (`review_url` / `review_active` / `review_paid_through`) are admin-only (privileged-column guard); owners cannot self-extend.
+
 Keys + assets: `PASSBUDDY_USER_ID` / `PASSBUDDY_API_KEY` live in env (server only; also set in Vercel). The pass logo/strip are hosted on platodigital.io (`/brand/plato-pass-icon.png`, `/brand/plato-pass-strip.png`). Pass content (name, colors, fields) is editable via the API and can be refreshed any time. Apple Wallet only for now.

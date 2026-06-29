@@ -284,6 +284,29 @@ export async function markPaid(invoiceId: string): Promise<Result> {
       ),
     });
   }
+
+  // If this invoice billed a Review Card, extend the tenant's review access one month
+  // (paid in advance, from the later of today / current paid-through). Matched by catalog
+  // service name OR line description so a missing/renamed service still works.
+  const { data: liRows } = await svc
+    .from("invoice_line_items")
+    .select("description, billing_services(name)")
+    .eq("invoice_id", invoiceId);
+  const billedReview = (liRows ?? []).some(
+    (l) =>
+      (l.billing_services as unknown as { name?: string } | null)?.name === "Review card" ||
+      (l.description ?? "").toLowerCase().startsWith("review card")
+  );
+  if (billedReview) {
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
+    const { data: tt } = await svc.from("tenants").select("review_paid_through, slug").eq("id", inv.tenant_id).maybeSingle();
+    const baseStr = tt?.review_paid_through && tt.review_paid_through >= today ? tt.review_paid_through : today;
+    const base = new Date(`${baseStr}T12:00:00Z`);
+    base.setUTCMonth(base.getUTCMonth() + 1);
+    await svc.from("tenants").update({ review_paid_through: base.toISOString().slice(0, 10) }).eq("id", inv.tenant_id);
+    if (tt?.slug) revalidatePath(`/admin/tenants/${tt.slug}`);
+  }
+
   revalidatePath("/admin/billing");
   return { ok: true };
 }

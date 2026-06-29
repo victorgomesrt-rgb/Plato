@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Star, Copy, Check } from "lucide-react";
 import { toast } from "@/components/toast";
-import { setReviewCard, generateReviewCode } from "./review-actions";
+import { setReviewCard, generateReviewCode, billReviewCard } from "./review-actions";
 
 type Res = { ok: boolean; error?: string };
 
@@ -68,7 +68,12 @@ export function ReviewCardPanel({
           className="rounded-btn bg-accent px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60">Save</button>
       </div>
 
-      <div className="mt-3 border-t border-line pt-3">
+      <div className="mt-3 space-y-2 border-t border-line pt-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <button disabled={pending} onClick={() => run(billReviewCard(tenantId, slug), "Draft invoice created — send it from Billing")}
+            className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">Bill 1 month</button>
+          <span className="text-xs text-muted">Creates a draft invoice; paid-through extends a month when you mark it paid.</span>
+        </div>
         {cardUrl ? (
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs text-muted">Print this on the card / decal / NFC:</span>

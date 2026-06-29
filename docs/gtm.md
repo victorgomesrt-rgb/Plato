@@ -28,6 +28,7 @@ This is the bridge from phone to table and the part rivals find hard to copy at 
 - Window decal. "Scan to see our menu" at the door. Catches passersby who decide where to eat.
 - Flyers. Designed in Canva with the QR. For takeout bags, hotel concierge desks, tour operators.
 - Tablet display, rented. A tablet on the counter or entrance in kiosk mode, looping the video menu. You own it, lock it to their page, and reclaim it if they leave. Optional add-on on any plan. See finance.md section 3a.
+- Review Card. A QR/NFC/decal that sends diners straight to the restaurant's Google review page, routed through Plato so we can pause it if they stop paying. A reputation play, not menu discovery, so it is an easy low-cost upsell on any plan and a natural standalone entry product for restaurants not yet ready for a full menu. See finance.md section 11.
 
 Sourcing:
 - NFC NTAG215 stickers and cards from bulk suppliers online. Buy in lots of 100.

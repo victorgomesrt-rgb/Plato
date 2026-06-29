@@ -20,6 +20,7 @@ Add-ons, one time or recurring:
 - Extra hardware (window decal, extra QR/NFC, table stand): at cost plus margin.
 - Flyer or extra print design on lower tiers: $75 each.
 - Plato Card promoted blast (Apple Wallet): $75 each, or a $199/mo "always promoting" bundle (up to 4 blasts). Premium includes 1 free blast/mo. See section 10.
+- Review Card: a payment-gated QR/NFC/decal that redirects diners to the restaurant's Google review page. About $25/mo, set in the catalog. The redirect pauses the moment the card lapses. See section 11.
 
 All add-ons are billable from the admin Billing screen. An invoice is built from **multiple line items** (each `quantity × unit price`, auto-summed to the total). Add-on prices live in an **editable service catalog** (admin Billing → **Manage services & prices**: add, rename, remove, reprice — e.g. Plato Card blast, Tablet rental, decal/hardware, re-shoot, NFC/QR pack, flyer). Subscription and Setup lines stay plan-derived (PLAN_PRICES / PLAN_SETUP, not in the catalog). Line items show itemized on the owner's invoice and PDF.
 
@@ -175,3 +176,13 @@ Cost + margin:
 - Effective margin per blast is near 100% until the Pro tier is needed; even then, 150k notifications/mo covers ~50 blasts to a 3k base, so per-blast cost stays trivial.
 
 Operational: restaurants request a blast from their dashboard; the admin reviews, sends, and the invoice is raised automatically ($75 line). Network blasts (Plato's own "this week on Plato") are admin-authored and capped at 7/week to protect the diner experience. Apple Wallet only for now (Android is a later phase).
+
+## 11. Review Card (reputation add-on)
+
+A payment-gated QR/NFC/decal that sends diners straight to the restaurant's Google review page. The code routes through `platodigital.io/r/<code>`, so Plato controls the destination: while the card is active and paid through the current period it redirects to Google, otherwise it shows a neutral paused page. No reprint to switch it on or off.
+
+Pricing: about $25/mo (editable in the billing catalog). Near-zero marginal cost (it is just a redirect), so it is high-margin and an easy upsell on top of any plan, or a low-friction entry product for restaurants not yet on a menu plan (a standalone version is a later phase).
+
+Compliance: we link every diner to the restaurant's public Google review page. This is payment-gating, not sentiment-based "review gating" (which Google prohibits), so we are clear.
+
+Operational: set it up in admin → tenant → Review Card (paste the Google URL, toggle active, set paid-through, generate the code). "Bill 1 month" raises a draft invoice; marking it paid extends access a month. To cut a non-payer, toggle active off or let paid-through lapse.

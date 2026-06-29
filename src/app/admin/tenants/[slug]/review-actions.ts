@@ -4,9 +4,11 @@ import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createInvoice } from "../../billing/actions";
 
 type Res = { ok: true } | { ok: false; error: string };
 const shortCode = () => crypto.randomUUID().replace(/-/g, "").slice(0, 8);
+const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 
 // Review-card gate is Plato-managed (guarded columns), so it's written via the service
 // role behind the admin gate — never the owner session.
@@ -43,6 +45,32 @@ export async function generateReviewCode(tenantId: string, slug: string): Promis
       .insert({ tenant_id: tenantId, code: shortCode(), kind: "review", placement: "review" });
     if (error) return { ok: false, error: error.message };
   }
+  revalidatePath(`/admin/tenants/${slug}`);
+  return { ok: true };
+}
+
+// Raise this month's Review Card invoice (draft). Uses the catalog "Review card" price
+// when present. Paying it extends the tenant's review_paid_through (see markPaid).
+export async function billReviewCard(tenantId: string, slug: string): Promise<Res> {
+  if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+  const svc = createAdminClient();
+  const { data: rows } = await svc
+    .from("billing_services")
+    .select("id, unit_price, description")
+    .eq("name", "Review card")
+    .limit(1);
+  const s = rows?.[0];
+  const now = new Date();
+  const due = new Date();
+  due.setDate(due.getDate() + 14);
+  const r = await createInvoice({
+    tenantId,
+    periodStart: isoDate(new Date(now.getFullYear(), now.getMonth(), 1)),
+    periodEnd: isoDate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
+    dueDate: isoDate(due),
+    lines: [{ serviceId: s?.id ?? null, description: s?.description || "Review card · monthly", quantity: 1, unitPrice: s ? Number(s.unit_price) : 25 }],
+  });
+  if (!r.ok) return r;
   revalidatePath(`/admin/tenants/${slug}`);
   return { ok: true };
 }
