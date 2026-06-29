@@ -3,10 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { itemCap } from "@/lib/plans";
 import { MenuEditor } from "./menu-editor";
 import { TemplatePicker } from "./template-picker";
 import { TenantControls } from "./tenant-controls";
+import { ReviewCardPanel } from "./review-card-panel";
 
 export const metadata: Metadata = { title: "Manage menu", robots: { index: false } };
 
@@ -21,10 +23,17 @@ export default async function ManageTenantPage({
   const supabase = await createClient();
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template")
+    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template, review_url, review_active, review_paid_through")
     .eq("slug", slug)
     .maybeSingle();
   if (!tenant) notFound();
+
+  const { data: reviewLink } = await createAdminClient()
+    .from("short_links")
+    .select("code")
+    .eq("tenant_id", tenant.id)
+    .eq("kind", "review")
+    .limit(1);
 
   const [{ data: categories }, { data: items }] = await Promise.all([
     supabase
@@ -69,6 +78,16 @@ export default async function ManageTenantPage({
       </div>
 
       <TenantControls tenantId={tenant.id} slug={tenant.slug} plan={tenant.plan} status={tenant.status} />
+
+      <ReviewCardPanel
+        tenantId={tenant.id}
+        slug={tenant.slug}
+        site={process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io"}
+        reviewUrl={tenant.review_url ?? null}
+        reviewActive={tenant.review_active ?? false}
+        reviewPaidThrough={tenant.review_paid_through ?? null}
+        reviewCode={reviewLink?.[0]?.code ?? null}
+      />
 
       <div className="mt-3">
         <TemplatePicker tenantId={tenant.id} current={tenant.template ?? "grid"} />
