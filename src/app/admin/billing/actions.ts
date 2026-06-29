@@ -72,6 +72,7 @@ export async function createInvoice(input: {
     })
     .filter((l) => l.description && l.quantity > 0);
   if (lines.length === 0) return { ok: false, error: "Add at least one line item" };
+  if (lines.some((l) => l.unit_price < 0)) return { ok: false, error: "Unit price can't be negative" };
   const total = round2(lines.reduce((a, l) => a + l.amount, 0));
   const summary =
     lines.length === 1 ? lines[0].description : `${lines[0].description} +${lines.length - 1} more`;
@@ -107,7 +108,13 @@ export async function createInvoice(input: {
       const { error: liErr } = await svc
         .from("invoice_line_items")
         .insert(lines.map((l) => ({ invoice_id: inv.id, ...l })));
-      if (liErr) return { ok: false, error: liErr.message };
+      if (liErr) {
+        // No multi-statement transaction here, so compensate: delete the invoice we
+        // just created. Otherwise it lingers as an orphan with no line items (and a
+        // retry would mint a duplicate under the next number).
+        await svc.from("invoices").delete().eq("id", inv.id);
+        return { ok: false, error: liErr.message };
+      }
       revalidatePath("/admin/billing");
       return { ok: true };
     }
