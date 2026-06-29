@@ -131,6 +131,7 @@ Multi-tenant data isolation is the thing you cannot get wrong.
 
 ## 13. Plato Card — Apple Wallet coalition loyalty (NEW, building 2026-06-23)
 Full spec: [plato-card.md](plato-card.md). v1 = one shared pass + member discount + admin/paid blasts.
+> **DONE + verified live 2026-06-24.** All `(build)` items below are built; the request → approve → push → invoice loop was verified end-to-end (real PassBuddy messageId + invoice PLATO-2026-0001), hosted ≤160px logo/strip shipped. Only the `(manual/device)` items (Add-to-Wallet install, glass on a real iPhone, blast received in Wallet) remain.
 - [ ] PassBuddy keys are server-only (`PASSBUDDY_USER_ID`/`PASSBUDDY_API_KEY` never in the client bundle). (build)
 - [ ] `lib/passbuddy.ts` wraps create/update/notify; maps error codes; a PassBuddy outage never blocks menu render. (build)
 - [ ] `wallet_passes` + `wallet_blasts` tables with RLS (admin/service write; owners insert + read only their own blasts). (build)
@@ -162,3 +163,25 @@ Full spec: [plato-card.md](plato-card.md). v1 = one shared pass + member discoun
 - [ ] Flagship restaurant live and filmed. (ops)
 - [ ] Sales one pager, price sheet, and demo link ready. (ops)
 - [ ] Hardware stock on hand to place within a week of closing. (ops)
+
+## 15. Billing v2 + Review Cards (2026-06-24)
+
+Billing:
+- [x] Invoices are multi-line (qty × unit price, auto-summed); add-on prices in an editable `billing_services` catalog (admin Billing → Manage services). Subscription/Setup stay plan-derived.
+- [x] `createInvoice` rolls back the invoice if the line-items insert fails; rejects negative unit prices.
+- [x] Owner invoice + PDF are itemized.
+
+Review Cards (payment-gated Google-review redirect — finance §11, operations §12):
+- [x] `/r/<code>` redirects to the tenant's Google review URL only while active AND paid_through ≥ today (AST); otherwise a neutral `/review-unavailable` page. Verified live (paid→Google, expired/inactive→paused).
+- [x] Gate columns (`review_url`/`review_active`/`review_paid_through`/`review_only`) are admin-only (privileged-column guard).
+- [x] Admin setup UI on the tenant page (URL, active, paid-through, generate code + copy, Live/Paused chip).
+- [x] "Bill 1 month" raises a draft invoice; paying a review-card invoice extends paid-through one month.
+- [x] Standalone "review-only" clients (no menu/login); `publicState` 404s them (verified active+published still 404s) and Discover excludes them.
+- [ ] Review-card QR/decal/NFC physically printed + scanned on a real device. (manual/device)
+
+## 16. Final QA snapshot (2026-06-24)
+- [x] Production build green (`npm run build`, exit 0, no warnings). tsc + ESLint clean.
+- [x] Privileged-column guard verified in prod: service-role bypass intact + all 9 columns guarded (incl. `review_*`).
+- [x] RLS enabled on all 21 public tables (incl. new `billing_services`, `invoice_line_items`).
+- [x] Service-role key server-only (`admin.ts`), not in any client component, never `NEXT_PUBLIC`.
+- Remaining launch blockers are OPS / manual / device only (no open code blockers): error monitoring (Sentry), Supabase backups, Bunny prod limits + the **`video_status`→ready webhook is untested** (no flagship filmed yet), real-owner + live 2-tenant RLS tests, real-iPhone device pass, attorney sign-off on Terms/Privacy/agreement, custom domains (deferred), Stripe (deferred, invoice-only).
