@@ -52,11 +52,11 @@ const stats = [["4", "Menu templates"], ["2", "Languages · EN & ES"], ["4-8s", 
 
 const plans = [
   { name: "Starter", tagline: "For cafes & casual spots", price: 99, cta: "Get started", dark: false,
-    items: ["On-site photo & video capture", "Your menu page + one QR stand", "Sold-out & price quick edits", "Up to 40 items", "Basic analytics"] },
+    items: ["On-site photo & video capture", "Your menu page + one QR stand", "English & Spanish · USD & AWG", "Sold-out & price quick edits", "Up to 40 items", "Basic analytics"] },
   { name: "Growth", tagline: "For busy restaurants", price: 249, cta: "Get started", dark: true,
-    items: ["Everything in Starter", "Full video menu, more items", "English & Spanish · USD & AWG", "NFC + QR stickers & window decal", "Custom domain", "Advanced analytics · 1 re-shoot/yr"] },
+    items: ["Everything in Starter", "Full video menu, more items", "NFC + QR stickers & window decal", "Custom domain", "Advanced analytics · 1 re-shoot/yr"] },
   { name: "Premium", tagline: "For beach clubs & fine dining", price: 499, cta: "Get started", dark: false,
-    items: ["Everything in Growth", "Unlimited items", "Featured on Discover", "Quarterly re-shoot · full hardware kit", "Flyer design · priority support"] },
+    items: ["Everything in Growth", "Unlimited items", "Featured on Discover", "Quarterly re-shoot · full hardware kit", "Flyer design · priority support", "1 free Plato Card blast / mo"] },
 ];
 
 // Match the real diner page action bar (brand-tinted icons).

@@ -8,8 +8,8 @@ Content capture is a service in every plan. You go on-site, shoot the food photo
 
 | Plan | Monthly | Annual (10x) | Setup (one time) | Key inclusions |
 |---|---|---|---|---|
-| Starter | $99 | $990 | $199 | Online menu page, restaurant info and action buttons, on-site photo and video capture of key items, one QR code stand, dashboard access, basic analytics, item cap 40 |
-| Growth | $249 | $2,490 | $299 | Everything in Starter, plus full video menu, more items, advanced analytics, NFC and QR sticker pack, window decal, custom domain, EN and ES |
+| Starter | $99 | $990 | $199 | Online menu page, restaurant info and action buttons, on-site photo and video capture of key items, EN and ES, USD and AWG, one QR code stand, dashboard access, basic analytics, item cap 40 |
+| Growth | $249 | $2,490 | $299 | Everything in Starter, plus full video menu, more items, advanced analytics, NFC and QR sticker pack, window decal, custom domain |
 | Premium | $499 | $4,990 | $499 | Everything in Growth, plus unlimited items, spot on the Discovery feature page, priority support, flyer design, quarterly re-shoot, full hardware kit |
 
 Setup fee covers the first on-site capture session and the menu build. Price it so labor on the first visit is covered even if a Starter customer leaves early.

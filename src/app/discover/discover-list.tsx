@@ -22,7 +22,9 @@ function useHydrated() {
   return useSyncExternalStore(() => () => {}, () => true, () => false);
 }
 
-const DEMO = "/book";
+// Send prospective restaurants to the landing email capture so we reach out to them,
+// rather than the self-serve /book plan flow.
+const ADD_RESTAURANT = "/#waitlist";
 
 function Card({ t, hydrated }: { t: DiscoverCard; hydrated: boolean }) {
   const accent = t.accent_color ?? "#FB6A1A";
@@ -90,7 +92,7 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
             <span className="font-display font-extrabold">Plato</span>
           </Link>
           <div className="flex items-center gap-4 text-sm">
-            <a href={DEMO} className="text-white/70 hover:text-white">Add your restaurant</a>
+            <a href={ADD_RESTAURANT} className="text-white/70 hover:text-white">Add your restaurant</a>
             <Link href="/login" className="text-white/70 hover:text-white">Log in</Link>
           </div>
         </div>

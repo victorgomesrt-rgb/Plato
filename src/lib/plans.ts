@@ -34,11 +34,11 @@ export const PLAN_SETUP: Record<Plan, number> = { starter: 199, growth: 299, pre
 export const PLAN_META: Record<Plan, { annual: number; features: string[] }> = {
   starter: {
     annual: 990,
-    features: ["Online menu page", "Info & action buttons", "On-site photo & video capture", "1 QR code stand", "Basic analytics", "Up to 40 items"],
+    features: ["Online menu page", "Info & action buttons", "On-site photo & video capture", "English & Spanish", "1 QR code stand", "Basic analytics", "Up to 40 items"],
   },
   growth: {
     annual: 2490,
-    features: ["Everything in Starter", "Full video menu", "Advanced analytics", "NFC + QR sticker pack", "Window decal", "Custom domain", "English & Spanish"],
+    features: ["Everything in Starter", "Full video menu", "Advanced analytics", "NFC + QR sticker pack", "Window decal", "Custom domain"],
   },
   premium: {
     annual: 4990,
