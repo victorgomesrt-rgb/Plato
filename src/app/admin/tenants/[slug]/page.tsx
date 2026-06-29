@@ -23,7 +23,7 @@ export default async function ManageTenantPage({
   const supabase = await createClient();
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template, review_url, review_active, review_paid_through")
+    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template, review_url, review_active, review_paid_through, review_only")
     .eq("slug", slug)
     .maybeSingle();
   if (!tenant) notFound();
@@ -59,22 +59,27 @@ export default async function ManageTenantPage({
         <div>
           <h1 className="font-display text-2xl font-semibold text-ink">{tenant.name}</h1>
           <p className="text-sm capitalize text-muted">
-            /{tenant.slug} · {tenant.plan} · {tenant.status === "past_due" ? "past due" : tenant.status}
-            {tenant.published_at ? " · live" : ""}
+            {tenant.review_only ? (
+              <>/{tenant.slug} · review-only client</>
+            ) : (
+              <>/{tenant.slug} · {tenant.plan} · {tenant.status === "past_due" ? "past due" : tenant.status}{tenant.published_at ? " · live" : ""}</>
+            )}
           </p>
         </div>
-        <div className="flex items-center gap-3 text-sm">
-          <form action="/admin/impersonate" method="post">
-            <input type="hidden" name="tenant_id" value={tenant.id} />
-            <button type="submit" className="font-medium text-accent">View as owner</button>
-          </form>
-          <Link href={`/admin/tenants/${tenant.slug}/qr`} className="font-medium text-accent">
-            QR codes
-          </Link>
-          <Link href={`/${tenant.slug}`} className="text-accent underline">
-            Preview
-          </Link>
-        </div>
+        {!tenant.review_only && (
+          <div className="flex items-center gap-3 text-sm">
+            <form action="/admin/impersonate" method="post">
+              <input type="hidden" name="tenant_id" value={tenant.id} />
+              <button type="submit" className="font-medium text-accent">View as owner</button>
+            </form>
+            <Link href={`/admin/tenants/${tenant.slug}/qr`} className="font-medium text-accent">
+              QR codes
+            </Link>
+            <Link href={`/${tenant.slug}`} className="text-accent underline">
+              Preview
+            </Link>
+          </div>
+        )}
       </div>
 
       <TenantControls tenantId={tenant.id} slug={tenant.slug} plan={tenant.plan} status={tenant.status} />
@@ -89,16 +94,20 @@ export default async function ManageTenantPage({
         reviewCode={reviewLink?.[0]?.code ?? null}
       />
 
-      <div className="mt-3">
-        <TemplatePicker tenantId={tenant.id} current={tenant.template ?? "grid"} />
-      </div>
+      {!tenant.review_only && (
+        <>
+          <div className="mt-3">
+            <TemplatePicker tenantId={tenant.id} current={tenant.template ?? "grid"} />
+          </div>
 
-      <MenuEditor
-        tenant={tenant}
-        categories={categories ?? []}
-        items={items ?? []}
-        cap={itemCap(tenant.plan)}
-      />
+          <MenuEditor
+            tenant={tenant}
+            categories={categories ?? []}
+            items={items ?? []}
+            cap={itemCap(tenant.plan)}
+          />
+        </>
+      )}
     </main>
   );
 }

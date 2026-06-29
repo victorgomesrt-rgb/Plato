@@ -107,6 +107,39 @@ export async function provisionClient(input: ProvisionInput): Promise<ProvisionR
   return { ok: true, slug, ownerExisted };
 }
 
+function slugifyName(name: string): string {
+  const base = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  return base || "review-client";
+}
+
+// Standalone Review Card client: a review_only tenant with no menu and no owner invite
+// (the restaurant never logs in; the admin sets up the card next). Stays 'building' so
+// /[slug] 404s and it never appears on Discover.
+export async function provisionReviewClient(input: { name: string }): Promise<ProvisionResult> {
+  if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
+  const name = input.name?.trim();
+  if (!name) return { ok: false, error: "Restaurant name is required" };
+  const svc = createAdminClient();
+
+  let base = slugifyName(name);
+  if (isReservedSlug(base) || !isValidSlug(base)) base = `rc-${Math.random().toString(36).slice(2, 6)}`;
+  let slug = base;
+  for (let i = 0; i < 8; i++) {
+    const { data: taken } = await svc.from("tenants").select("id").eq("slug", slug).maybeSingle();
+    if (!taken) break;
+    slug = `${base}-${Math.random().toString(36).slice(2, 6)}`;
+  }
+
+  const { data: tenant, error } = await svc
+    .from("tenants")
+    .insert({ slug, name, plan: "starter", base_currency: "USD", status: "building", review_only: true })
+    .select("slug")
+    .single();
+  if (error) return { ok: false, error: `Could not create client: ${error.message}` };
+  revalidatePath("/admin");
+  return { ok: true, slug: tenant.slug, ownerExisted: false };
+}
+
 /* ---------- Tenant management (admin console) ---------- */
 
 const STATUSES = ["building", "trialing", "active", "past_due", "suspended", "canceled"];

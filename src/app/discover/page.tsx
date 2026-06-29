@@ -32,6 +32,7 @@ export default async function DiscoverPage() {
     .select("slug, name, description, cover_url, logo_url, accent_color, plan, hours, address")
     .not("published_at", "is", null)
     .not("status", "in", "(building,suspended,canceled)")
+    .neq("review_only", true)
     .order("name")
     .returns<DiscoverCard[]>();
 

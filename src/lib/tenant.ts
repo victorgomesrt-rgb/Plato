@@ -28,6 +28,7 @@ export type Tenant = {
   hours: Record<string, [string, string] | null> | null;
   links: TenantLink[] | null;
   wallet_partner: boolean | null;
+  review_only: boolean | null;
 };
 
 export type TenantLink = {
@@ -40,7 +41,7 @@ export type TenantLink = {
 };
 
 const TENANT_COLS =
-  "id, slug, name, description, logo_url, cover_url, accent_color, custom_domain, base_currency, fx_rate, dual_currency, template, default_locale, locales, status, published_at, previous_slug, address, lat, lng, phone, whatsapp, hours, links, wallet_partner";
+  "id, slug, name, description, logo_url, cover_url, accent_color, custom_domain, base_currency, fx_rate, dual_currency, template, default_locale, locales, status, published_at, previous_slug, address, lat, lng, phone, whatsapp, hours, links, wallet_partner, review_only";
 
 export async function getTenantBySlug(slug: string): Promise<Tenant | null> {
   const admin = createAdminClient();
@@ -79,6 +80,7 @@ export type PublicState = "ok" | "not_found" | "unavailable";
 
 export function publicState(tenant: Tenant | null): PublicState {
   if (!tenant) return "not_found";
+  if (tenant.review_only) return "not_found"; // review-only clients have no public menu page
   if (tenant.status === "suspended" || tenant.status === "canceled") return "unavailable";
   if (!tenant.published_at || tenant.status === "building") return "not_found";
   return "ok";
