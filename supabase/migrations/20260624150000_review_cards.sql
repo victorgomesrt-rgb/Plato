@@ -10,10 +10,13 @@ alter table public.tenants add column if not exists review_paid_through date;
 -- The gate must be Plato-managed: an owner must not set their own review URL or extend
 -- their own paid-through window (that would be free service). Re-create the column guard
 -- with the review_* columns added to the privileged set.
+-- NOTE the `auth.uid() is not null` condition: it preserves the service-role bypass from
+-- 20260618120500_fix_guard_service_role.sql (service role has no auth session). Omitting it
+-- would block admin actions (setTenantStatus/changeTenantPlan/markPaid) — do not drop it.
 create or replace function public.guard_tenant_cols()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  if not public.is_admin() then
+  if auth.uid() is not null and not public.is_admin() then
     if new.plan is distinct from old.plan
        or new.status is distinct from old.status
        or new.published_at is distinct from old.published_at
