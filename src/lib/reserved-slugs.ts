@@ -28,6 +28,8 @@ export const RESERVED_SLUGS = new Set<string>([
   "sitemap",
   "q", // tracked QR redirect
   "t", // tracked NFC redirect
+  "r", // gated review-card redirect
+  "review-unavailable", // review-card paused page
 ]);
 
 // Hosts served as the application itself (marketing, dashboard, admin), not tenant
