@@ -150,6 +150,7 @@ export async function changeTenantPlan(
   // Keep the subscription mirror in step so feature gates change immediately.
   await svc.from("subscriptions").update({ plan }).eq("tenant_id", tenantId);
   revalidatePath("/admin");
+  revalidatePath("/discover"); // plan drives the Discover "featured" (premium) placement
   return { ok: true };
 }
 

@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/toast";
-import { addTablet, assignTablet, returnTablet } from "./actions";
+import { addTablet, assignTablet, returnTablet, billTabletRental } from "./actions";
 
 export type Tablet = { id: string; asset_tag: string | null; model: string | null; status: string; tenant_id: string | null; monthly_fee: number | null; deposit: number | null; term_months: number | null; deployed_at: string | null; tenants: { name: string } | null };
 type TenantOpt = { id: string; name: string };
@@ -71,7 +71,10 @@ export function TabletsAdmin({ tablets, tenants }: { tablets: Tablet[]; tenants:
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1.5">
                     {t.status === "deployed" ? (
-                      <button disabled={pending} onClick={() => run(returnTablet(t.id))} className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-ink/30 disabled:opacity-60">Return</button>
+                      <>
+                        <button disabled={pending} onClick={() => run(billTabletRental(t.id))} title="Create this month's rental invoice" className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">Bill rent</button>
+                        <button disabled={pending} onClick={() => run(returnTablet(t.id))} className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-ink/30 disabled:opacity-60">Return</button>
+                      </>
                     ) : (
                       <>
                         <select value={pick[t.id] ?? ""} onChange={(e) => setPick((p) => ({ ...p, [t.id]: e.target.value }))} className="rounded-btn border border-line bg-surface px-2 py-1.5 text-xs">

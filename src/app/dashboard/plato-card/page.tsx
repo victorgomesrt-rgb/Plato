@@ -10,6 +10,9 @@ export const metadata: Metadata = { title: "Plato Card", robots: { index: false 
 const fmt = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d)) : "—");
 const STATUS_LABEL: Record<string, string> = { requested: "In review", scheduled: "Scheduled", sent: "Sent", declined: "Declined" };
 const STATUS_STYLE: Record<string, string> = { requested: "bg-citrus/25 text-ink", scheduled: "bg-sea/10 text-sea", sent: "bg-emerald-100 text-emerald-700", declined: "bg-line text-muted" };
+// A scheduled blast whose time has passed reads as sent (no PassBuddy delivery webhook).
+const effStatus = (b: { status: string; scheduled_at: string | null }) =>
+  b.status === "scheduled" && b.scheduled_at && new Date(b.scheduled_at) < new Date() ? "sent" : b.status;
 
 type Tn = { slug: string; wallet_partner: boolean | null; wallet_discount: string | null };
 type Blast = { id: string; message: string; status: string; scheduled_at: string | null; sent_at: string | null; created_at: string };
@@ -50,10 +53,10 @@ export default async function OwnerPlatoCardPage() {
           <ul className="mt-3 divide-y divide-line">
             {list.map((b) => (
               <li key={b.id} className="flex items-center gap-3 py-2.5">
-                {b.status === "sent" ? <Check className="h-4 w-4 text-emerald-600" /> : b.status === "scheduled" ? <Clock className="h-4 w-4 text-sea" /> : <Send className="h-4 w-4 text-muted" />}
+                {effStatus(b) === "sent" ? <Check className="h-4 w-4 text-emerald-600" /> : effStatus(b) === "scheduled" ? <Clock className="h-4 w-4 text-sea" /> : <Send className="h-4 w-4 text-muted" />}
                 <span className="min-w-0 flex-1 truncate text-sm text-ink">{b.message}</span>
                 <span className="shrink-0 text-xs text-muted">{fmt(b.sent_at ?? b.scheduled_at ?? b.created_at)}</span>
-                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLE[b.status] ?? "bg-line text-muted"}`}>{STATUS_LABEL[b.status] ?? b.status}</span>
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLE[effStatus(b)] ?? "bg-line text-muted"}`}>{STATUS_LABEL[effStatus(b)] ?? b.status}</span>
               </li>
             ))}
           </ul>

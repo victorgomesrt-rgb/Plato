@@ -12,6 +12,7 @@ const KINDS = [
   { v: "photo", label: "Photo swap" },
   { v: "copy", label: "Copy / text" },
   { v: "hours", label: "Hours" },
+  { v: "plan", label: "Change plan" },
   { v: "question", label: "Question" },
   { v: "general", label: "Something else" },
 ];

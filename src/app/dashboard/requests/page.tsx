@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { HelpCircle, DollarSign, ConciergeBell, Image as ImageIcon, Video, PenLine, Clock, MessageSquare } from "lucide-react";
+import { HelpCircle, DollarSign, ConciergeBell, Image as ImageIcon, Video, PenLine, Clock, MessageSquare, ArrowUpCircle } from "lucide-react";
 import type { ComponentType } from "react";
 import { resolveDashboard } from "@/lib/dashboard-context";
 import { DashboardHeader } from "../dashboard-header";
@@ -22,6 +22,7 @@ const KIND: Record<string, KindCfg> = {
   video: { label: "Re-shoot", icon: Video, tile: "bg-accent/10 text-accent-deep", pill: "bg-accent/10 text-accent-deep" },
   copy: { label: "Copy / text", icon: PenLine, tile: "bg-citrus/25 text-ink", pill: "bg-citrus/25 text-ink" },
   hours: { label: "Hours", icon: Clock, tile: "bg-line text-muted", pill: "bg-line text-muted" },
+  plan: { label: "Plan change", icon: ArrowUpCircle, tile: "bg-accent/10 text-accent-deep", pill: "bg-accent/10 text-accent-deep" },
   general: { label: "General", icon: MessageSquare, tile: "bg-line text-muted", pill: "bg-line text-muted" },
 };
 const kindCfg = (k: string) => KIND[k] ?? KIND.general;

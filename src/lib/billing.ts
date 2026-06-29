@@ -60,3 +60,35 @@ export async function overdueInvoiceIds(): Promise<string[]> {
     .lt("due_date", today);
   return (data ?? []).map((r) => r.id);
 }
+
+// Dunning, run daily by the invoice-reminders cron. A tenant with a sent + overdue
+// invoice moves active/trialing -> past_due; a past_due tenant whose overdue invoices
+// are gone (paid or voided) moves back to active. Self-healing and idempotent.
+// past_due still serves the public page (short grace window, see publicState) — taking a
+// page offline (suspended) stays a manual admin decision, never automatic.
+export async function applyDunning(): Promise<{ pastDue: number; restored: number }> {
+  const svc = createAdminClient();
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
+  const { data: od } = await svc.from("invoices").select("tenant_id").eq("status", "sent").lt("due_date", today);
+  const overdue = new Set((od ?? []).map((r) => r.tenant_id as string));
+
+  let pastDue = 0;
+  if (overdue.size) {
+    const { data } = await svc
+      .from("tenants")
+      .update({ status: "past_due" })
+      .in("id", [...overdue])
+      .in("status", ["active", "trialing"])
+      .select("id");
+    pastDue = data?.length ?? 0;
+  }
+
+  const { data: pd } = await svc.from("tenants").select("id").eq("status", "past_due");
+  const restore = (pd ?? []).map((r) => r.id as string).filter((id) => !overdue.has(id));
+  let restored = 0;
+  if (restore.length) {
+    const { data } = await svc.from("tenants").update({ status: "active" }).in("id", restore).select("id");
+    restored = data?.length ?? 0;
+  }
+  return { pastDue, restored };
+}

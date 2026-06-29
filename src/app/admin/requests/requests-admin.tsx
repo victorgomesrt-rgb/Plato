@@ -3,9 +3,10 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/components/toast";
-import { setChangeRequestStatus, setHardwareStatus } from "./actions";
+import { setChangeRequestStatus, setHardwareStatus, applyPlanFromRequest } from "./actions";
 
-export type ChangeReq = { id: string; kind: string; message: string; status: string; created_at: string; owner_reply: string | null; tenants: { name: string; slug: string } | null };
+export type ChangeReq = { id: string; kind: string; message: string; status: string; created_at: string; owner_reply: string | null; tenant_id: string; tenants: { name: string; slug: string } | null };
+const PLAN_OPTS = ["starter", "growth", "premium"];
 export type HardwareReq = { id: string; item_type: string; quantity: number; notes: string | null; status: string; created_at: string; tenants: { name: string; slug: string } | null };
 
 const fmt = (d: string) => new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeZone: "America/Aruba" }).format(new Date(d));
@@ -44,9 +45,18 @@ export function RequestsAdmin({ changeRequests, hardwareOrders }: { changeReques
                   {r.owner_reply && (
                     <p className="mt-2 rounded-btn border-l-2 border-accent bg-line/40 px-3 py-1.5 text-sm text-ink"><span className="font-medium">Owner replied:</span> {r.owner_reply}</p>
                   )}
-                  <div className="mt-2 flex items-center justify-between">
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                     <span className="text-xs text-muted">{fmt(r.created_at)}</span>
-                    {next && <button disabled={pending} onClick={() => run(setChangeRequestStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{next.label}</button>}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {r.kind === "plan" && r.status !== "done" && r.tenant_id && (
+                        <span className="flex items-center gap-1 text-xs text-muted">Set plan &amp; close:
+                          {PLAN_OPTS.map((p) => (
+                            <button key={p} disabled={pending} onClick={() => run(applyPlanFromRequest(r.id, r.tenant_id, p))} className="rounded-btn border border-line px-2 py-1 text-xs font-medium capitalize text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">{p}</button>
+                          ))}
+                        </span>
+                      )}
+                      {next && <button disabled={pending} onClick={() => run(setChangeRequestStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{next.label}</button>}
+                    </div>
                   </div>
                 </li>
               );

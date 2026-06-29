@@ -16,6 +16,10 @@ const fmt = (d: string | null) => (d ? new Intl.DateTimeFormat("en-US", { dateSt
 const STATUS: Record<string, string> = {
   requested: "bg-citrus/25 text-ink", scheduled: "bg-sea/10 text-sea", sent: "bg-emerald-100 text-emerald-700", declined: "bg-line text-muted",
 };
+// PassBuddy has no delivery webhook, so a scheduled blast whose time has passed is
+// inferred as sent rather than left "scheduled" forever.
+const effStatus = (b: { status: string; scheduled_at: string | null }) =>
+  b.status === "scheduled" && b.scheduled_at && new Date(b.scheduled_at) < new Date() ? "sent" : b.status;
 
 export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap, members, membersThisMonth }: { blasts: Blast[]; partnerCount: number; sentThisWeek: number; weeklyCap: number; members: number; membersThisMonth: number }) {
   const router = useRouter();
@@ -104,9 +108,9 @@ export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap, 
           <ul className="mt-3 divide-y divide-line">
             {history.map((b) => (
               <li key={b.id} className="flex items-center gap-3 py-2.5">
-                {b.status === "scheduled" ? <Clock className="h-4 w-4 text-muted" /> : <Check className="h-4 w-4 text-emerald-600" />}
+                {effStatus(b) === "scheduled" ? <Clock className="h-4 w-4 text-muted" /> : <Check className="h-4 w-4 text-emerald-600" />}
                 <span className="min-w-0 flex-1 truncate text-sm text-ink">{b.tenants?.name ? `${b.tenants.name}: ` : ""}{b.message}</span>
-                <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS[b.status] ?? "bg-line text-muted"}`}>{b.status === "scheduled" ? `Scheduled ${fmt(b.scheduled_at)}` : `Sent ${fmt(b.sent_at)}`}</span>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS[effStatus(b)] ?? "bg-line text-muted"}`}>{effStatus(b) === "scheduled" ? `Scheduled ${fmt(b.scheduled_at)}` : `Sent ${fmt(b.sent_at ?? b.scheduled_at)}`}</span>
               </li>
             ))}
           </ul>

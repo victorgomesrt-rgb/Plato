@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { overdueInvoiceIds, remindInvoice } from "@/lib/billing";
+import { overdueInvoiceIds, remindInvoice, applyDunning } from "@/lib/billing";
 
 // Scheduled by Vercel Cron (see vercel.json). Sends reminders for sent-but-overdue
-// invoices. Protected by CRON_SECRET so only the scheduler (or you) can trigger it.
+// invoices, then applies dunning (overdue tenants -> past_due, recovered ones -> active).
+// Protected by CRON_SECRET so only the scheduler (or you) can trigger it.
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
   const auth = request.headers.get("authorization");
@@ -17,5 +18,6 @@ export async function GET(request: NextRequest) {
     const r = await remindInvoice(id);
     if (r.ok) sent++;
   }
-  return NextResponse.json({ overdue: ids.length, reminded: sent });
+  const dunning = await applyDunning();
+  return NextResponse.json({ overdue: ids.length, reminded: sent, ...dunning });
 }
