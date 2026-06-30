@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Star, Copy, Check } from "lucide-react";
 import { toast } from "@/components/toast";
-import { setReviewCard, generateReviewCode, billReviewCard } from "./review-actions";
 
 type Res = { ok: boolean; error?: string };
 
@@ -27,6 +26,12 @@ export function ReviewCardPanel({
 
   const run = (p: Promise<Res>, msg = "Saved") =>
     start(async () => { const r = await p; if (r.ok) { toast(msg); router.refresh(); } else toast(r.error ?? "Could not save"); });
+
+  // Route Handler, not a Server Action (the actions 500'd only on Vercel).
+  const post = (op: string, extra: Record<string, unknown> = {}): Promise<Res> =>
+    fetch(`/admin/tenants/${slug}/review`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ op, tenantId, ...extra }) })
+      .then((r) => r.json() as Promise<Res>)
+      .catch(() => ({ ok: false, error: "Network error" }));
 
   function extendMonth() {
     const base = paidThrough && paidThrough >= today ? new Date(paidThrough) : new Date();
@@ -64,13 +69,13 @@ export function ReviewCardPanel({
             <button type="button" onClick={extendMonth} className="rounded-btn border border-line px-2.5 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep">+1 month</button>
           </div>
         </label>
-        <button disabled={pending} onClick={() => run(setReviewCard(tenantId, slug, { url, active, paidThrough: paidThrough || null }))}
+        <button disabled={pending} onClick={() => run(post("save", { url, active, paidThrough: paidThrough || null }))}
           className="rounded-btn bg-accent px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60">Save</button>
       </div>
 
       <div className="mt-3 space-y-2 border-t border-line pt-3">
         <div className="flex flex-wrap items-center gap-2">
-          <button disabled={pending} onClick={() => run(billReviewCard(tenantId, slug), "Draft invoice created — send it from Billing")}
+          <button disabled={pending} onClick={() => run(post("bill"), "Draft invoice created — send it from Billing")}
             className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">Bill 1 month</button>
           <span className="text-xs text-muted">Creates a draft invoice; paid-through extends a month when you mark it paid.</span>
         </div>
@@ -83,7 +88,7 @@ export function ReviewCardPanel({
             </button>
           </div>
         ) : (
-          <button disabled={pending} onClick={() => run(generateReviewCode(tenantId, slug), "Review code created")}
+          <button disabled={pending} onClick={() => run(post("generate"), "Review code created")}
             className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">Generate review code</button>
         )}
       </div>
