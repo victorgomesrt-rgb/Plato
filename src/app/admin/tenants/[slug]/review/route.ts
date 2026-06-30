@@ -1,5 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
+import sharp from "sharp";
+import convert from "heic-convert";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -65,9 +67,7 @@ export async function POST(req: NextRequest) {
       const { data: blob, error: dlErr } = await svc.storage.from("item-images").download(tmpPath);
       if (dlErr || !blob) return NextResponse.json({ ok: false, error: dlErr?.message ?? "Upload not found" });
       let input = Buffer.from(await blob.arrayBuffer());
-      const { default: sharp } = await import("sharp");
       if (/\.(heic|heif)$/i.test(tmpPath)) {
-        const { default: convert } = await import("heic-convert");
         input = Buffer.from(await convert({ buffer: input, format: "JPEG", quality: 0.92 }));
       }
       const out = await sharp(input).rotate().resize({ width: 512, height: 512, fit: "inside", withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
