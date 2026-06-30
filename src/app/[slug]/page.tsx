@@ -9,6 +9,7 @@ import {
 import { getMenu } from "@/lib/menu";
 import { arubaNow } from "@/lib/hours";
 import { DinerPage } from "@/components/diner/diner-page";
+import { ReviewLanding } from "./review-landing";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -20,6 +21,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io";
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const tenant = await getTenantBySlug(slug);
+  if (tenant?.review_only) return { title: tenant.name, robots: { index: false } };
   if (!tenant || publicState(tenant) !== "ok") {
     return { title: "Menu", robots: { index: false } };
   }
@@ -56,6 +58,11 @@ export default async function TenantPage({ params }: Props) {
     const renamed = await getTenantByPreviousSlug(slug);
     if (renamed) permanentRedirect(`/${renamed.slug}`); // 308: old slug → new, permanent for SEO
   }
+
+  // Review-only clients have no menu — their slug serves a small review landing instead
+  // of 404ing. publicState still returns not_found for them (keeps the menu/OG/sitemap
+  // paths clean), so this branch must come first.
+  if (tenant?.review_only) return <ReviewLanding tenant={tenant} />;
 
   const state = publicState(tenant);
   if (state === "not_found") notFound();

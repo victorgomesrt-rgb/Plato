@@ -29,6 +29,9 @@ export type Tenant = {
   links: TenantLink[] | null;
   wallet_partner: boolean | null;
   review_only: boolean | null;
+  review_url: string | null;
+  review_active: boolean | null;
+  review_paid_through: string | null;
 };
 
 export type TenantLink = {
@@ -41,7 +44,7 @@ export type TenantLink = {
 };
 
 const TENANT_COLS =
-  "id, slug, name, description, logo_url, cover_url, accent_color, custom_domain, base_currency, fx_rate, dual_currency, template, default_locale, locales, status, published_at, previous_slug, address, lat, lng, phone, whatsapp, hours, links, wallet_partner, review_only";
+  "id, slug, name, description, logo_url, cover_url, accent_color, custom_domain, base_currency, fx_rate, dual_currency, template, default_locale, locales, status, published_at, previous_slug, address, lat, lng, phone, whatsapp, hours, links, wallet_partner, review_only, review_url, review_active, review_paid_through";
 
 export async function getTenantBySlug(slug: string): Promise<Tenant | null> {
   const admin = createAdminClient();
