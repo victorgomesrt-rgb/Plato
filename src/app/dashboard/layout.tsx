@@ -5,6 +5,7 @@ import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { Toaster } from "@/components/toast";
 import { createClient } from "@/lib/supabase/server";
 import { resolveDashboard } from "@/lib/dashboard-context";
+import { currentAdmin } from "@/lib/admin-auth";
 
 const dateFmt = (d: string) =>
   new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", timeZone: "America/Aruba" }).format(new Date(d));
@@ -16,6 +17,22 @@ type TenantBits = {
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const res = await resolveDashboard();
   if (res.state === "redirect") redirect("/login");
+
+  // A signed-in user with no tenant must NOT land on a placeholder owner dashboard.
+  // Platform admins (e.g. adrian@ with no restaurant of their own) go to the admin
+  // console; a genuine non-admin with no restaurant sees a short note instead.
+  const admin = await currentAdmin();
+  if (res.state === "no_tenant") {
+    if (admin) redirect("/admin");
+    return (
+      <main className="grid min-h-screen place-items-center bg-[#FAF8F4] px-6 text-center">
+        <div>
+          <p className="font-display text-lg font-semibold text-ink">No restaurant linked to this account</p>
+          <p className="mt-2 text-sm text-muted">Ask your Plato contact to finish setup.</p>
+        </div>
+      </main>
+    );
+  }
 
   let t: TenantBits | null = null;
   let impersonating = false;
@@ -73,6 +90,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         requestCount={requestCount}
         ownerName={ownerName}
         ownerEmail={ownerEmail}
+        isAdmin={!!admin}
       />
       <div className="md:pl-60">
         {impersonating && (

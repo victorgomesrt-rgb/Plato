@@ -3,12 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, List, BarChart3, MessageSquare, AppWindow, CreditCard, Wallet, ExternalLink } from "lucide-react";
+import { LayoutDashboard, List, BarChart3, MessageSquare, AppWindow, CreditCard, Wallet, ExternalLink, Shield } from "lucide-react";
 
 type Item = { href: string; label: string; icon: typeof LayoutDashboard; badge?: number };
 
 export function DashboardSidebar({
-  name, slug, plan, price, live, renews, requestCount = 0, ownerName, ownerEmail,
+  name, slug, plan, price, live, renews, requestCount = 0, ownerName, ownerEmail, isAdmin = false,
 }: {
   name: string;
   slug: string;
@@ -19,6 +19,7 @@ export function DashboardSidebar({
   requestCount?: number;
   ownerName: string;
   ownerEmail: string;
+  isAdmin?: boolean;
 }) {
   const path = usePathname();
   const nav: Item[] = [
@@ -79,6 +80,11 @@ export function DashboardSidebar({
       </nav>
 
       <div className="px-4 pb-4 md:mt-auto">
+        {isAdmin && (
+          <Link href="/admin" className="mb-3 flex items-center gap-2.5 rounded-btn border border-accent/30 bg-accent/10 px-3 py-2 text-sm font-medium text-white hover:bg-accent/20">
+            <Shield className="h-4 w-4 text-accent" /> Admin console
+          </Link>
+        )}
         <div className="hidden rounded-card border border-white/10 bg-white/5 p-4 md:block">
           <p className="text-xs">
             <span className="font-semibold uppercase tracking-wide text-accent">{plan}</span>
