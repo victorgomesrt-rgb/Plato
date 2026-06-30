@@ -82,7 +82,7 @@ export default async function ManageTenantPage({
         )}
       </div>
 
-      <TenantControls tenantId={tenant.id} slug={tenant.slug} plan={tenant.plan} status={tenant.status} />
+      <TenantControls tenantId={tenant.id} slug={tenant.slug} plan={tenant.plan} status={tenant.status} reviewOnly={!!tenant.review_only} />
 
       <ReviewCardPanel
         tenantId={tenant.id}

@@ -9,17 +9,18 @@ import { AdminHeader } from "../admin-header";
 export const metadata: Metadata = { title: "Admin · Revenue", robots: { index: false } };
 
 const usd = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
-type Tenant = { name: string; slug: string; plan: string; status: string; created_at: string };
+type Tenant = { name: string; slug: string; plan: string; status: string; created_at: string; review_only: boolean | null };
 
 export default async function AdminRevenuePage() {
   if (!(await currentAdmin())) notFound();
   const svc = createAdminClient();
   const [{ data: tData }, { data: tabData }] = await Promise.all([
-    svc.from("tenants").select("name, slug, plan, status, created_at").returns<Tenant[]>(),
+    svc.from("tenants").select("name, slug, plan, status, created_at, review_only").returns<Tenant[]>(),
     svc.from("tablets").select("monthly_fee, status").returns<{ monthly_fee: number | null; status: string }[]>(),
   ]);
   const tenants = tData ?? [];
-  const active = tenants.filter((t) => t.status === "active");
+  const menu = tenants.filter((t) => !t.review_only); // review-only clients aren't menu subscriptions
+  const active = menu.filter((t) => t.status === "active");
   const subMrr = active.reduce((a, t) => a + planPrice(t.plan), 0);
   const tabletMrr = (tabData ?? []).filter((t) => t.status === "deployed").reduce((a, t) => a + Number(t.monthly_fee ?? 0), 0);
 
@@ -30,7 +31,7 @@ export default async function AdminRevenuePage() {
   });
   const mrrTrend = months.map((m) => ({
     label: m.label,
-    value: tenants.filter((t) => new Date(t.created_at) <= m.end && t.status !== "canceled").reduce((a, t) => a + planPrice(t.plan), 0),
+    value: menu.filter((t) => new Date(t.created_at) <= m.end && t.status !== "canceled").reduce((a, t) => a + planPrice(t.plan), 0),
   }));
   const momPct = mrrTrend[10].value > 0 ? Math.round(((mrrTrend[11].value - mrrTrend[10].value) / mrrTrend[10].value) * 1000) / 10 : 0;
   const avgPerTenant = active.length ? Math.round(subMrr / active.length) : 0;

@@ -16,6 +16,7 @@ export type TenantRow = {
   status: string;
   created_at: string;
   updated_at: string;
+  review_only: boolean | null;
 };
 
 const usd = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(n);
@@ -123,19 +124,23 @@ export function AdminConsole({ tenants }: { tenants: TenantRow[] }) {
                     </Link>
                   </div>
                 </td>
-                <td className="px-3 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${PLAN_STYLE[t.plan] ?? "bg-line text-muted"}`}>{t.plan}</span></td>
+                <td className="px-3 py-3">{t.review_only
+                  ? <span className="rounded-full bg-citrus/25 px-2 py-0.5 text-xs font-medium text-ink">Review card</span>
+                  : <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${PLAN_STYLE[t.plan] ?? "bg-line text-muted"}`}>{t.plan}</span>}</td>
                 <td className="px-3 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLE[t.status] ?? "bg-line text-muted"}`}>{STATUS_LABEL[t.status] ?? t.status}</span></td>
-                <td className="px-3 py-3 font-medium text-ink">{t.status === "active" ? usd(planPrice(t.plan)) : "—"}</td>
+                <td className="px-3 py-3 font-medium text-ink">{t.review_only ? "—" : t.status === "active" ? usd(planPrice(t.plan)) : "—"}</td>
                 <td className="px-3 py-3 text-muted">{monthYear(t.created_at)}</td>
                 <td className="px-3 py-3 text-muted">{relTime(t.updated_at, now)}</td>
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-end gap-1">
-                    <a href={`/${t.slug}`} target="_blank" rel="noopener noreferrer" title="View live menu" aria-label="View live menu" className="grid h-8 w-8 place-items-center rounded-btn text-muted hover:bg-line hover:text-ink"><Eye className="h-4 w-4" /></a>
+                    <a href={`/${t.slug}`} target="_blank" rel="noopener noreferrer" title={t.review_only ? "View review page" : "View live menu"} aria-label={t.review_only ? "View review page" : "View live menu"} className="grid h-8 w-8 place-items-center rounded-btn text-muted hover:bg-line hover:text-ink"><Eye className="h-4 w-4" /></a>
                     <Link href={`/admin/tenants/${t.slug}`} title="Manage" aria-label="Manage" className="grid h-8 w-8 place-items-center rounded-btn text-muted hover:bg-line hover:text-ink"><SlidersHorizontal className="h-4 w-4" /></Link>
-                    <button disabled={pending} onClick={() => toggle(t)} title={t.status === "active" ? "Suspend" : "Activate"} aria-label={t.status === "active" ? "Suspend" : "Activate"}
-                      className="grid h-8 w-8 place-items-center rounded-btn text-muted hover:bg-line hover:text-accent-deep disabled:opacity-50">
-                      {t.status === "active" ? <Ban className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
-                    </button>
+                    {!t.review_only && (
+                      <button disabled={pending} onClick={() => toggle(t)} title={t.status === "active" ? "Suspend" : "Activate"} aria-label={t.status === "active" ? "Suspend" : "Activate"}
+                        className="grid h-8 w-8 place-items-center rounded-btn text-muted hover:bg-line hover:text-accent-deep disabled:opacity-50">
+                        {t.status === "active" ? <Ban className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>

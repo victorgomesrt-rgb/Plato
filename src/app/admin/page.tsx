@@ -14,7 +14,7 @@ const usd = (n: number) => new Intl.NumberFormat("en-US", { style: "currency", c
 const arubaMonth = (d: string) =>
   new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba", year: "numeric", month: "2-digit" }).format(new Date(d));
 
-type Tenant = { id: string; name: string; slug: string; plan: string; status: string; created_at: string; updated_at: string; published_at: string | null };
+type Tenant = { id: string; name: string; slug: string; plan: string; status: string; created_at: string; updated_at: string; published_at: string | null; review_only: boolean | null };
 type Inv = { amount: number; paid_at: string | null; tenants: { name: string } | null };
 
 function relTime(ts: string, now: number) {
@@ -29,7 +29,7 @@ export default async function AdminOverviewPage() {
   const svc = createAdminClient();
 
   const [{ data: tData }, { data: iData }] = await Promise.all([
-    svc.from("tenants").select("id, name, slug, plan, status, created_at, updated_at, published_at").order("created_at", { ascending: false }).returns<Tenant[]>(),
+    svc.from("tenants").select("id, name, slug, plan, status, created_at, updated_at, published_at, review_only").order("created_at", { ascending: false }).returns<Tenant[]>(),
     svc.from("invoices").select("amount, paid_at, tenants(name)").not("paid_at", "is", null).order("paid_at", { ascending: false }).limit(5).returns<Inv[]>(),
   ]);
   const tenants = tData ?? [];
@@ -39,11 +39,14 @@ export default async function AdminOverviewPage() {
   const nowD = new Date(now);
   const thisMonth = arubaMonth(nowD.toISOString());
 
-  const active = tenants.filter((t) => t.status === "active");
+  // Review-only clients have no menu plan — exclude them from menu-business metrics
+  // (MRR, plan mix, page counts). Their review-card revenue is tracked in Billing.
+  const menu = tenants.filter((t) => !t.review_only);
+  const active = menu.filter((t) => t.status === "active");
   const mrr = active.reduce((a, t) => a + planPrice(t.plan), 0);
-  const pastDue = tenants.filter((t) => t.status === "past_due").length;
-  const churn = tenants.filter((t) => t.status === "canceled" && arubaMonth(t.updated_at) === thisMonth).length;
-  const newThis = tenants.filter((t) => arubaMonth(t.created_at) === thisMonth).length;
+  const pastDue = menu.filter((t) => t.status === "past_due").length;
+  const churn = menu.filter((t) => t.status === "canceled" && arubaMonth(t.updated_at) === thisMonth).length;
+  const newThis = menu.filter((t) => arubaMonth(t.created_at) === thisMonth).length;
 
   // MRR trailing 12 months (cumulative by signup, excluding canceled).
   const months = Array.from({ length: 12 }, (_, i) => {
@@ -52,7 +55,7 @@ export default async function AdminOverviewPage() {
   });
   const mrrTrend = months.map((m) => ({
     label: m.label,
-    value: tenants.filter((t) => new Date(t.created_at) <= m.end && t.status !== "canceled").reduce((a, t) => a + planPrice(t.plan), 0),
+    value: menu.filter((t) => new Date(t.created_at) <= m.end && t.status !== "canceled").reduce((a, t) => a + planPrice(t.plan), 0),
   }));
   const last = mrrTrend[11].value, prev = mrrTrend[10].value;
   const momPct = prev > 0 ? Math.round(((last - prev) / prev) * 1000) / 10 : 0;
@@ -63,7 +66,7 @@ export default async function AdminOverviewPage() {
     { name: "Premium", value: active.filter((t) => t.plan === "premium").length, color: "#FB6A1A" },
   ];
 
-  const onboarding = tenants
+  const onboarding = menu
     .filter((t) => ["building", "trialing"].includes(t.status))
     .slice(0, 4)
     .map((t) => ({ name: t.name, label: t.status === "building" ? "Building menu" : "Ready to publish", pct: t.status === "building" ? 55 : 90 }));
@@ -71,7 +74,7 @@ export default async function AdminOverviewPage() {
   type Act = { icon: "pay" | "live"; title: string; sub: string; ts: string };
   const activity: Act[] = [
     ...(iData ?? []).filter((i) => i.paid_at).map((i): Act => ({ icon: "pay", title: `Payment received, ${i.tenants?.name ?? "-"}`, sub: usd(Number(i.amount)), ts: i.paid_at! })),
-    ...tenants.filter((t) => t.published_at).slice(0, 3).map((t): Act => ({ icon: "live", title: `${t.name} went live`, sub: t.plan, ts: t.published_at! })),
+    ...menu.filter((t) => t.published_at).slice(0, 3).map((t): Act => ({ icon: "live", title: `${t.name} went live`, sub: t.plan, ts: t.published_at! })),
   ].sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime()).slice(0, 6);
 
   const cards: { label: string; value: string | number; pill?: string; pillGood?: boolean; sub: string }[] = [
@@ -87,7 +90,7 @@ export default async function AdminOverviewPage() {
       <div className="flex flex-wrap items-center gap-3">
         <div className="mr-auto">
           <h1 className="font-display text-2xl font-bold text-ink">Overview</h1>
-          <p className="text-sm text-muted">Across all {tenants.length} menu {tenants.length === 1 ? "page" : "pages"}</p>
+          <p className="text-sm text-muted">Across all {menu.length} menu {menu.length === 1 ? "page" : "pages"}</p>
         </div>
         <AdminSearch tenants={tenants.map((t) => ({ name: t.name, slug: t.slug, plan: t.plan }))} />
         <Link href="/admin/new-client" className="inline-flex shrink-0 items-center gap-1.5 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">

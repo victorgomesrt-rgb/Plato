@@ -15,7 +15,7 @@ export default async function AdminTenantsPage() {
   const svc = createAdminClient();
   const { data } = await svc
     .from("tenants")
-    .select("id, name, slug, plan, status, created_at, updated_at")
+    .select("id, name, slug, plan, status, created_at, updated_at, review_only")
     .order("created_at", { ascending: false })
     .returns<TenantRow[]>();
   const tenants = data ?? [];
