@@ -25,7 +25,7 @@ export async function setReviewCard(
       .update({ review_url: url || null, review_active: input.active, review_paid_through: input.paidThrough || null })
       .eq("id", tenantId);
     if (error) return { ok: false, error: error.message };
-    revalidatePath(`/admin/tenants/${slug}`);
+    revalidatePath(`/${slug}`); // public review landing — NOT the current admin page (revalidating the page you're on re-renders it inside the action and 500s on Vercel; the panel updates via router.refresh)
     return { ok: true };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
@@ -49,7 +49,7 @@ export async function generateReviewCode(tenantId: string, slug: string): Promis
         .insert({ tenant_id: tenantId, code: shortCode(), kind: "review", placement: "review" });
       if (error) return { ok: false, error: error.message };
     }
-    revalidatePath(`/admin/tenants/${slug}`);
+    revalidatePath(`/${slug}`); // public review landing — NOT the current admin page (revalidating the page you're on re-renders it inside the action and 500s on Vercel; the panel updates via router.refresh)
     return { ok: true };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
@@ -82,7 +82,7 @@ export async function billReviewCard(tenantId: string, slug: string): Promise<Re
       lines: [{ serviceId: s?.id ?? null, description: s?.description || "Review card · monthly", quantity: 1, unitPrice: s ? Number(s.unit_price) : 25 }],
     });
     if (!r.ok) return r;
-    revalidatePath(`/admin/tenants/${slug}`);
+    revalidatePath(`/${slug}`); // public review landing — NOT the current admin page (revalidating the page you're on re-renders it inside the action and 500s on Vercel; the panel updates via router.refresh)
     return { ok: true };
   } catch (e) {
     return { ok: false, error: (e as Error).message };
