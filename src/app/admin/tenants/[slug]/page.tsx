@@ -23,7 +23,7 @@ export default async function ManageTenantPage({
   const supabase = await createClient();
   const { data: tenant } = await supabase
     .from("tenants")
-    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template, review_url, review_active, review_paid_through, review_only")
+    .select("id, slug, name, plan, status, published_at, base_currency, fx_rate, template, logo_url, review_url, review_active, review_paid_through, review_only")
     .eq("slug", slug)
     .maybeSingle();
   if (!tenant) notFound();
@@ -92,6 +92,7 @@ export default async function ManageTenantPage({
         reviewActive={tenant.review_active ?? false}
         reviewPaidThrough={tenant.review_paid_through ?? null}
         reviewCode={reviewLink?.[0]?.code ?? null}
+        logoUrl={tenant.logo_url ?? null}
       />
 
       {!tenant.review_only && (

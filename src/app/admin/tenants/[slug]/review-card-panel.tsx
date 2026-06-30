@@ -1,17 +1,18 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Star, Copy, Check } from "lucide-react";
+import { Star, Copy, Check, ImagePlus } from "lucide-react";
 import { toast } from "@/components/toast";
+import { createClient } from "@/lib/supabase/client";
 
 type Res = { ok: boolean; error?: string };
 
 export function ReviewCardPanel({
-  tenantId, slug, site, reviewUrl, reviewActive, reviewPaidThrough, reviewCode,
+  tenantId, slug, site, reviewUrl, reviewActive, reviewPaidThrough, reviewCode, logoUrl,
 }: {
   tenantId: string; slug: string; site: string;
-  reviewUrl: string | null; reviewActive: boolean; reviewPaidThrough: string | null; reviewCode: string | null;
+  reviewUrl: string | null; reviewActive: boolean; reviewPaidThrough: string | null; reviewCode: string | null; logoUrl: string | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -28,10 +29,29 @@ export function ReviewCardPanel({
     start(async () => { const r = await p; if (r.ok) { toast(msg); router.refresh(); } else toast(r.error ?? "Could not save"); });
 
   // Route Handler, not a Server Action (the actions 500'd only on Vercel).
-  const post = (op: string, extra: Record<string, unknown> = {}): Promise<Res> =>
+  const post = (op: string, extra: Record<string, unknown> = {}): Promise<Res & { url?: string }> =>
     fetch(`/admin/tenants/${slug}/review`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ op, tenantId, ...extra }) })
-      .then((r) => r.json() as Promise<Res>)
+      .then((r) => r.json() as Promise<Res & { url?: string }>)
       .catch(() => ({ ok: false, error: "Network error" }));
+
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [logo, setLogo] = useState(logoUrl);
+  const [uploading, setUploading] = useState(false);
+  async function onLogoFile(file: File) {
+    setUploading(true);
+    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+    const tmpPath = `${tenantId}/_tmp/${crypto.randomUUID()}.${ext}`;
+    const up = await createClient().storage.from("item-images").upload(tmpPath, file, { upsert: true });
+    if (up.error) { toast(up.error.message); setUploading(false); return; }
+    const r = await post("logo", { tmpPath });
+    setUploading(false);
+    if (r.ok) { setLogo(r.url ?? null); toast("Logo updated"); router.refresh(); }
+    else toast(r.error ?? "Upload failed");
+  }
+  function removeLogo() {
+    setUploading(true);
+    post("removeLogo").then((r) => { setUploading(false); if (r.ok) { setLogo(null); toast("Logo removed"); router.refresh(); } else toast(r.error ?? "Could not remove"); });
+  }
 
   function extendMonth() {
     const base = paidThrough && paidThrough >= today ? new Date(paidThrough) : new Date();
@@ -71,6 +91,26 @@ export function ReviewCardPanel({
         </label>
         <button disabled={pending} onClick={() => run(post("save", { url, active, paidThrough: paidThrough || null }))}
           className="rounded-btn bg-accent px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60">Save</button>
+      </div>
+
+      <div className="mt-3 flex items-center gap-3 border-t border-line pt-3">
+        <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-lg border border-line bg-line/40">
+          {logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logo} alt="" className="h-full w-full object-contain" />
+          ) : (
+            <ImagePlus className="h-5 w-5 text-muted" />
+          )}
+        </div>
+        <div className="min-w-0 text-xs text-muted">
+          <p className="font-medium text-ink">Logo</p>
+          <p>Used in the QR center &amp; on the review page.</p>
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <input ref={fileRef} type="file" accept="image/*,.heic,.heif" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onLogoFile(f); e.target.value = ""; }} />
+          <button type="button" disabled={uploading} onClick={() => fileRef.current?.click()} className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">{uploading ? "Uploading…" : logo ? "Change" : "Upload logo"}</button>
+          {logo && <button type="button" disabled={uploading} onClick={removeLogo} className="text-xs text-muted hover:text-accent-deep">Remove</button>}
+        </div>
       </div>
 
       <div className="mt-3 space-y-2 border-t border-line pt-3">

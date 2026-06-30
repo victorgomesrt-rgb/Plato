@@ -56,6 +56,39 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(r.ok ? { ok: true } : { ok: false, error: r.error });
     }
 
+    // Client logo: the browser uploaded the original to <tenantId>/_tmp/ (storage RLS
+    // allows is_admin()); here we convert HEIC, square it, strip EXIF, store the webp,
+    // and set tenants.logo_url. Mirrors processBrandImage but admin-gated, no membership.
+    if (op === "logo") {
+      const tmpPath = String(body.tmpPath ?? "");
+      if (!tmpPath.startsWith(`${tenantId}/_tmp/`)) return NextResponse.json({ ok: false, error: "Bad upload path" });
+      const { data: blob, error: dlErr } = await svc.storage.from("item-images").download(tmpPath);
+      if (dlErr || !blob) return NextResponse.json({ ok: false, error: dlErr?.message ?? "Upload not found" });
+      let input = Buffer.from(await blob.arrayBuffer());
+      const { default: sharp } = await import("sharp");
+      if (/\.(heic|heif)$/i.test(tmpPath)) {
+        const { default: convert } = await import("heic-convert");
+        input = Buffer.from(await convert({ buffer: input, format: "JPEG", quality: 0.92 }));
+      }
+      const out = await sharp(input).rotate().resize({ width: 512, height: 512, fit: "inside", withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
+      const path = `${tenantId}/_logo.webp`;
+      const up = await svc.storage.from("item-images").upload(path, out, { contentType: "image/webp", upsert: true });
+      if (up.error) return NextResponse.json({ ok: false, error: up.error.message });
+      const { data: pub } = svc.storage.from("item-images").getPublicUrl(path);
+      const url = `${pub.publicUrl}?v=${Date.now()}`;
+      const { error } = await svc.from("tenants").update({ logo_url: url }).eq("id", tenantId);
+      if (error) return NextResponse.json({ ok: false, error: error.message });
+      await svc.storage.from("item-images").remove([tmpPath]);
+      return NextResponse.json({ ok: true, url });
+    }
+
+    if (op === "removeLogo") {
+      await svc.storage.from("item-images").remove([`${tenantId}/_logo.webp`]);
+      const { error } = await svc.from("tenants").update({ logo_url: null }).eq("id", tenantId);
+      if (error) return NextResponse.json({ ok: false, error: error.message });
+      return NextResponse.json({ ok: true });
+    }
+
     return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });
   } catch (e) {
     return NextResponse.json({ ok: false, error: (e as Error).message });
