@@ -8,6 +8,25 @@ import { createClient } from "@/lib/supabase/client";
 
 type Res = { ok: boolean; error?: string };
 
+// Resize + re-encode to WebP in the browser (also strips EXIF). No server image lib — sharp's
+// native binary (libvips) fails to load in a Vercel route handler.
+function toWebp(file: File, max: number): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => {
+      URL.revokeObjectURL(img.src);
+      const scale = Math.min(1, max / Math.max(img.width, img.height || 1));
+      const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+      const c = document.createElement("canvas"); c.width = w; c.height = h;
+      const ctx = c.getContext("2d"); if (!ctx) return reject(new Error("Canvas not supported"));
+      ctx.drawImage(img, 0, 0, w, h);
+      c.toBlob((bl) => (bl ? resolve(bl) : reject(new Error("Could not encode image"))), "image/webp", 0.85);
+    };
+    img.onerror = () => reject(new Error("Could not read image — use PNG, JPG, or WebP"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+
 export function ReviewCardPanel({
   tenantId, slug, site, reviewUrl, reviewActive, reviewPaidThrough, reviewCode, logoUrl,
 }: {
@@ -39,14 +58,19 @@ export function ReviewCardPanel({
   const [uploading, setUploading] = useState(false);
   async function onLogoFile(file: File) {
     setUploading(true);
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    const tmpPath = `${tenantId}/_tmp/${crypto.randomUUID()}.${ext}`;
-    const up = await createClient().storage.from("item-images").upload(tmpPath, file, { upsert: true });
-    if (up.error) { toast(up.error.message); setUploading(false); return; }
-    const r = await post("logo", { tmpPath });
+    try {
+      const webp = await toWebp(file, 512);
+      const up = await createClient().storage.from("item-images").upload(`${tenantId}/_logo.webp`, webp, { contentType: "image/webp", upsert: true });
+      if (up.error) throw new Error(up.error.message);
+      const r = await post("logo");
+      if (!r.ok) throw new Error(r.error ?? "Could not save logo");
+      setLogo(r.url ?? null);
+      toast("Logo updated");
+      router.refresh();
+    } catch (e) {
+      toast((e as Error).message);
+    }
     setUploading(false);
-    if (r.ok) { setLogo(r.url ?? null); toast("Logo updated"); router.refresh(); }
-    else toast(r.error ?? "Upload failed");
   }
   function removeLogo() {
     setUploading(true);
@@ -107,7 +131,7 @@ export function ReviewCardPanel({
           <p>Used in the QR center &amp; on the review page.</p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          <input ref={fileRef} type="file" accept="image/*,.heic,.heif" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onLogoFile(f); e.target.value = ""; }} />
+          <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onLogoFile(f); e.target.value = ""; }} />
           <button type="button" disabled={uploading} onClick={() => fileRef.current?.click()} className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">{uploading ? "Uploading…" : logo ? "Change" : "Upload logo"}</button>
           {logo && <button type="button" disabled={uploading} onClick={removeLogo} className="text-xs text-muted hover:text-accent-deep">Remove</button>}
         </div>

@@ -1,7 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
-import sharp from "sharp";
-import convert from "heic-convert";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -58,27 +56,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(r.ok ? { ok: true } : { ok: false, error: r.error });
     }
 
-    // Client logo: the browser uploaded the original to <tenantId>/_tmp/ (storage RLS
-    // allows is_admin()); here we convert HEIC, square it, strip EXIF, store the webp,
-    // and set tenants.logo_url. Mirrors processBrandImage but admin-gated, no membership.
+    // Client logo: the browser already resized + re-encoded to WebP (canvas, which strips
+    // EXIF) and uploaded it to <tenantId>/_logo.webp (storage RLS allows is_admin()). We
+    // just point logo_url at it. No server-side sharp — its native binary (libvips) fails
+    // to load in a Vercel route handler (ERR_DLOPEN); the browser does the image work.
     if (op === "logo") {
-      const tmpPath = String(body.tmpPath ?? "");
-      if (!tmpPath.startsWith(`${tenantId}/_tmp/`)) return NextResponse.json({ ok: false, error: "Bad upload path" });
-      const { data: blob, error: dlErr } = await svc.storage.from("item-images").download(tmpPath);
-      if (dlErr || !blob) return NextResponse.json({ ok: false, error: dlErr?.message ?? "Upload not found" });
-      let input = Buffer.from(await blob.arrayBuffer());
-      if (/\.(heic|heif)$/i.test(tmpPath)) {
-        input = Buffer.from(await convert({ buffer: input, format: "JPEG", quality: 0.92 }));
-      }
-      const out = await sharp(input).rotate().resize({ width: 512, height: 512, fit: "inside", withoutEnlargement: true }).webp({ quality: 82 }).toBuffer();
       const path = `${tenantId}/_logo.webp`;
-      const up = await svc.storage.from("item-images").upload(path, out, { contentType: "image/webp", upsert: true });
-      if (up.error) return NextResponse.json({ ok: false, error: up.error.message });
       const { data: pub } = svc.storage.from("item-images").getPublicUrl(path);
       const url = `${pub.publicUrl}?v=${Date.now()}`;
       const { error } = await svc.from("tenants").update({ logo_url: url }).eq("id", tenantId);
       if (error) return NextResponse.json({ ok: false, error: error.message });
-      await svc.storage.from("item-images").remove([tmpPath]);
       return NextResponse.json({ ok: true, url });
     }
 
