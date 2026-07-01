@@ -87,6 +87,7 @@ export default async function ManageTenantPage({
       <ReviewCardPanel
         tenantId={tenant.id}
         slug={tenant.slug}
+        name={tenant.name}
         site={process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io"}
         reviewUrl={tenant.review_url ?? null}
         reviewActive={tenant.review_active ?? false}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Star, Copy, Check, ImagePlus } from "lucide-react";
 import { toast } from "@/components/toast";
 import { createClient } from "@/lib/supabase/client";
+import { ReviewQr } from "./review-qr";
 
 type Res = { ok: boolean; error?: string };
 
@@ -28,9 +29,9 @@ function toWebp(file: File, max: number): Promise<Blob> {
 }
 
 export function ReviewCardPanel({
-  tenantId, slug, site, reviewUrl, reviewActive, reviewPaidThrough, reviewCode, logoUrl,
+  tenantId, slug, site, name, reviewUrl, reviewActive, reviewPaidThrough, reviewCode, logoUrl,
 }: {
-  tenantId: string; slug: string; site: string;
+  tenantId: string; slug: string; site: string; name: string;
   reviewUrl: string | null; reviewActive: boolean; reviewPaidThrough: string | null; reviewCode: string | null; logoUrl: string | null;
 }) {
   const router = useRouter();
@@ -144,13 +145,16 @@ export function ReviewCardPanel({
           <span className="text-xs text-muted">Creates a draft invoice; paid-through extends a month when you mark it paid.</span>
         </div>
         {cardUrl ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-muted">Print this on the card / decal / NFC:</span>
-            <code className="rounded-btn bg-line/40 px-2 py-1 text-xs text-ink">{cardUrl}</code>
-            <button onClick={copy} className="inline-flex items-center gap-1 rounded-btn border border-line px-2 py-1 text-xs font-medium text-ink hover:border-ink/30">
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}{copied ? "Copied" : "Copy"}
-            </button>
-          </div>
+          <>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted">Print this on the card / decal / NFC:</span>
+              <code className="rounded-btn bg-line/40 px-2 py-1 text-xs text-ink">{cardUrl}</code>
+              <button onClick={copy} className="inline-flex items-center gap-1 rounded-btn border border-line px-2 py-1 text-xs font-medium text-ink hover:border-ink/30">
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}{copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <ReviewQr url={`https://${cardUrl}`} name={name} logoUrl={logo} />
+          </>
         ) : (
           <button disabled={pending} onClick={() => run(post("generate"), "Review code created")}
             className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-ink hover:border-accent hover:text-accent-deep disabled:opacity-60">Generate review code</button>
