@@ -41,7 +41,8 @@ export function ReviewCardPanel({
   const [paidThrough, setPaidThrough] = useState(reviewPaidThrough ?? "");
   const [copied, setCopied] = useState(false);
 
-  const today = new Date().toISOString().slice(0, 10);
+  // AST, matching the /r gate and the public landing (CLAUDE.md: all date logic is America/Aruba).
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const live = !!url && active && !!paidThrough && paidThrough >= today;
   const cardUrl = reviewCode ? `${site.replace(/^https?:\/\//, "")}/r/${reviewCode}` : null;
 
