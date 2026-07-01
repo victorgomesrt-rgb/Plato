@@ -16,12 +16,15 @@ export function ReviewQr({ url, name, logoUrl, accent = "#FB6A1A" }: { url: stri
       const QRCodeStyling = (await import("qr-code-styling")).default;
       if (cancelled || !boxRef.current) return;
       const options = {
-        width: 220, height: 220, type: "svg" as const, data: url, image: centerImage,
+        width: 240, height: 240, type: "svg" as const, data: url, image: centerImage,
+        // High error correction (~30% recovery) lets the center logo fill more of the code
+        // while staying reliably scannable.
+        qrOptions: { errorCorrectionLevel: "H" as const },
         dotsOptions: { color: "#16110E", type: "rounded" as const },
         cornersSquareOptions: { color: accent, type: "extra-rounded" as const },
         cornersDotOptions: { color: accent },
         backgroundOptions: { color: "#ffffff" },
-        imageOptions: { crossOrigin: "anonymous" as const, margin: 6, imageSize: 0.28 },
+        imageOptions: { crossOrigin: "anonymous" as const, margin: 3, imageSize: 0.4, hideBackgroundDots: true },
       };
       if (!qrRef.current) { qrRef.current = new QRCodeStyling(options); boxRef.current.innerHTML = ""; qrRef.current.append(boxRef.current); }
       else qrRef.current.update(options);
