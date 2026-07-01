@@ -14,6 +14,10 @@ export function ReviewLanding({ tenant }: { tenant: Tenant }) {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-5 px-6 text-center">
+      {tenant.logo_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={tenant.logo_url} alt={tenant.name} className="h-20 w-20 rounded-2xl object-contain" />
+      )}
       <h1 className="font-display text-2xl font-bold text-ink">{tenant.name}</h1>
       {live ? (
         <>
