@@ -58,14 +58,26 @@ export async function approveBlast(id: string): Promise<Result> {
   if (!admin) return { ok: false, error: "Not authorized" };
   const svc = createAdminClient();
 
-  const { data: blast } = await svc.from("wallet_blasts").select("id, tenant_id, message, status").eq("id", id).maybeSingle();
-  const b = blast as { id: string; tenant_id: string | null; message: string; status: string } | null;
-  if (!b || b.status !== "requested") return { ok: false, error: "That request is no longer open." };
-
   const passId = await platoPassId(svc);
   if (!passId) return { ok: false, error: "The Plato Card isn't set up yet." };
+
+  // Atomically claim the request so a double-click / two admins can't double-push + double-bill.
+  const { data: claimed } = await svc
+    .from("wallet_blasts")
+    .update({ status: "sent", sent_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("status", "requested")
+    .select("id, tenant_id, message")
+    .maybeSingle();
+  const b = claimed as { id: string; tenant_id: string | null; message: string } | null;
+  if (!b) return { ok: false, error: "That request is no longer open." };
+
   const res = await notify(passId, b.message);
-  if (!res.ok) return { ok: false, error: res.error };
+  if (!res.ok) {
+    // Roll the claim back so the request can be retried.
+    await svc.from("wallet_blasts").update({ status: "requested", sent_at: null }).eq("id", id);
+    return { ok: false, error: res.error };
+  }
 
   // Raise the blast invoice (PLATO-YYYY-NNNN, retry on collision).
   let invoiceId: string | null = null;
@@ -85,7 +97,7 @@ export async function approveBlast(id: string): Promise<Result> {
   }
 
   await svc.from("wallet_blasts").update({
-    status: "sent", sent_at: new Date().toISOString(), passbuddy_message_id: res.data.messageId, invoice_id: invoiceId, price: BLAST_PRICE,
+    passbuddy_message_id: res.data.messageId, invoice_id: invoiceId, price: BLAST_PRICE,
   }).eq("id", id);
   revalidatePath("/admin/plato-card");
   revalidatePath("/admin/billing");

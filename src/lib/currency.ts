@@ -14,8 +14,11 @@ export function convertPrice(
   to: DisplayCurrency,
   fxRate: number
 ): number {
-  const usd = baseCurrency === "AWG" ? base / fxRate : base;
-  return to === "USD" ? roundTo(usd, 0.05) : roundTo(usd * fxRate, 0.25);
+  // Guard a bad/zero rate so an AWG-base item can't render $Infinity/$NaN; fall back to
+  // the documented default peg (1.80).
+  const rate = fxRate > 0 && Number.isFinite(fxRate) ? fxRate : 1.8;
+  const usd = baseCurrency === "AWG" ? base / rate : base;
+  return to === "USD" ? roundTo(usd, 0.05) : roundTo(usd * rate, 0.25);
 }
 
 export function formatPrice(value: number, currency: DisplayCurrency): string {

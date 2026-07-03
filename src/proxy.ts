@@ -15,10 +15,17 @@ export async function proxy(request: NextRequest) {
   let rewriteTo: URL | null = null;
   if (!isAppHost(host)) {
     const tenant = await getTenantByCustomDomain(host);
-    if (tenant && !nextUrl.pathname.startsWith(`/${tenant.slug}`)) {
-      const url = nextUrl.clone();
-      url.pathname = `/${tenant.slug}${nextUrl.pathname === "/" ? "" : nextUrl.pathname}`;
-      rewriteTo = url;
+    if (tenant) {
+      const p = nextUrl.pathname;
+      // Already on this tenant's path (boundary-checked so `/bar` doesn't swallow `/bar-grill`).
+      const onTenant = p === `/${tenant.slug}` || p.startsWith(`/${tenant.slug}/`);
+      // Shared app routes must reach the app, not get rewritten under the slug.
+      const isAppRoute = /^\/(api|auth|q|t|r|_next)(\/|$)/.test(p);
+      if (!onTenant && !isAppRoute) {
+        const url = nextUrl.clone();
+        url.pathname = `/${tenant.slug}${p === "/" ? "" : p}`;
+        rewriteTo = url;
+      }
     }
   }
 

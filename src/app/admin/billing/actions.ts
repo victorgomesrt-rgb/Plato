@@ -173,6 +173,7 @@ export async function sendInvoice(invoiceId: string): Promise<Result> {
     .eq("id", invoiceId)
     .maybeSingle();
   if (!inv) return { ok: false, error: "Invoice not found" };
+  if (inv.status === "paid") return { ok: false, error: "This invoice is already paid." };
   const tenant = inv.tenants as unknown as { name: string; slug: string; plan: string };
 
   const to = await ownerEmail(svc, inv.tenant_id);

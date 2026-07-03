@@ -28,6 +28,7 @@ export async function remindInvoice(invoiceId: string): Promise<{ ok: boolean; e
     .eq("id", invoiceId)
     .maybeSingle();
   if (!inv) return { ok: false, error: "Invoice not found" };
+  if (inv.status === "paid") return { ok: false, error: "Invoice already paid" };
   const tenant = inv.tenants as unknown as { name: string };
   const to = await ownerEmail(svc, inv.tenant_id);
   if (!to) return { ok: false, error: "No owner email" };
@@ -46,18 +47,30 @@ export async function remindInvoice(invoiceId: string): Promise<{ ok: boolean; e
        ${signed ? emailButton(signed.signedUrl, "View invoice") : ""}`
     ),
   });
-  return error ? { ok: false, error: error.message } : { ok: true };
+  if (error) return { ok: false, error: error.message };
+  // Record the send so the cron throttles (at most every few days, capped total).
+  await svc
+    .from("invoices")
+    .update({ last_reminded_at: new Date().toISOString(), reminder_count: (inv.reminder_count ?? 0) + 1 })
+    .eq("id", invoiceId);
+  return { ok: true };
 }
 
-// Invoices that have been sent but are now past due and still unpaid.
+// Sent + overdue + unpaid invoices that are due a reminder: not reminded in the last few
+// days, and under the total cap so a stuck invoice doesn't email the owner forever.
+const REMINDER_GAP_DAYS = 3;
+const REMINDER_MAX = 4;
 export async function overdueInvoiceIds(): Promise<string[]> {
   const svc = createAdminClient();
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
+  const cutoff = new Date(Date.now() - REMINDER_GAP_DAYS * 86_400_000).toISOString();
   const { data } = await svc
     .from("invoices")
     .select("id")
     .eq("status", "sent")
-    .lt("due_date", today);
+    .lt("due_date", today)
+    .lt("reminder_count", REMINDER_MAX)
+    .or(`last_reminded_at.is.null,last_reminded_at.lt.${cutoff}`);
   return (data ?? []).map((r) => r.id);
 }
 

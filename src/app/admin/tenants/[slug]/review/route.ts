@@ -1,16 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { revalidatePath } from "next/cache";
 import crypto from "node:crypto";
 import { currentAdmin } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { arubaBillingPeriod } from "@/lib/aruba";
 
 // Review Card mutations as a Route Handler, not a Server Action: the equivalent server
 // actions 500'd only on Vercel (same class as the impersonation fix). The admin panel
 // calls this via fetch; it returns JSON and the panel does router.refresh() on success.
 const shortCode = () => crypto.randomUUID().replace(/-/g, "").slice(0, 8);
-const isoDate = (d: Date) => d.toISOString().slice(0, 10);
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   if (!(await currentAdmin())) return NextResponse.json({ ok: false, error: "Not authorized" }, { status: 401 });
+  const { slug } = await params;
   const body = await req.json().catch(() => ({}));
   const { op, tenantId } = body as { op?: string; tenantId?: string };
   if (!tenantId) return NextResponse.json({ ok: false, error: "Missing tenant" }, { status: 400 });
@@ -25,6 +27,7 @@ export async function POST(req: NextRequest) {
         .update({ review_url: url || null, review_active: !!body.active, review_paid_through: body.paidThrough || null })
         .eq("id", tenantId);
       if (error) return NextResponse.json({ ok: false, error: error.message });
+      revalidatePath(`/${slug}`); // the public review landing reads these live values
       return NextResponse.json({ ok: true });
     }
 
@@ -42,15 +45,13 @@ export async function POST(req: NextRequest) {
     if (op === "bill") {
       const { data: rows } = await svc.from("billing_services").select("id, unit_price, description").eq("name", "Review card").limit(1);
       const s = rows?.[0];
-      const now = new Date();
-      const due = new Date();
-      due.setDate(due.getDate() + 14);
+      const { periodStart, periodEnd, dueDate } = arubaBillingPeriod();
       const { createInvoice } = await import("../../../billing/actions");
       const r = await createInvoice({
         tenantId,
-        periodStart: isoDate(new Date(now.getFullYear(), now.getMonth(), 1)),
-        periodEnd: isoDate(new Date(now.getFullYear(), now.getMonth() + 1, 0)),
-        dueDate: isoDate(due),
+        periodStart,
+        periodEnd,
+        dueDate,
         lines: [{ serviceId: s?.id ?? null, description: s?.description || "Review card · monthly", quantity: 1, unitPrice: s ? Number(s.unit_price) : 25 }],
       });
       return NextResponse.json(r.ok ? { ok: true } : { ok: false, error: r.error });
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
       const url = `${pub.publicUrl}?v=${Date.now()}`;
       const { error } = await svc.from("tenants").update({ logo_url: url }).eq("id", tenantId);
       if (error) return NextResponse.json({ ok: false, error: error.message });
+      revalidatePath(`/${slug}`); // logo shows on the public review landing
       return NextResponse.json({ ok: true, url });
     }
 
@@ -73,6 +75,7 @@ export async function POST(req: NextRequest) {
       await svc.storage.from("item-images").remove([`${tenantId}/_logo.webp`]);
       const { error } = await svc.from("tenants").update({ logo_url: null }).eq("id", tenantId);
       if (error) return NextResponse.json({ ok: false, error: error.message });
+      revalidatePath(`/${slug}`);
       return NextResponse.json({ ok: true });
     }
 

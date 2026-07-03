@@ -67,6 +67,19 @@ export async function POST(req: NextRequest) {
   if (overLimit(sessionHits, session_id, SESSION_LIMIT)) return new NextResponse(null, { status: 204 });
 
   const svc = createAdminClient();
+
+  // If an item is named, it must belong to this tenant — otherwise drop the event so a
+  // script can't attribute another tenant's item (or a bogus id) to this tenant's stats.
+  if (item_id) {
+    const { data: owns } = await svc
+      .from("menu_items")
+      .select("id")
+      .eq("id", item_id)
+      .eq("tenant_id", tenant_id)
+      .maybeSingle();
+    if (!owns) return new NextResponse(null, { status: 204 });
+  }
+
   await svc.from("analytics_events").insert({
     tenant_id,
     item_id: item_id ?? null,

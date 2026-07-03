@@ -12,10 +12,11 @@ function yesterdayAruba(): string {
 }
 
 export async function GET(request: NextRequest) {
+  // Vercel Cron sends `Authorization: Bearer ${CRON_SECRET}`. Header-only — no ?secret=
+  // query param (it would leak the credential into request logs / history).
   const secret = process.env.CRON_SECRET;
   const auth = request.headers.get("authorization");
-  const qs = request.nextUrl.searchParams.get("secret");
-  if (!secret || (auth !== `Bearer ${secret}` && qs !== secret)) {
+  if (!secret || auth !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

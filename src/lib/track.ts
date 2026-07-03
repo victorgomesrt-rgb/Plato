@@ -19,7 +19,7 @@ export async function trackRedirect(code: string, eventType: "qr_scan" | "nfc_ta
   if (!link || !tenant) return NextResponse.redirect(site, { status: 302 });
 
   await Promise.all([
-    svc.from("short_links").update({ scans: (link.scans ?? 0) + 1 }).eq("id", link.id),
+    svc.rpc("bump_scan", { p_id: link.id }),
     svc.from("analytics_events").insert({ tenant_id: link.tenant_id, event_type: eventType }),
   ]);
 
@@ -37,19 +37,22 @@ export async function reviewRedirect(code: string) {
 
   const { data: link } = await svc
     .from("short_links")
-    .select("id, scans, tenant_id, tenants(review_url, review_active, review_paid_through)")
+    .select("id, scans, tenant_id, tenants(status, review_url, review_active, review_paid_through)")
     .eq("code", code)
     .eq("kind", "review")
     .maybeSingle();
 
   const tenant = (link?.tenants ?? null) as
-    | { review_url: string | null; review_active: boolean; review_paid_through: string | null }
+    | { status: string; review_url: string | null; review_active: boolean; review_paid_through: string | null }
     | null;
   if (!link || !tenant) return NextResponse.redirect(paused, { status: 302 });
 
   // ISO date strings compare lexicographically, so >= is a valid "paid through" check.
+  // A suspended/canceled tenant is off regardless of the review dates.
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
   const live =
+    tenant.status !== "suspended" &&
+    tenant.status !== "canceled" &&
     !!tenant.review_url &&
     tenant.review_active === true &&
     !!tenant.review_paid_through &&
@@ -57,7 +60,7 @@ export async function reviewRedirect(code: string) {
   if (!live) return NextResponse.redirect(paused, { status: 302 });
 
   await Promise.all([
-    svc.from("short_links").update({ scans: (link.scans ?? 0) + 1 }).eq("id", link.id),
+    svc.rpc("bump_scan", { p_id: link.id }),
     svc.from("analytics_events").insert({ tenant_id: link.tenant_id, event_type: "review_scan" }),
   ]);
 

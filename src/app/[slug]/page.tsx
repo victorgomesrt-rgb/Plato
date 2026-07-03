@@ -61,8 +61,12 @@ export default async function TenantPage({ params }: Props) {
 
   // Review-only clients have no menu — their slug serves a small review landing instead
   // of 404ing. publicState still returns not_found for them (keeps the menu/OG/sitemap
-  // paths clean), so this branch must come first.
-  if (tenant?.review_only) return <ReviewLanding tenant={tenant} />;
+  // paths clean), so this branch must come first. A suspended/canceled review client is
+  // taken offline just like a menu tenant.
+  if (tenant?.review_only) {
+    if (tenant.status === "suspended" || tenant.status === "canceled") return <Unavailable />;
+    return <ReviewLanding tenant={tenant} />;
+  }
 
   const state = publicState(tenant);
   if (state === "not_found") notFound();

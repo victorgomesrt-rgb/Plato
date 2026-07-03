@@ -9,7 +9,10 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
-  const next = searchParams.get("next") ?? "/dashboard";
+  // Only accept a same-site path (single leading slash), so `?next=//evil.com` or a full
+  // URL can't turn the callback into an open redirect.
+  const rawNext = searchParams.get("next") ?? "/dashboard";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/dashboard";
 
   const supabase = await createClient();
 
