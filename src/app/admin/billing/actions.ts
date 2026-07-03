@@ -242,34 +242,75 @@ export async function markPaid(invoiceId: string): Promise<Result> {
     .eq("id", invoiceId)
     .maybeSingle();
   if (!inv) return { ok: false, error: "Invoice not found" };
+  if (inv.status === "paid") return { ok: true }; // already paid — idempotent no-op
+  if (inv.status !== "sent" && inv.status !== "draft")
+    return { ok: false, error: `Cannot mark a ${inv.status} invoice paid.` };
   const tenant = inv.tenants as unknown as { name: string; slug: string; plan: string };
 
-  await svc
+  // Atomically claim the paid transition. If a concurrent call (double-click, second tab)
+  // already flipped it, stop — otherwise the subscription roll / review extension below
+  // would apply twice.
+  const { data: claimed } = await svc
     .from("invoices")
     .update({ status: "paid", paid_at: new Date().toISOString() })
-    .eq("id", invoiceId);
-
-  // Activate the tenant (service role bypasses the privileged-column guard).
-  await svc.from("tenants").update({ status: "active" }).eq("id", inv.tenant_id);
-
-  // Roll the subscription period forward one month from the later of now / current end.
-  const { data: sub } = await svc
-    .from("subscriptions")
-    .select("current_period_end")
-    .eq("tenant_id", inv.tenant_id)
+    .eq("id", invoiceId)
+    .eq("status", inv.status)
+    .select("id")
     .maybeSingle();
-  const now = new Date();
-  const base = sub?.current_period_end && new Date(sub.current_period_end) > now
-    ? new Date(sub.current_period_end)
-    : now;
-  base.setMonth(base.getMonth() + 1);
-  await svc.from("subscriptions").upsert({
-    tenant_id: inv.tenant_id,
-    plan: tenant.plan,
-    status: "active",
-    interval: "month",
-    current_period_end: base.toISOString(),
-  });
+  if (!claimed) return { ok: true };
+
+  // Scope the side effects to what the invoice actually billed. Only a plan-subscription
+  // line ("Starter/Growth/Premium · monthly") activates the tenant + rolls the billing
+  // period; a review-card line extends review access. Add-on-only invoices (blast, tablet,
+  // hardware) must NOT un-suspend a tenant or grant a free menu month.
+  const { data: liRows } = await svc
+    .from("invoice_line_items")
+    .select("description, billing_services(name)")
+    .eq("invoice_id", invoiceId);
+  const lines = liRows ?? [];
+  const billedSubscription = lines.some((l) =>
+    /^(starter|growth|premium) · monthly/.test((l.description ?? "").toLowerCase().trim())
+  );
+  const billedReview = lines.some(
+    (l) =>
+      (l.billing_services as unknown as { name?: string } | null)?.name === "Review card" ||
+      (l.description ?? "").toLowerCase().startsWith("review card")
+  );
+
+  if (billedSubscription) {
+    // Activate the tenant (service role bypasses the privileged-column guard) + roll the
+    // subscription one month from the later of now / current period end.
+    await svc.from("tenants").update({ status: "active" }).eq("id", inv.tenant_id);
+    const { data: sub } = await svc
+      .from("subscriptions")
+      .select("current_period_end")
+      .eq("tenant_id", inv.tenant_id)
+      .maybeSingle();
+    const now = new Date();
+    const base = sub?.current_period_end && new Date(sub.current_period_end) > now
+      ? new Date(sub.current_period_end)
+      : now;
+    base.setMonth(base.getMonth() + 1);
+    await svc.from("subscriptions").upsert({
+      tenant_id: inv.tenant_id,
+      plan: tenant.plan,
+      status: "active",
+      interval: "month",
+      current_period_end: base.toISOString(),
+    });
+  }
+
+  // If this invoice billed a Review Card, extend the tenant's review access one month
+  // (paid in advance, from the later of today / current paid-through).
+  if (billedReview) {
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
+    const { data: tt } = await svc.from("tenants").select("review_paid_through, slug").eq("id", inv.tenant_id).maybeSingle();
+    const baseStr = tt?.review_paid_through && tt.review_paid_through >= today ? tt.review_paid_through : today;
+    const base = new Date(`${baseStr}T12:00:00Z`);
+    base.setUTCMonth(base.getUTCMonth() + 1);
+    await svc.from("tenants").update({ review_paid_through: base.toISOString().slice(0, 10) }).eq("id", inv.tenant_id);
+    if (tt?.slug) revalidatePath(`/admin/tenants/${tt.slug}`);
+  }
 
   const to = await ownerEmail(svc, inv.tenant_id);
   if (to) {
@@ -280,31 +321,9 @@ export async function markPaid(invoiceId: string): Promise<Result> {
         `<p>We received your payment of ${money(Number(inv.amount), inv.currency)} for ${periodLabel(
           inv.period_start,
           inv.period_end
-        )}. Your menu stays live. Nothing else to do.</p>`
+        )}. Thank you. Nothing else to do.</p>`
       ),
     });
-  }
-
-  // If this invoice billed a Review Card, extend the tenant's review access one month
-  // (paid in advance, from the later of today / current paid-through). Matched by catalog
-  // service name OR line description so a missing/renamed service still works.
-  const { data: liRows } = await svc
-    .from("invoice_line_items")
-    .select("description, billing_services(name)")
-    .eq("invoice_id", invoiceId);
-  const billedReview = (liRows ?? []).some(
-    (l) =>
-      (l.billing_services as unknown as { name?: string } | null)?.name === "Review card" ||
-      (l.description ?? "").toLowerCase().startsWith("review card")
-  );
-  if (billedReview) {
-    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Aruba" }).format(new Date());
-    const { data: tt } = await svc.from("tenants").select("review_paid_through, slug").eq("id", inv.tenant_id).maybeSingle();
-    const baseStr = tt?.review_paid_through && tt.review_paid_through >= today ? tt.review_paid_through : today;
-    const base = new Date(`${baseStr}T12:00:00Z`);
-    base.setUTCMonth(base.getUTCMonth() + 1);
-    await svc.from("tenants").update({ review_paid_through: base.toISOString().slice(0, 10) }).eq("id", inv.tenant_id);
-    if (tt?.slug) revalidatePath(`/admin/tenants/${tt.slug}`);
   }
 
   revalidatePath("/admin/billing");

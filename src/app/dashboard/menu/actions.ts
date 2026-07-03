@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertWritable } from "@/lib/dashboard-context";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Res = { ok: true } | { ok: false; error: string };
@@ -20,6 +21,8 @@ async function revalidate(supabase: SupabaseClient) {
 
 // RLS limits these to the signed-in owner's own tenant items.
 export async function setItemAvailable(id: string, available: boolean): Promise<Res> {
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const supabase = await createClient();
   const { error } = await supabase.from("menu_items").update({ is_available: available }).eq("id", id);
   if (error) return { ok: false, error: error.message };
@@ -28,6 +31,8 @@ export async function setItemAvailable(id: string, available: boolean): Promise<
 }
 
 export async function setItemPrice(id: string, price: number | null): Promise<Res> {
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const supabase = await createClient();
   const { error } = await supabase.from("menu_items").update({ price }).eq("id", id);
   if (error) return { ok: false, error: error.message };

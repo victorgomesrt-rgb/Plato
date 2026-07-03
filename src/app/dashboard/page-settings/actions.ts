@@ -5,6 +5,7 @@ import convert from "heic-convert";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { assertWritable } from "@/lib/dashboard-context";
 import { DAY_KEYS } from "@/lib/hours";
 import type { TenantLink } from "@/lib/tenant";
 
@@ -50,6 +51,8 @@ async function requireMember(tenantId: string): Promise<string> {
 }
 
 export async function updateTenantInfo(tenantId: string, input: PageDetailsInput): Promise<Res> {
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const supabase = await createClient(); // RLS enforces membership + the privileged-column guard
 
   const phone = input.phone.trim();
@@ -63,13 +66,22 @@ export async function updateTenantInfo(tenantId: string, input: PageDetailsInput
   const accent = input.accentColor.trim() || "#FB6A1A";
   if (!/^#[0-9a-fA-F]{6}$/.test(accent)) return { ok: false, error: "Accent color must be a hex like #FB6A1A." };
 
+  // Reservation / website links land in <a href> on the public page, so only accept
+  // http(s) — reject javascript:, data:, etc. (stored-XSS guard).
+  const reserveUrl = input.reservationUrl.trim();
+  const websiteUrl = input.websiteUrl.trim();
+  if (reserveUrl && !/^https?:\/\//i.test(reserveUrl))
+    return { ok: false, error: "Reservation link must start with http:// or https://." };
+  if (websiteUrl && !/^https?:\/\//i.test(websiteUrl))
+    return { ok: false, error: "Website link must start with http:// or https://." };
+
   // Auto-build the action-bar buttons from the filled fields, in a fixed order.
   const generated: TenantLink[] = [];
   if ((lat !== null && lng !== null) || address) generated.push({ type: "directions" });
   if (phone) generated.push({ type: "call" });
   if (whatsapp) generated.push({ type: "whatsapp" });
-  if (input.reservationUrl.trim()) generated.push({ type: "reserve", url: input.reservationUrl.trim() });
-  if (input.websiteUrl.trim()) generated.push({ type: "website", url: input.websiteUrl.trim() });
+  if (reserveUrl) generated.push({ type: "reserve", url: reserveUrl });
+  if (websiteUrl) generated.push({ type: "website", url: websiteUrl });
   if (input.instagram.trim()) generated.push({ type: "instagram", url: instaUrl(input.instagram) });
   const ssid = input.wifiSsid.trim(), pass = input.wifiPassword.trim();
   if (ssid || pass) generated.push({ type: "wifi", ssid: ssid || undefined, password: pass || undefined });
@@ -109,6 +121,8 @@ export async function updateTenantInfo(tenantId: string, input: PageDetailsInput
 
 export async function processBrandImage(tenantId: string, kind: "logo" | "cover", tmpPath: string): Promise<Res<{ url: string }>> {
   try {
+    const w = await assertWritable();
+    if (!w.ok) return w;
     const slug = await requireMember(tenantId);
     if (!tmpPath.startsWith(`${tenantId}/_tmp/`)) return { ok: false, error: "Bad upload path" };
     const svc = createAdminClient();
@@ -141,6 +155,8 @@ export async function processBrandImage(tenantId: string, kind: "logo" | "cover"
 }
 
 export async function removeBrandImage(tenantId: string, kind: "logo" | "cover"): Promise<Res> {
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const slug = await requireMember(tenantId);
   const svc = createAdminClient();
   await svc.storage.from("item-images").remove([`${tenantId}/_${kind}.webp`]);
@@ -156,6 +172,8 @@ const TEMPLATES = new Set(["reel", "grid", "classic", "spotlight"]);
 // Switch the public menu template. Not a privileged column, so the RLS client is fine.
 export async function setTemplate(tenantId: string, template: string): Promise<Res> {
   if (!TEMPLATES.has(template)) return { ok: false, error: "Unknown template" };
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const supabase = await createClient();
   const { error } = await supabase.from("tenants").update({ template }).eq("id", tenantId);
   if (error) return { ok: false, error: error.message };

@@ -48,3 +48,15 @@ export const resolveDashboard = cache(async (): Promise<Resolved> => {
   if (!mem) return { state: "no_tenant" };
   return { state: "ok", ctx: { db: supabase, tenantId: mem.tenant_id as string, impersonating: false } };
 });
+
+// Owner-dashboard write actions must refuse to run under admin impersonation, which is
+// read-only. The RLS policies all carry `or is_admin()`, so without this the admin's own
+// session would satisfy them and the `readOnly` UI prop alone wouldn't stop a crafted
+// server-action call. resolveDashboard() is cache()d per request, so this is cheap.
+export async function assertWritable(): Promise<{ ok: true } | { ok: false; error: string }> {
+  const res = await resolveDashboard();
+  if (res.state === "redirect") return { ok: false, error: "Please sign in again." };
+  if (res.state === "no_tenant") return { ok: false, error: "We couldn't find your menu." };
+  if (res.ctx.impersonating) return { ok: false, error: "Viewing as owner is read-only." };
+  return { ok: true };
+}

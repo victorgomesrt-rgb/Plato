@@ -33,6 +33,13 @@ type TenantBits = {
   address: string | null;
 };
 
+// Only emit safe schemes into href — defense in depth against a stored javascript:/data:
+// URL (input is also validated on save in page-settings).
+function safeUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  return /^(https?:|tel:|mailto:)/i.test(url) ? url : null;
+}
+
 function hrefFor(link: TenantLink, tn: TenantBits): string | null {
   switch (link.type) {
     case "directions":
@@ -48,7 +55,7 @@ function hrefFor(link: TenantLink, tn: TenantBits): string | null {
     case "email":
       return link.url ? `mailto:${link.url}` : null;
     default:
-      return link.url ?? null;
+      return safeUrl(link.url);
   }
 }
 

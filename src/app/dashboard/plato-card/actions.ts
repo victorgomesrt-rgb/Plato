@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertWritable } from "@/lib/dashboard-context";
 
 type Result = { ok: true } | { ok: false; error: string };
 
@@ -17,6 +18,8 @@ async function memberTenant() {
 
 // Owner sets their standing member perk + whether they're listed on the Plato Card.
 export async function saveWalletPerk(discount: string, listed: boolean): Promise<Result> {
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const { supabase, tenantId, slug } = await memberTenant();
   if (!tenantId) return { ok: false, error: "We couldn't find your menu." };
 
@@ -36,6 +39,8 @@ export async function requestPromo(message: string, scheduledAt?: string): Promi
   const text = message.trim();
   if (!text) return { ok: false, error: "Describe the special you want to push." };
 
+  const w = await assertWritable();
+  if (!w.ok) return w;
   const { tenantId, userId, supabase } = await memberTenant();
   if (!tenantId) return { ok: false, error: "We couldn't find your menu." };
 
