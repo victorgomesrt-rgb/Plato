@@ -69,22 +69,9 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
   const [active, setActive] = useState<string | null>(categories[0]?.id ?? null);
   const [selected, setSelected] = useState<Item | null>(null);
-  const [showMini, setShowMini] = useState(false);
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const hydrated = useHydrated();
-  const coverRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
-
-  // Mini header appears once the cover scrolls out of view.
-  useEffect(() => {
-    const el = coverRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(([e]) => setShowMini(!e.isIntersecting), {
-      threshold: 0,
-    });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   // Highlight the category whose section is in view.
   useEffect(() => {
@@ -177,29 +164,10 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
   return (
     <div style={{ ["--color-accent" as string]: accent } as React.CSSProperties}>
-      {/* Sticky mini header */}
-      <div
-        className={`fixed inset-x-0 top-0 z-40 flex items-center justify-between border-b border-line bg-surface/95 px-4 py-2 backdrop-blur transition ${
-          showMini ? "translate-y-0" : "-translate-y-full"
-        }`}
-      >
-        <span className="truncate font-display font-semibold text-ink">{tenant.name}</span>
-        {tenant.lat != null && tenant.lng != null && (
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${tenant.lat},${tenant.lng}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full px-3 py-1 text-sm font-medium text-white"
-            style={{ background: accent }}
-          >
-            {t(locale, "directions")}
-          </a>
-        )}
-      </div>
 
       <div className="mx-auto w-full max-w-2xl pb-[calc(7rem+env(safe-area-inset-bottom))]">
         {/* Cover */}
-        <div ref={coverRef} className="relative h-56 w-full overflow-hidden sm:h-64">
+        <div className="relative h-56 w-full overflow-hidden sm:h-64">
           {tenant.cover_url ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={tenant.cover_url} alt="" className="h-full w-full object-cover" />
