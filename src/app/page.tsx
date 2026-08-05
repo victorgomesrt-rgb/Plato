@@ -11,6 +11,7 @@ import { PlatoMark } from "@/components/plato-logo";
 import { EmailCapture } from "@/components/email-capture";
 import { TemplateSwitcher } from "@/components/landing/template-switcher";
 import { MobileNav } from "@/components/landing/mobile-nav";
+import { HeroVideo } from "@/components/landing/hero-video";
 import { Reveal } from "@/components/reveal";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -88,7 +89,7 @@ function HeroPhone() {
 
           {/* Cover */}
           <div className="relative h-[252px] overflow-hidden bg-[#2A211B]">
-            <Image src="/landing/dish-8.jpg" alt="" fill sizes="312px" className="object-cover" style={KB(13)} priority />
+            <HeroVideo />
             <div className="absolute inset-0" style={{ background: "linear-gradient(rgba(0,0,0,.34) 0%, rgba(0,0,0,0) 38%, rgba(0,0,0,.8) 100%)" }} />
             <div className="absolute left-4 top-9 flex items-center gap-1.5 rounded-full bg-black/45 px-2 py-1 text-[10px] font-medium text-white backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> Open now
