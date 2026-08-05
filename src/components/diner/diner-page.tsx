@@ -47,7 +47,14 @@ type Props = {
 };
 
 const DAY_LABEL: Record<DayKey, string> = {
-  sun: "Sun", mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat",
+  sun: "Sunday", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday",
+};
+// "23:00" → "11:00 PM" for the hours card.
+const to12 = (hm: string) => {
+  const [h, m] = hm.split(":").map(Number);
+  const ap = h < 12 ? "AM" : "PM";
+  const hr = h % 12 === 0 ? 12 : h % 12;
+  return `${hr}:${String(m).padStart(2, "0")} ${ap}`;
 };
 
 export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayKey }: Props) {
@@ -300,8 +307,8 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         {/* Sections, Grid template, two columns */}
         <div className="px-4">
           {menuTags.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 pt-6">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted">{locale === "es" ? "Dietético" : "Dietary"}</span>
+            <div className="flex items-center gap-2 overflow-x-auto pt-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <span className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted">{locale === "es" ? "Dietético" : "Dietary"}</span>
               {menuTags.map((tg) => {
                 const on = activeTags.includes(tg);
                 return (
@@ -310,7 +317,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                     type="button"
                     aria-pressed={on}
                     onClick={() => setActiveTags(on ? activeTags.filter((x) => x !== tg) : [...activeTags, tg])}
-                    className={`press inline-flex min-h-11 items-center rounded-full px-3.5 text-sm font-medium transition-transform ${on ? "" : "border border-line bg-surface text-ink"}`}
+                    className={`press inline-flex min-h-11 shrink-0 items-center rounded-full px-3.5 text-sm font-medium transition-transform ${on ? "" : "border border-line bg-surface text-ink"}`}
                     style={on ? { background: accent, color: textOn(accent) } : undefined}
                   >
                     {tagLabel(tg, locale)}
@@ -318,7 +325,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                 );
               })}
               {activeTags.length > 0 && (
-                <button type="button" onClick={() => setActiveTags([])} className="text-sm font-medium text-muted underline">
+                <button type="button" onClick={() => setActiveTags([])} className="shrink-0 pr-1 text-sm font-medium text-muted underline">
                   {locale === "es" ? "Limpiar" : "Clear"}
                 </button>
               )}
@@ -374,28 +381,37 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
           })()}
           {tenant.address && <p className="text-ink">{tenant.address}</p>}
           {tenant.hours && (
-            <div className="mt-3">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-ink">{t(locale, "hours")}</span>
+            <div className="mt-4 overflow-hidden rounded-card border border-line">
+              <div className="flex items-center justify-between bg-ink px-4 py-3">
+                <span className="font-display text-sm font-semibold text-white">{t(locale, "hours")}</span>
                 {hydrated && (
                   <span
-                    className="rounded-full px-2 py-0.5 text-xs font-medium text-white"
-                    style={{ background: isOpenNow(tenant.hours) ? "#0E5B5B" : "#6B6660" }}
+                    className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-white"
+                    style={{ background: isOpenNow(tenant.hours) ? "#0E5B5B" : "rgba(255,255,255,0.16)" }}
                   >
                     {isOpenNow(tenant.hours) ? t(locale, "openNow") : t(locale, "closed")}
                   </span>
                 )}
               </div>
-              <ul className="mt-1">
+              <div className="divide-y divide-line">
                 {DAY_KEYS.map((d) => {
                   const r = tenant.hours?.[d];
+                  const today = hydrated && d === todayKey;
                   return (
-                    <li key={d} className={d === todayKey ? "font-medium text-ink" : ""}>
-                      {DAY_LABEL[d]} · {r ? `${r[0]}-${r[1]}` : "-"}
-                    </li>
+                    <div key={d} className={`flex items-center justify-between px-4 py-2.5 text-sm ${today ? "bg-accent/10" : ""}`}>
+                      <span className="flex items-center gap-2 font-medium text-ink">
+                        {DAY_LABEL[d]}
+                        {today && (
+                          <span className="rounded-full bg-accent/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent-strong">Today</span>
+                        )}
+                      </span>
+                      <span className={`tabular-nums ${r ? (today ? "font-semibold text-ink" : "text-muted") : "text-muted"}`}>
+                        {r ? `${to12(r[0])} to ${to12(r[1])}` : t(locale, "closed")}
+                      </span>
+                    </div>
                   );
                 })}
-              </ul>
+              </div>
             </div>
           )}
           <p className="mt-6 flex items-center justify-center gap-3 pb-2 text-center text-xs">
