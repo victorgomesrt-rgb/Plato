@@ -100,7 +100,7 @@ function HeroPhone() {
             </div>
             <div className="absolute bottom-3.5 left-4">
               <p className="font-display text-[26px] font-extrabold leading-none text-white drop-shadow">Brisa</p>
-              <p className="mt-1 text-[11px] text-white/85">Beach kitchen · Eagle Beach</p>
+              <p className="mt-1 text-[11px] text-white/85">Lotus Kitchen · Oranjestad</p>
             </div>
           </div>
 
@@ -123,7 +123,7 @@ function HeroPhone() {
               <span className="text-[10px] text-muted">Tap to open</span>
             </div>
             <div className="mt-2.5 flex gap-2.5">
-              {[{ img: "/landing/dish-7.jpg", n: "Garlic Shrimp", p: "$24", s: 14 }, { img: "/landing/dish-4.jpg", n: "Mango Colada", p: "$12", s: 16 }].map((d) => (
+              {[{ img: "/landing/mock-1.jpg", n: "Spring Rolls", p: "$9", s: 14 }, { img: "/landing/mock-2.jpg", n: "Lychee Mojito", p: "$12", s: 16 }].map((d) => (
                 <div key={d.n} className="relative h-[150px] w-[128px] shrink-0 overflow-hidden rounded-2xl">
                   <Image src={d.img} alt="" fill sizes="128px" className="object-cover" style={KB(d.s)} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/5 to-transparent" />
