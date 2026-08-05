@@ -54,7 +54,7 @@ export function RequestForm({ readOnly = false }: { readOnly?: boolean }) {
       </label>
       {err && <p className="mt-2 text-sm text-accent-deep">{err}</p>}
       {ok && <p className="mt-2 text-sm text-sea">Sent, our team will take care of it.</p>}
-      <button type="submit" disabled={pending || readOnly} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-60">
+      <button type="submit" disabled={pending || readOnly} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-ink hover:bg-accent-deep disabled:opacity-60">
         <Send className="h-4 w-4" />{pending ? "Sending…" : "Send to my team"}
       </button>
     </form>

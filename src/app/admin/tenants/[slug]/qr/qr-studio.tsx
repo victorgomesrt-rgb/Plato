@@ -115,13 +115,13 @@ export function QrStudio({
         <div className="flex gap-2">
           <button
             onClick={() => setSource("link")}
-            className={`rounded-btn px-3 py-1.5 text-sm font-medium ${source === "link" ? "bg-accent text-white" : "bg-line text-ink"}`}
+            className={`rounded-btn px-3 py-1.5 text-sm font-medium ${source === "link" ? "bg-accent text-ink" : "bg-line text-ink"}`}
           >
             Tracked link
           </button>
           <button
             onClick={() => setSource("custom")}
-            className={`rounded-btn px-3 py-1.5 text-sm font-medium ${source === "custom" ? "bg-accent text-white" : "bg-line text-ink"}`}
+            className={`rounded-btn px-3 py-1.5 text-sm font-medium ${source === "custom" ? "bg-accent text-ink" : "bg-line text-ink"}`}
           >
             Custom URL
           </button>

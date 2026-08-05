@@ -41,7 +41,7 @@ function Card({ t, hydrated }: { t: DiscoverCard; hydrated: boolean }) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute left-3 top-3 flex gap-2">
           {t.plan === "premium" && (
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-white">Featured</span>
+            <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] font-semibold text-ink">Featured</span>
           )}
           {open !== null && (
             <span className="flex items-center gap-1.5 rounded-full bg-black/45 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur">
@@ -109,19 +109,26 @@ export function DiscoverList({ tenants }: { tenants: DiscoverCard[] }) {
             See the food before<br className="hidden sm:block" /> you sit down.
           </h1>
           <p className="mt-3 text-white/70">Browse Aruba&apos;s restaurants with menus that actually move. Watch the dishes, then go.</p>
-          <div className="mx-auto mt-6 flex max-w-lg items-center gap-2 rounded-full bg-white p-1.5 pl-4 shadow-xl">
+          <div className="mx-auto mt-6 flex max-w-lg items-center gap-2 rounded-full bg-white p-1.5 pl-4 shadow-xl focus-within:ring-2 focus-within:ring-accent">
             <Search className="h-5 w-5 shrink-0 text-muted" />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search restaurants, dishes…"
+              aria-label="Search restaurants and dishes"
               className="h-9 flex-1 bg-transparent text-ink outline-none placeholder:text-muted"
             />
-            <span className="shrink-0 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-white">Search</span>
+            <button
+              type="button"
+              onClick={() => (document.activeElement as HTMLElement)?.blur()}
+              className="press shrink-0 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-ink"
+            >
+              Search
+            </button>
           </div>
           <div className="mt-4 flex justify-center gap-2 text-sm">
-            <button onClick={() => setOpenOnly(false)} className={`rounded-full px-3 py-1 font-medium ${!openOnly ? "bg-accent text-white" : "bg-white/10 text-white/80"}`}>All</button>
-            <button onClick={() => setOpenOnly(true)} className={`rounded-full px-3 py-1 font-medium ${openOnly ? "bg-accent text-white" : "bg-white/10 text-white/80"}`}>Open now</button>
+            <button aria-pressed={!openOnly} onClick={() => setOpenOnly(false)} className={`press inline-flex min-h-11 items-center rounded-full px-4 font-medium ${!openOnly ? "bg-accent text-ink" : "bg-white/10 text-white/80"}`}>All</button>
+            <button aria-pressed={openOnly} onClick={() => setOpenOnly(true)} className={`press inline-flex min-h-11 items-center rounded-full px-4 font-medium ${openOnly ? "bg-accent text-ink" : "bg-white/10 text-white/80"}`}>Open now</button>
           </div>
         </div>
       </section>

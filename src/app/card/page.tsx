@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     url: "https://platodigital.io/card",
     siteName: "Plato",
     type: "website",
-    images: [{ url: "/og-card.png", width: 1200, height: 630, alt: "The Plato Card — member perks across Aruba" }],
+    images: [{ url: "/og-card.png", width: 1200, height: 630, alt: "The Plato Card, member perks across Aruba" }],
   },
   twitter: {
     card: "summary_large_image",
@@ -94,7 +94,7 @@ export default async function PlatoCardPage() {
           </ul>
         )}
 
-        <p className="mt-8 text-center text-xs text-white/40">Powered by Plato · platodigital.io</p>
+        <p className="mt-8 text-center text-xs text-white/60">Powered by Plato · platodigital.io</p>
       </div>
     </main>
   );

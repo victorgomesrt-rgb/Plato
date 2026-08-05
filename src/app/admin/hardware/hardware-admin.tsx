@@ -69,7 +69,7 @@ export function HardwareAdmin({ orders, tenants }: { orders: Order[]; tenants: T
                 </div>
                 <div className="mt-2 flex items-center justify-between">
                   <span className="text-xs text-muted">{fmt(o.created_at)}</span>
-                  {next && <button disabled={pending} onClick={() => run(advanceHardware(o.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{next.label}</button>}
+                  {next && <button disabled={pending} onClick={() => run(advanceHardware(o.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-60">{next.label}</button>}
                 </div>
               </div>
             );
@@ -91,7 +91,7 @@ export function HardwareAdmin({ orders, tenants }: { orders: Order[]; tenants: T
           <input type="number" min={1} value={f.quantity} onChange={(e) => setF({ ...f, quantity: Number(e.target.value) })} className="rounded-btn border border-line px-3 py-2 text-sm outline-none focus:border-accent" />
           <input value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} placeholder="Notes (optional)" className="rounded-btn border border-line px-3 py-2 text-sm outline-none focus:border-accent" />
         </div>
-        <button disabled={pending} className="mt-3 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Create order</button>
+        <button disabled={pending} className="mt-3 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink disabled:opacity-60">Create order</button>
       </form>
     </div>
   );

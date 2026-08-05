@@ -130,7 +130,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   };
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-6 lg:px-8 lg:py-8">
+    <main className="mx-auto max-w-5xl px-5 pb-32 pt-6 lg:px-8 lg:pb-36 lg:pt-8">
       <DashboardHeader title="Dashboard" subtitle={`How ${tn.name}'s menu is performing`} slug={tn.slug} />
 
       {/* Floating bottom-right helper (fixed position, minimizable, auto-hides when complete). */}
@@ -139,7 +139,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <div className="mt-5 flex items-center justify-between gap-3">
         <div className="flex gap-2 text-sm">
           {[7, 30, 90].map((d) => (
-            <Link key={d} href={`/dashboard?days=${d}`} className={`rounded-full px-3 py-1 font-medium ${d === N ? "bg-accent text-white" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>
+            <Link key={d} href={`/dashboard?days=${d}`} className={`rounded-full px-3 py-1 font-medium ${d === N ? "bg-accent text-ink" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>
               {d} days
             </Link>
           ))}

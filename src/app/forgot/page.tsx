@@ -39,7 +39,7 @@ export default function ForgotPage() {
               className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent" />
           </span>
         </label>
-        <button type="submit" disabled={busy} className="h-11 w-full rounded-btn bg-accent font-semibold text-white transition hover:bg-accent-deep disabled:opacity-60">
+        <button type="submit" disabled={busy} className="h-11 w-full rounded-btn bg-accent font-semibold text-ink transition hover:bg-accent-deep disabled:opacity-60">
           {busy ? "Sending…" : "Send reset link"}
         </button>
       </form>

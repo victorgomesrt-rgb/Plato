@@ -49,7 +49,7 @@ export function EmailCapture({ variant = "dark" }: { variant?: "dark" | "light" 
         <button
           type="submit"
           disabled={pending}
-          className="h-12 w-full rounded-full bg-accent px-5 font-semibold text-white transition hover:bg-accent-deep disabled:opacity-60"
+          className="press h-12 w-full rounded-full bg-accent px-5 font-semibold text-ink transition-colors hover:bg-accent-deep disabled:opacity-60"
         >
           {pending ? "Sending…" : "Submit"}
         </button>

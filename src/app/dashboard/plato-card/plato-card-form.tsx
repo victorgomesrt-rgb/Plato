@@ -31,8 +31,8 @@ export function WalletPerk({ discount, listed, readOnly }: { discount: string; l
       <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
         <span className="text-sm text-ink">Listed on the Plato Card</span>
         <button disabled={pending || readOnly} onClick={() => { const next = !on; setOn(next); save(next); }} aria-label="Toggle listing" className="disabled:opacity-60">
-          <span className={`relative block h-6 w-11 rounded-full transition ${on ? "bg-emerald-500" : "bg-line"}`}>
-            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${on ? "left-[22px]" : "left-0.5"}`} />
+          <span className={`relative block h-6 w-11 rounded-full transition-colors ${on ? "bg-emerald-500" : "bg-line"}`}>
+            <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ease-out ${on ? "translate-x-5" : "translate-x-0"}`} />
           </span>
         </button>
       </div>
@@ -65,7 +65,7 @@ export function PromoRequest({ readOnly }: { readOnly: boolean }) {
         <label className="text-sm text-muted">Preferred date
           <input type="date" value={when} disabled={readOnly} onChange={(e) => setWhen(e.target.value)} className="ml-2 h-9 rounded-btn border border-line bg-surface px-2 text-sm text-ink outline-none focus:border-accent disabled:opacity-60" />
         </label>
-        <button disabled={pending || readOnly} onClick={submit} className="ml-auto inline-flex items-center gap-2 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-60">
+        <button disabled={pending || readOnly} onClick={submit} className="ml-auto inline-flex items-center gap-2 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink hover:bg-accent-deep disabled:opacity-60">
           <Send className="h-4 w-4" />Request blast · $75
         </button>
       </div>

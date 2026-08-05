@@ -8,6 +8,7 @@ import type { Category, Item } from "@/lib/menu";
 import { localized, t, LOCALE_LABELS } from "@/lib/i18n";
 import { track } from "@/lib/track-client";
 import { priceLabel, type DisplayCurrency } from "@/lib/currency";
+import { textOn } from "@/lib/contrast";
 import { isOpenNow, DAY_KEYS, type DayKey } from "@/lib/hours";
 import { ActionBar } from "./action-bar";
 import { CardMedia } from "./card-media";
@@ -108,7 +109,8 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
     .slice(0, 8);
 
   function jumpTo(catId: string) {
-    sectionRefs.current[catId]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    sectionRefs.current[catId]?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
   }
 
   function openItem(it: Item) {
@@ -188,7 +190,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         )}
       </div>
 
-      <div className="mx-auto w-full max-w-2xl pb-28">
+      <div className="mx-auto w-full max-w-2xl pb-[calc(7rem+env(safe-area-inset-bottom))]">
         {/* Cover */}
         <div ref={coverRef} className="relative h-56 w-full overflow-hidden sm:h-64">
           {tenant.cover_url ? (
@@ -225,8 +227,8 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                   <button
                     key={lc}
                     onClick={() => setLocale(lc)}
-                    className={`px-2.5 py-1 ${locale === lc ? "text-white" : "text-ink"}`}
-                    style={locale === lc ? { background: accent } : undefined}
+                    className={`press inline-flex min-h-11 items-center px-3 ${locale === lc ? "" : "text-ink"}`}
+                    style={locale === lc ? { background: accent, color: textOn(accent) } : undefined}
                   >
                     {LOCALE_LABELS[lc] ?? lc.toUpperCase()}
                   </button>
@@ -239,8 +241,8 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                   <button
                     key={c}
                     onClick={() => setCurrency(c)}
-                    className={`px-2.5 py-1 ${cur === c ? "text-white" : "text-ink"}`}
-                    style={cur === c ? { background: accent } : undefined}
+                    className={`press inline-flex min-h-11 items-center px-3 ${cur === c ? "" : "text-ink"}`}
+                    style={cur === c ? { background: accent, color: textOn(accent) } : undefined}
                   >
                     {c}
                   </button>
@@ -268,7 +270,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-2.5">
                       <p className="truncate text-sm font-semibold text-white drop-shadow">{l(it.name, it.name_i18n)}</p>
-                      <span className="mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-bold text-white" style={{ background: accent }}>
+                      <span className="mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-bold" style={{ background: accent, color: textOn(accent) }}>
                         {price(it)}
                       </span>
                     </div>
@@ -280,15 +282,15 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         </div>
 
         {/* Sticky category nav */}
-        <nav className="sticky top-0 z-30 mt-4 flex gap-2 overflow-x-auto border-b border-line bg-surface/95 px-4 py-2 backdrop-blur">
+        <nav className="sticky top-0 z-30 mt-4 flex gap-2 overflow-x-auto border-b border-line bg-surface/95 px-4 py-2">
           {categories.map((c) => (
             <button
               key={c.id}
               onClick={() => jumpTo(c.id)}
-              className={`shrink-0 rounded-full px-3 py-1 text-sm font-medium ${
-                active === c.id ? "text-white" : "bg-line text-ink"
+              className={`press inline-flex min-h-11 shrink-0 items-center rounded-full px-3.5 text-sm font-medium ${
+                active === c.id ? "" : "bg-line text-ink"
               }`}
-              style={active === c.id ? { background: accent } : undefined}
+              style={active === c.id ? { background: accent, color: textOn(accent) } : undefined}
             >
               {l(c.name, c.name_i18n as Record<string, string> | null)}
             </button>
@@ -308,8 +310,8 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
                     type="button"
                     aria-pressed={on}
                     onClick={() => setActiveTags(on ? activeTags.filter((x) => x !== tg) : [...activeTags, tg])}
-                    className={`rounded-full px-3 py-1 text-sm font-medium transition ${on ? "text-white" : "border border-line bg-surface text-ink"}`}
-                    style={on ? { background: accent } : undefined}
+                    className={`press inline-flex min-h-11 items-center rounded-full px-3.5 text-sm font-medium transition-transform ${on ? "" : "border border-line bg-surface text-ink"}`}
+                    style={on ? { background: accent, color: textOn(accent) } : undefined}
                   >
                     {tagLabel(tg, locale)}
                   </button>

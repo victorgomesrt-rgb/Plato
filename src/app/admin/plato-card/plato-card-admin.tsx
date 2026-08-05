@@ -76,7 +76,7 @@ export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap, 
       <section className="rounded-card border border-line bg-surface p-5">
         <div className="flex items-center justify-between">
           <p className="font-display text-base font-semibold text-ink">Promo requests</p>
-          {queue.length > 0 && <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-white">{queue.length} waiting</span>}
+          {queue.length > 0 && <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-semibold text-ink">{queue.length} waiting</span>}
         </div>
         {queue.length === 0 ? (
           <p className="mt-3 text-sm text-muted">No promo requests right now.</p>
@@ -91,7 +91,7 @@ export function PlatoCardAdmin({ blasts, partnerCount, sentThisWeek, weeklyCap, 
                 </div>
                 <p className="mt-1.5 text-sm text-muted">{b.message}</p>
                 <div className="mt-2.5 flex gap-2">
-                  <button disabled={pending} onClick={() => approve(b.id)} className="inline-flex items-center gap-1.5 rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent-deep disabled:opacity-60"><Send className="h-3.5 w-3.5" />Approve &amp; send</button>
+                  <button disabled={pending} onClick={() => approve(b.id)} className="inline-flex items-center gap-1.5 rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-ink hover:bg-accent-deep disabled:opacity-60"><Send className="h-3.5 w-3.5" />Approve &amp; send</button>
                   <button disabled={pending} onClick={() => decline(b.id)} className="rounded-btn border border-line px-3 py-1.5 text-xs font-medium text-muted hover:text-ink">Decline</button>
                 </div>
               </li>

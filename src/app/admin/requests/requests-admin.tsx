@@ -55,7 +55,7 @@ export function RequestsAdmin({ changeRequests, hardwareOrders }: { changeReques
                           ))}
                         </span>
                       )}
-                      {next && <button disabled={pending} onClick={() => run(setChangeRequestStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{next.label}</button>}
+                      {next && <button disabled={pending} onClick={() => run(setChangeRequestStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-60">{next.label}</button>}
                     </div>
                   </div>
                 </li>
@@ -82,7 +82,7 @@ export function RequestsAdmin({ changeRequests, hardwareOrders }: { changeReques
                   {r.notes && <p className="mt-1.5 text-sm text-muted">{r.notes}</p>}
                   <div className="mt-2 flex items-center justify-between">
                     <span className="text-xs text-muted">{fmt(r.created_at)}</span>
-                    {next && <button disabled={pending} onClick={() => run(setHardwareStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{next.label}</button>}
+                    {next && <button disabled={pending} onClick={() => run(setHardwareStatus(r.id, next.to))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-60">{next.label}</button>}
                   </div>
                 </li>
               );

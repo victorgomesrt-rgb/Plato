@@ -29,7 +29,7 @@ export function ChangePassword() {
         placeholder="New password"
         className="flex-1 rounded-btn border border-line px-3 py-2.5 text-ink outline-none focus:border-accent"
       />
-      <button type="submit" disabled={busy} className="rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+      <button type="submit" disabled={busy} className="rounded-btn bg-accent px-4 py-2.5 text-sm font-semibold text-ink disabled:opacity-60">
         {busy ? "Saving…" : "Update password"}
       </button>
       {msg && <p className="w-full text-sm text-muted">{msg}</p>}

@@ -23,7 +23,7 @@ export function AdminHeader({
       </div>
       <AdminSearch tenants={tenants} />
       {showNewClient && (
-        <Link href="/admin/new-client" className="inline-flex shrink-0 items-center gap-1.5 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">
+        <Link href="/admin/new-client" className="inline-flex shrink-0 items-center gap-1.5 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink hover:bg-accent-deep">
           <Plus className="h-4 w-4" /> New client
         </Link>
       )}

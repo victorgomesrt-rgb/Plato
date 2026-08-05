@@ -48,7 +48,7 @@ function PriceField({ item, currency, readOnly }: { item: QItem; currency: strin
   }
 
   return (
-    <div className={`flex h-11 w-24 items-center gap-1 rounded-btn border px-2.5 ${saving ? "border-accent" : "border-line"} ${readOnly ? "opacity-60" : "focus-within:border-accent"}`}>
+    <div className={`flex h-11 w-32 items-center gap-1 rounded-btn border px-2.5 ${saving ? "border-accent" : "border-line"} ${readOnly ? "opacity-60" : "focus-within:border-accent"}`}>
       <span className="text-sm text-muted">{currency === "USD" ? "$" : currency}</span>
       <input
         inputMode="decimal"
@@ -77,8 +77,8 @@ function AvailabilityToggle({ item, readOnly }: { item: QItem; readOnly: boolean
         className="grid h-11 w-11 place-items-center disabled:opacity-60"
         aria-label={available ? "Available, tap to mark sold out" : "Sold out, tap to mark available"}
       >
-        <span className={`relative block h-6 w-11 rounded-full transition ${available ? "bg-emerald-500" : "bg-line"}`}>
-          <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all ${available ? "left-[22px]" : "left-0.5"}`} />
+        <span className={`relative block h-6 w-11 rounded-full transition-colors ${available ? "bg-emerald-500" : "bg-line"}`}>
+          <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ease-out ${available ? "translate-x-5" : "translate-x-0"}`} />
         </span>
       </button>
     </div>

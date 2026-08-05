@@ -195,7 +195,7 @@ export function PageSettingsForm(p: Props) {
 
         <section className="rounded-card border border-line bg-surface p-5">
           <h2 className="font-display text-base font-semibold text-ink">Brand color</h2>
-          <p className="mt-1 text-sm text-muted">Your accent on the menu — buttons, highlights, and price chips.</p>
+          <p className="mt-1 text-sm text-muted">Your accent on the menu: buttons, highlights, and price chips.</p>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <input type="color" value={f.accentColor} disabled={!!p.readOnly} onChange={(e) => set("accentColor", e.target.value)}
               className="h-10 w-14 shrink-0 cursor-pointer rounded-btn border border-line bg-surface p-1 disabled:opacity-60" aria-label="Brand color" />
@@ -203,7 +203,7 @@ export function PageSettingsForm(p: Props) {
               placeholder="#FB6A1A" className={`${field} max-w-[140px] uppercase`} />
             <span className="inline-flex h-9 items-center rounded-btn px-4 text-sm font-semibold text-white" style={{ background: f.accentColor }}>Button</span>
             {!whiteTextOk(f.accentColor) && (
-              <span className="text-xs text-accent-deep">Light color — white button text may be hard to read.</span>
+              <span className="text-xs text-accent-deep">Light color. White button text may be hard to read.</span>
             )}
           </div>
         </section>
@@ -230,7 +230,7 @@ export function PageSettingsForm(p: Props) {
         </section>
 
         <div className="flex items-center gap-3">
-          <button type="submit" disabled={pending || !!p.readOnly} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          <button type="submit" disabled={pending || !!p.readOnly} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-ink disabled:opacity-60">
             {pending ? "Saving…" : "Save changes"}
           </button>
           {msg && <p className="text-sm text-muted">{msg}</p>}

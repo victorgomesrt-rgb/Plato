@@ -59,7 +59,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         <div>
           <div className="flex gap-2 text-sm">
             {FILTERS.map((x) => (
-              <Link key={x.v} href={`/dashboard/requests${x.v === "all" ? "" : `?filter=${x.v}`}`} className={`rounded-full px-3 py-1 font-medium ${f === x.v ? "bg-accent text-white" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>{x.label}</Link>
+              <Link key={x.v} href={`/dashboard/requests${x.v === "all" ? "" : `?filter=${x.v}`}`} className={`rounded-full px-3 py-1 font-medium ${f === x.v ? "bg-accent text-ink" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>{x.label}</Link>
             ))}
           </div>
 

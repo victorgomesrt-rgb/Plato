@@ -93,7 +93,7 @@ export default async function AdminOverviewPage() {
           <p className="text-sm text-muted">Across all {menu.length} menu {menu.length === 1 ? "page" : "pages"}</p>
         </div>
         <AdminSearch tenants={tenants.map((t) => ({ name: t.name, slug: t.slug, plan: t.plan }))} />
-        <Link href="/admin/new-client" className="inline-flex shrink-0 items-center gap-1.5 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">
+        <Link href="/admin/new-client" className="inline-flex shrink-0 items-center gap-1.5 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink hover:bg-accent-deep">
           <Plus className="h-4 w-4" /> New client
         </Link>
       </div>

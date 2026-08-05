@@ -38,7 +38,7 @@ export function DashboardSidebar({
   return (
     <aside className="bg-ink text-white md:fixed md:inset-y-0 md:left-0 md:flex md:w-60 md:flex-col">
       <div className="flex items-center gap-3 px-5 py-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent font-display text-lg font-bold text-white shadow-[0_0_22px_-4px_rgba(251,106,26,0.8)]">{initial}</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent font-display text-lg font-bold text-ink shadow-[0_0_22px_-4px_rgba(251,106,26,0.8)]">{initial}</span>
         <div className="min-w-0">
           <p className="truncate font-display font-semibold">{name}</p>
           <p className="truncate text-xs text-white/50">platodigital.io/{slug}</p>
@@ -61,10 +61,10 @@ export function DashboardSidebar({
         )}
       </div>
 
-      <nav className="mt-4 flex gap-1 overflow-x-auto px-3 pb-2 md:mt-5 md:flex-1 md:flex-col md:gap-0.5 md:overflow-visible md:px-0 md:pb-0">
+      <nav className="mt-4 flex flex-wrap gap-1 px-3 pb-2 md:mt-5 md:flex-1 md:flex-col md:flex-nowrap md:gap-0.5 md:px-0 md:pb-0">
         {nav.map(({ href, label, icon: Icon, badge }) => {
           const active = href === "/dashboard" ? path === href : path.startsWith(href);
-          const cls = `flex shrink-0 items-center gap-3 rounded-btn border-l-2 px-4 py-2.5 text-[15px] font-medium md:rounded-none md:px-5 ${
+          const cls = `press flex items-center gap-2.5 rounded-btn border-l-2 px-3.5 py-2.5 text-[15px] font-medium md:gap-3 md:rounded-none md:px-5 ${
             active ? "border-accent bg-white/[0.06] text-white" : "border-transparent text-white/60 hover:bg-white/5 hover:text-white"
           }`;
           return (
@@ -72,7 +72,7 @@ export function DashboardSidebar({
               <Icon className="h-[18px] w-[18px]" />
               {label}
               {badge ? (
-                <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1.5 text-[11px] font-bold text-white">{badge}</span>
+                <span className="ml-auto grid h-5 min-w-5 place-items-center rounded-full bg-accent px-1.5 text-[11px] font-bold text-ink">{badge}</span>
               ) : null}
             </Link>
           );

@@ -14,9 +14,9 @@ export default function ReviewUnavailablePage() {
         <p className="mt-3 text-white/70">This link isn&rsquo;t active right now. Please check back soon.</p>
         <a
           href="https://platodigital.io"
-          className="mt-7 inline-block rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep"
+          className="mt-7 inline-flex items-center gap-1.5 text-xs text-white/50 hover:text-white/80"
         >
-          Powered by Plato
+          <PlatoMark className="h-4 w-auto" onDark /> Powered by Plato
         </a>
       </div>
     </main>

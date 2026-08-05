@@ -11,7 +11,7 @@ const PLANS = [
   { key: "Growth", price: "$249", note: "Busy restaurants" },
   { key: "Premium", price: "$499", note: "Resort & fine dining" },
 ];
-const field = "mt-1 w-full rounded-btn border border-line bg-surface px-3 py-2.5 text-ink outline-none focus:border-accent";
+const field = "mt-1 w-full rounded-btn border border-line bg-surface px-3 py-2.5 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/40";
 
 export function BookForm() {
   const [pending, startTransition] = useTransition();
@@ -92,7 +92,7 @@ export function BookForm() {
         <div className="mt-3 flex gap-2">
           {TIMING.map((tm) => (
             <button type="button" key={tm} onClick={() => set("timing", tm)}
-              className={`rounded-btn px-4 py-2 text-sm font-medium transition ${f.timing === tm ? "bg-accent text-white" : "border border-line text-ink hover:border-ink/30"}`}>
+              className={`rounded-btn px-4 py-2 text-sm font-medium transition ${f.timing === tm ? "bg-accent text-ink" : "border border-line text-ink hover:border-ink/30"}`}>
               {tm}
             </button>
           ))}
@@ -104,7 +104,7 @@ export function BookForm() {
         </label>
 
         {err && <p className="mt-3 text-sm text-accent-deep">{err}</p>}
-        <button type="submit" disabled={pending} className="mt-5 w-full rounded-btn bg-accent px-4 py-3 font-semibold text-white disabled:opacity-60">
+        <button type="submit" disabled={pending} className="press mt-5 w-full rounded-btn bg-accent px-4 py-3 font-semibold text-ink disabled:opacity-60">
           {pending ? "Sending…" : "Book my demo"}
         </button>
         <p className="mt-2 text-center text-xs text-muted">No contracts · cancel anytime · one-time on-site capture fee applies.</p>

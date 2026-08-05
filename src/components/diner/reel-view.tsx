@@ -6,6 +6,7 @@ import type { Item } from "@/lib/menu";
 import { LOCALE_LABELS, t as tr } from "@/lib/i18n";
 import { tagLabel } from "@/lib/tags";
 import type { DisplayCurrency } from "@/lib/currency";
+import { textOn } from "@/lib/contrast";
 import { VideoTile } from "./video-tile";
 
 type ReelTenant = {
@@ -95,7 +96,7 @@ export function ReelView({
         <div className="flex gap-1.5">
           {dishes.map((d, i) => (
             <div key={d.id} className="h-[3px] flex-1 overflow-hidden rounded-full bg-white/30">
-              <span className="block h-full bg-white transition-all" style={{ width: i <= active ? "100%" : "0%" }} />
+              <span className="block h-full w-full origin-left bg-white transition-transform duration-200 ease-out" style={{ transform: i <= active ? "scaleX(1)" : "scaleX(0)" }} />
             </div>
           ))}
         </div>
@@ -112,13 +113,13 @@ export function ReelView({
           <div className="ml-auto flex items-center gap-1.5">
             {activeLocales.length > 1 &&
               activeLocales.map((lc) => (
-                <button key={lc} onClick={() => setLocale(lc)} className={`${pill} ${locale === lc ? "text-white" : glass}`} style={locale === lc ? { background: accent } : undefined}>
+                <button key={lc} onClick={() => setLocale(lc)} className={`press ${pill} ${locale === lc ? "" : glass}`} style={locale === lc ? { background: accent, color: textOn(accent) } : undefined}>
                   {LOCALE_LABELS[lc] ?? lc.toUpperCase()}
                 </button>
               ))}
             {dualCurrency &&
               (["USD", "AWG"] as DisplayCurrency[]).map((c) => (
-                <button key={c} onClick={() => setCurrency(c)} className={`${pill} ${cur === c ? "text-white" : glass}`} style={cur === c ? { background: accent } : undefined}>
+                <button key={c} onClick={() => setCurrency(c)} className={`press ${pill} ${cur === c ? "" : glass}`} style={cur === c ? { background: accent, color: textOn(accent) } : undefined}>
                   {c}
                 </button>
               ))}
@@ -143,18 +144,18 @@ export function ReelView({
               {/* Right action rail */}
               <div className="absolute bottom-40 right-3 z-20 flex flex-col items-center gap-4">
                 {directionsHref && (
-                  <a href={directionsHref} target="_blank" rel="noopener noreferrer" onClick={() => onLinkClick("directions")} className="flex flex-col items-center gap-1">
+                  <a href={directionsHref} target="_blank" rel="noopener noreferrer" onClick={() => onLinkClick("directions")} className="press flex flex-col items-center gap-1">
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-black/35 backdrop-blur"><Compass className="h-5 w-5" /></span>
                     <span className="text-[10px] font-medium">{tr(locale, "directions")}</span>
                   </a>
                 )}
                 {tenant.phone && (
-                  <a href={`tel:${tenant.phone}`} onClick={() => onLinkClick("call")} className="flex flex-col items-center gap-1">
+                  <a href={`tel:${tenant.phone}`} onClick={() => onLinkClick("call")} className="press flex flex-col items-center gap-1">
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-black/35 backdrop-blur"><Phone className="h-5 w-5" /></span>
                     <span className="text-[10px] font-medium">{tr(locale, "call")}</span>
                   </a>
                 )}
-                <button onClick={share} className="flex flex-col items-center gap-1">
+                <button onClick={share} className="press flex flex-col items-center gap-1">
                   <span className="grid h-11 w-11 place-items-center rounded-full bg-black/35 backdrop-blur"><Share2 className="h-5 w-5" /></span>
                   <span className="text-[10px] font-medium">{tr(locale, "share")}</span>
                 </button>
@@ -168,7 +169,7 @@ export function ReelView({
                   <p className="mt-1.5 max-w-xs text-sm text-white/80">{l(d.description, d.description_i18n)}</p>
                 )}
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full px-3 py-1 text-sm font-bold text-white" style={{ background: accent }}>{price(d)}</span>
+                  <span className="rounded-full px-3 py-1 text-sm font-bold" style={{ background: accent, color: textOn(accent) }}>{price(d)}</span>
                   {(d.tags ?? []).map((tag) => (
                     <span key={tag} className="rounded-full bg-black/35 px-2.5 py-1 text-[11px] font-medium backdrop-blur">{tagLabel(tag, locale)}</span>
                   ))}

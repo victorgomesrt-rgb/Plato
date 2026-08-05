@@ -26,5 +26,13 @@ export function CardMedia({
   if (it.image_url)
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={it.image_url} alt={it.name} className={className} />;
+  // Video is still uploading/encoding and there's no photo yet: show a distinct shimmering
+  // placeholder (not the flat blank tint) so diners can tell footage is on the way.
+  if (it.video_status === "processing")
+    return (
+      <div className={`${className} relative overflow-hidden`} style={{ background: `${accent}14` }}>
+        <span className="absolute inset-0 animate-pulse" style={{ background: `linear-gradient(105deg, transparent 30%, ${accent}22 50%, transparent 70%)` }} />
+      </div>
+    );
   return <div className={className} style={{ background: `${accent}14` }} />;
 }

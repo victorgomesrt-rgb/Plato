@@ -7,6 +7,7 @@ import {
 import { t } from "@/lib/i18n";
 import { track } from "@/lib/track-client";
 import { WhatsAppIcon, InstagramIcon, FacebookIcon, TikTokIcon } from "./brand-icons";
+import { textOn } from "@/lib/contrast";
 import type { TenantLink } from "@/lib/tenant";
 
 type Icon = ComponentType<{ className?: string }>;
@@ -59,7 +60,7 @@ function hrefFor(link: TenantLink, tn: TenantBits): string | null {
   }
 }
 
-const WRAP = "flex min-w-[60px] shrink-0 flex-col items-center gap-1.5";
+const WRAP = "press flex min-w-[60px] shrink-0 flex-col items-center gap-1.5";
 
 // Match the mockup: only WhatsApp gets its brand green; everything else is neutral ink.
 const BRAND: Record<string, string> = {
@@ -71,8 +72,8 @@ function Circle({ Icon, type, primary, accent }: { Icon: Icon; type: string; pri
   const card = type === "plato_card";
   return (
     <span
-      className={`grid h-12 w-12 place-items-center rounded-full transition ${primary ? "text-white" : card ? "border border-white/15 text-white shadow-sm backdrop-blur-md" : "bg-line"}`}
-      style={primary ? { background: accent } : card ? { background: "rgba(22,17,14,0.92)" } : brand ? { color: brand } : { color: "var(--color-ink)" }}
+      className={`grid h-12 w-12 place-items-center rounded-full ${primary ? "" : card ? "border border-white/15 text-white shadow-sm backdrop-blur-md" : "bg-line"}`}
+      style={primary ? { background: accent, color: textOn(accent) } : card ? { background: "rgba(22,17,14,0.92)" } : brand ? { color: brand } : { color: "var(--color-ink)" }}
     >
       <Icon className="h-[22px] w-[22px]" />
     </span>

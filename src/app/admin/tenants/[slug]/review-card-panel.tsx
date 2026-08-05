@@ -116,7 +116,7 @@ export function ReviewCardPanel({
           </div>
         </label>
         <button disabled={pending} onClick={() => run(post("save", { url, active, paidThrough: paidThrough || null }))}
-          className="rounded-btn bg-accent px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-60">Save</button>
+          className="rounded-btn bg-accent px-4 py-1.5 text-sm font-semibold text-ink disabled:opacity-60">Save</button>
       </div>
 
       <div className="mt-3 flex items-center gap-3 border-t border-line pt-3">

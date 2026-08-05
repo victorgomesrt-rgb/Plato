@@ -83,7 +83,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
       <div className="mt-5 flex items-center justify-between gap-3">
         <div className="flex gap-2 text-sm">
           {[7, 30, 90].map((d) => (
-            <Link key={d} href={`/dashboard/analytics?days=${d}`} className={`rounded-full px-3 py-1 font-medium ${d === N ? "bg-accent text-white" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>{d} days</Link>
+            <Link key={d} href={`/dashboard/analytics?days=${d}`} className={`rounded-full px-3 py-1 font-medium ${d === N ? "bg-accent text-ink" : "border border-line bg-surface text-ink hover:border-ink/20"}`}>{d} days</Link>
           ))}
         </div>
         <ExportButton rows={csvRows} filename={`plato-insights-${N}d.csv`} />
@@ -97,7 +97,7 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
           </div>
           <div className="flex gap-6 text-right">
             <div><p className="text-xs text-muted">Views</p><p className="font-display text-xl font-bold text-ink">{totalViews.toLocaleString()}</p></div>
-            <div><p className="text-xs text-muted">Plays</p><p className="font-display text-xl font-bold text-accent">{totalPlays.toLocaleString()}</p></div>
+            <div><p className="text-xs text-muted">Plays</p><p className="font-display text-xl font-bold text-accent-strong">{totalPlays.toLocaleString()}</p></div>
           </div>
         </div>
         <div className="mt-3"><ViewsPlaysTrend data={series} height={340} /></div>

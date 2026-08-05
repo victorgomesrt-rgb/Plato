@@ -8,8 +8,9 @@
 
 @theme {
   /* Brand */
-  --color-accent: #fb6a1a; /* Plato Orange */
+  --color-accent: #fb6a1a; /* Plato Orange, fills/icons; pair with text-ink for AA */
   --color-accent-deep: #e2540f; /* hover / pressed */
+  --color-accent-strong: #b5480b; /* orange TEXT on light bg (WCAG AA 5.4:1 on white) */
   --color-ink: #16110e; /* near-black, P body + dark surfaces */
   --color-surface: #ffffff;
   --color-muted: #6b6660;
@@ -39,6 +40,12 @@
   --text-lead: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);      /* 16px → 18px */
 
   /* Spacing scale 4/8/12/16/24/32/48 is the Tailwind default; no override needed */
+
+  /* Motion tokens (Emil Kowalski): custom curves + durations, shared not scattered. */
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
 }
 
 /*
@@ -99,21 +106,27 @@ body {
   border-radius: 3px;
 }
 
+/* Tap/press feedback: add `press` to any button/pressable. Subtle scale, GPU-only.
+   The reduced-motion block below neutralizes the movement. */
+.press { transition: transform 100ms var(--ease-out); }
+@media (hover: hover) and (pointer: fine) { .press:active { transform: scale(0.97); } }
+.press:active { transform: scale(0.97); }
+
 /* Landing motion (auto-disabled by the reduced-motion block below) */
 @keyframes plato-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 @keyframes plato-float-slow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
-@keyframes plato-pan { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-@keyframes plato-shimmer { 0% { transform: translateX(-120%); } 60%, 100% { transform: translateX(220%); } }
 @keyframes plato-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 @keyframes plato-kenburns { 0% { transform: scale(1.04); } 100% { transform: scale(1.18); } }
 @keyframes plato-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-@keyframes plato-ring { 0% { box-shadow: 0 0 0 0 rgba(251,106,26,.5); } 100% { box-shadow: 0 0 0 14px rgba(251,106,26,0); } }
 @keyframes plato-fadeswap { 0% { opacity: 0; transform: translateY(10px) scale(0.985); } 100% { opacity: 1; transform: none; } }
-
-/* Scroll-reveal, <Reveal> adds .in-view via IntersectionObserver (matches mockup pl-reveal) */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.3,1); }
-.reveal.in-view { opacity: 1; transform: none; }
 @keyframes plato-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@keyframes plato-toast-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } }
+.toast-in { animation: plato-toast-in 200ms var(--ease-out); }
+
+/* Scroll-reveal. <Reveal> adds .in-view (IntersectionObserver). Hidden state is gated on
+   `html.js`, set before paint — so if JS never runs, content renders visible (no blank page). */
+.js .reveal { opacity: 0; transform: translateY(28px); transition: opacity .8s ease, transform .8s var(--ease-out); }
+.js .reveal.in-view { opacity: 1; transform: none; }
 
 /* Respect reduced motion globally, design.md §9, video loops pause elsewhere in JS */
 @media (prefers-reduced-motion: reduce) {
@@ -121,7 +134,9 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
-  .reveal { opacity: 1 !important; transform: none !important; }
+  .js .reveal { opacity: 1 !important; transform: none !important; }
 }

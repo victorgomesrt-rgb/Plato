@@ -30,13 +30,13 @@ const Reel = () => (
   <PhoneFrame dark>
     <Image src={img(9)} alt="" fill sizes="272px" className="object-cover" style={{ animation: "plato-kenburns 14s ease-in-out infinite alternate" }} />
     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/30" />
-    <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2 py-1 text-[10px] font-bold text-white backdrop-blur"><span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-pulse 1.4s infinite" }} /> LIVE CLIP</span>
+    <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/50 px-2 py-1 text-[10px] font-bold text-ink backdrop-blur"><span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-pulse 1.4s infinite" }} /> LIVE CLIP</span>
     <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/20 backdrop-blur"><Play className="h-5 w-5 fill-white text-white" /></span>
     <div className="absolute inset-x-4 bottom-5">
       <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Chef&apos;s pick</p>
       <p className="font-display text-2xl font-extrabold leading-tight text-white drop-shadow">Caribbean Lobster</p>
       <p className="text-xs text-white/80">Grilled over coals, lime butter.</p>
-      <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-bold text-white">$46</span>
+      <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-bold text-ink">$46</span>
     </div>
   </PhoneFrame>
 );
@@ -88,7 +88,7 @@ const Spotlight = () => (
         <Image src={img(9)} alt="" fill sizes="240px" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
         <div className="absolute bottom-2.5 left-3"><p className="font-display text-lg font-extrabold text-white drop-shadow">Catch of the Day</p></div>
-        <span className="absolute bottom-3 right-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-white">$29</span>
+        <span className="absolute bottom-3 right-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-ink">$29</span>
       </div>
       <div className="mt-3 divide-y divide-line">
         {[["Garlic Shrimp", "$24", "Garlic butter, white wine.", 7], ["Caribbean Lobster", "$46", "Grilled, lime butter.", 8]].map(([n, p, d, im]) => (
@@ -116,7 +116,7 @@ export function TemplateSwitcher() {
           return (
             <button key={o.key} onClick={() => setActive(o.key)}
               className={`flex w-full items-center gap-4 rounded-card border p-4 text-left transition ${on ? "border-accent/60 bg-accent/10" : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]"}`}>
-              <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${on ? "bg-accent text-white" : "bg-white/10 text-white/80"}`}><o.icon className="h-5 w-5" /></span>
+              <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl ${on ? "bg-accent text-ink" : "bg-white/10 text-white/80"}`}><o.icon className="h-5 w-5" /></span>
               <div className="flex-1">
                 <p className="font-display font-bold text-white">{o.name}</p>
                 <p className="text-sm text-white/60">{o.body}</p>
@@ -126,7 +126,7 @@ export function TemplateSwitcher() {
           );
         })}
       </div>
-      <div key={active} style={{ animation: "plato-fadeswap 0.45s ease" }}>
+      <div key={active} style={{ animation: "plato-fadeswap 0.25s var(--ease-out)" }}>
         <Preview />
       </div>
     </div>

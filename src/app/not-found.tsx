@@ -11,7 +11,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="rounded-btn bg-accent px-5 py-2.5 text-sm font-medium text-white"
+        className="rounded-btn bg-accent px-5 py-2.5 text-sm font-medium text-ink"
       >
         Go to Plato
       </Link>

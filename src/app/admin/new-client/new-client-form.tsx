@@ -69,7 +69,7 @@ export function NewClientForm() {
           <div className="mt-1 flex gap-2">
             {["USD", "AWG"].map((c) => (
               <button key={c} type="button" onClick={() => setCurrency(c)}
-                className={`h-11 flex-1 rounded-btn text-sm font-semibold ${currency === c ? "bg-accent text-white" : "border border-line bg-surface text-ink hover:border-ink/30"}`}>{c}</button>
+                className={`h-11 flex-1 rounded-btn text-sm font-semibold ${currency === c ? "bg-accent text-ink" : "border border-line bg-surface text-ink hover:border-ink/30"}`}>{c}</button>
             ))}
           </div>
         </div>
@@ -96,7 +96,7 @@ export function NewClientForm() {
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
         <p className="max-w-sm text-xs text-muted">No password is created. The owner gets a secure set-password link by email, plus a magic-link sign in.</p>
         <button type="submit" disabled={pending || slugState?.available === false}
-          className="inline-flex items-center gap-2 rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-deep disabled:opacity-60">
+          className="inline-flex items-center gap-2 rounded-btn bg-accent px-5 py-2.5 text-sm font-semibold text-ink hover:bg-accent-deep disabled:opacity-60">
           <Send className="h-4 w-4" /> {pending ? "Creating…" : "Create client & send invite"}
         </button>
       </div>

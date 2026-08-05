@@ -90,7 +90,7 @@ export function AdminConsole({ tenants }: { tenants: TenantRow[] }) {
             <button
               key={f.key}
               onClick={() => setFilter(f.key)}
-              className={`rounded-full px-3 py-1 text-sm font-medium ${filter === f.key ? "bg-accent text-white" : "border border-line bg-surface text-ink hover:border-ink/30"}`}
+              className={`rounded-full px-3 py-1 text-sm font-medium ${filter === f.key ? "bg-accent text-ink" : "border border-line bg-surface text-ink hover:border-ink/30"}`}
             >
               {f.label}
             </button>

@@ -43,6 +43,11 @@ export default function RootLayout({
       lang="en"
       className={`${bricolage.variable} ${inter.variable} h-full antialiased`}
     >
+      <head>
+        {/* Mark JS available before paint: scroll-reveal hides content only under html.js,
+            so a no-JS / hydration-failure render still shows everything. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

@@ -95,7 +95,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <div className="md:pl-60">
         {impersonating && (
           <div className="flex flex-wrap items-center justify-between gap-2 bg-ink px-5 py-2.5 text-sm text-white lg:px-8">
-            <span>Viewing <strong>{t?.name ?? "this restaurant"}</strong> as the owner — read-only (admin).</span>
+            <span>Viewing <strong>{t?.name ?? "this restaurant"}</strong> as the owner (read-only admin).</span>
             <form action="/admin/impersonate/stop" method="post">
               <button type="submit" className="rounded-full bg-white/15 px-3 py-1 font-medium hover:bg-white/25">Exit</button>
             </form>

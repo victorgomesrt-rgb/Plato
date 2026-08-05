@@ -426,7 +426,7 @@ function ItemForm({
               tags,
             })
           }
-          className="rounded-btn bg-accent px-3 py-1.5 text-sm font-medium text-white"
+          className="rounded-btn bg-accent px-3 py-1.5 text-sm font-medium text-ink"
         >
           {initial ? "Save" : "Add item"}
         </button>
@@ -458,7 +458,7 @@ function AddCategory({
     <div className="mt-4 flex flex-wrap items-center gap-2 rounded-card border border-line p-4">
       <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category (EN)" className="rounded-btn border border-line px-2 py-1.5 text-sm" />
       <input value={nameEs} onChange={(e) => setNameEs(e.target.value)} placeholder="Categoría (ES)" className="rounded-btn border border-line px-2 py-1.5 text-sm" />
-      <button onClick={() => { run(createCategory(tenantId, name, nameEs)); setName(""); setNameEs(""); setOpen(false); }} className="rounded-btn bg-accent px-3 py-1.5 text-sm font-medium text-white">Add</button>
+      <button onClick={() => { run(createCategory(tenantId, name, nameEs)); setName(""); setNameEs(""); setOpen(false); }} className="rounded-btn bg-accent px-3 py-1.5 text-sm font-medium text-ink">Add</button>
       <button onClick={() => setOpen(false)} className="text-sm text-muted">Cancel</button>
     </div>
   );

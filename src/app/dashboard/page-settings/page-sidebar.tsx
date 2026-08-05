@@ -69,8 +69,8 @@ export function OwnerQrCard({ slug, name, accent, logoUrl, premium, siteUrl }: {
           {!premium && <span className="inline-flex items-center gap-1 rounded-full bg-line px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted"><Lock className="h-3 w-3" />Premium</span>}
         </div>
         <div className="mt-2 flex rounded-btn border border-line p-1">
-          <button onClick={() => setOwn(false)} className={`flex-1 rounded-[8px] px-3 py-1.5 text-sm font-medium ${!own ? "bg-accent text-white" : "text-ink"}`}>Plato</button>
-          <button onClick={() => { if (premium && logoUrl) setOwn(true); }} disabled={!premium || !logoUrl} className={`flex-1 truncate rounded-[8px] px-3 py-1.5 text-sm font-medium disabled:opacity-50 ${own ? "bg-accent text-white" : "text-ink"}`}>{name} logo</button>
+          <button onClick={() => setOwn(false)} className={`flex-1 rounded-[8px] px-3 py-1.5 text-sm font-medium ${!own ? "bg-accent text-ink" : "text-ink"}`}>Plato</button>
+          <button onClick={() => { if (premium && logoUrl) setOwn(true); }} disabled={!premium || !logoUrl} className={`flex-1 truncate rounded-[8px] px-3 py-1.5 text-sm font-medium disabled:opacity-50 ${own ? "bg-accent text-ink" : "text-ink"}`}>{name} logo</button>
         </div>
         <p className="mt-2 text-xs text-muted">Default Plato mark. On Premium, you can use your own logo.</p>
       </div>

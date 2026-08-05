@@ -81,7 +81,7 @@ export function TabletsAdmin({ tablets, tenants }: { tablets: Tablet[]; tenants:
                           <option value="">Assign to…</option>
                           {tenants.map((tn) => <option key={tn.id} value={tn.id}>{tn.name}</option>)}
                         </select>
-                        <button disabled={pending || !pick[t.id]} onClick={() => run(assignTablet(t.id, pick[t.id]))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-60">{t.status === "retired" ? "Redeploy" : "Deploy"}</button>
+                        <button disabled={pending || !pick[t.id]} onClick={() => run(assignTablet(t.id, pick[t.id]))} className="rounded-btn bg-accent px-3 py-1.5 text-xs font-semibold text-ink disabled:opacity-60">{t.status === "retired" ? "Redeploy" : "Deploy"}</button>
                       </>
                     )}
                   </div>
@@ -96,7 +96,7 @@ export function TabletsAdmin({ tablets, tenants }: { tablets: Tablet[]; tenants:
       <form onSubmit={(e) => { e.preventDefault(); run(addTablet(tag, model)); setTag(""); setModel(""); }} className="mt-3 flex flex-wrap gap-2 rounded-card border border-line bg-surface p-4">
         <input value={tag} onChange={(e) => setTag(e.target.value)} placeholder="Asset tag (PLT-012)" className="flex-1 rounded-btn border border-line px-3 py-2 text-sm outline-none focus:border-accent" />
         <input value={model} onChange={(e) => setModel(e.target.value)} placeholder="Model (optional)" className="flex-1 rounded-btn border border-line px-3 py-2 text-sm outline-none focus:border-accent" />
-        <button disabled={pending} className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">Add tablet</button>
+        <button disabled={pending} className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink disabled:opacity-60">Add tablet</button>
       </form>
     </div>
   );

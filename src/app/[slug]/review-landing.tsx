@@ -29,7 +29,7 @@ export function ReviewLanding({ tenant }: { tenant: Tenant }) {
             href={tenant.review_url ?? "#"}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-btn bg-accent px-6 py-3 text-base font-semibold text-white hover:bg-accent-deep"
+            className="rounded-btn bg-accent px-6 py-3 text-base font-semibold text-ink hover:bg-accent-deep"
           >
             Leave a Google review
           </a>

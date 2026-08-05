@@ -2,42 +2,32 @@
 
 import { useEffect, useRef } from "react";
 
-// Scroll-reveal: adds .in-view (CSS fades/slides up) when the element reaches ~88% down the
-// viewport. One shared rAF-throttled scroll/resize check across all instances, robust against
-// fast scroll and anchor jumps (anything in OR above the viewport reveals; nothing stays hidden).
-// Ref + classList only, no setState-in-effect.
-const items = new Set<HTMLElement>();
-let raf = 0;
-function run() {
-  raf = 0;
-  const vh = window.innerHeight;
-  for (const el of items) {
-    if (el.getBoundingClientRect().top < vh * 0.88) {
-      el.classList.add("in-view");
-      items.delete(el);
-    }
-  }
-}
-function schedule() { if (!raf) raf = requestAnimationFrame(run); }
-
+// Scroll-reveal: adds .in-view (CSS fades/slides up) when the element enters the viewport.
+// IntersectionObserver (not a scroll listener) — no per-frame work, batched by the browser.
+// The hidden state lives under `html.js` (globals.css), so no-JS renders content visible.
 export function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    items.add(el);
-    if (items.size === 1) {
-      window.addEventListener("scroll", schedule, { passive: true });
-      window.addEventListener("resize", schedule);
+    // Already in/above the viewport on mount (e.g. anchor jump, fast load) → reveal now.
+    if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+      el.classList.add("in-view");
+      return;
     }
-    schedule();
-    return () => {
-      items.delete(el);
-      if (items.size === 0) {
-        window.removeEventListener("scroll", schedule);
-        window.removeEventListener("resize", schedule);
-      }
-    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in-view");
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
   return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
 }

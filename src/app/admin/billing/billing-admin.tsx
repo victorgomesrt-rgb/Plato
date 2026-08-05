@@ -188,7 +188,7 @@ export function BillingAdmin({ tenants, invoices, services }: { tenants: Tenant[
           </div>
 
           <button disabled={pending || !tenantId || lines.length === 0} onClick={createDraft}
-            className="mt-3 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white disabled:opacity-60">{pending ? "Working…" : "Create draft"}</button>
+            className="mt-3 rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink disabled:opacity-60">{pending ? "Working…" : "Create draft"}</button>
         </div>
       )}
 
@@ -221,7 +221,7 @@ export function BillingAdmin({ tenants, invoices, services }: { tenants: Tenant[
                   <td className="px-3 py-3"><span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_STYLE[s] ?? "bg-line text-muted"}`}>{STATUS_LABEL[s] ?? s}</span></td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2 text-xs">
-                      {s === "draft" && <button disabled={pending} onClick={() => run(sendInvoice(inv.id))} className="rounded-btn bg-accent px-3 py-1.5 font-semibold text-white disabled:opacity-60">Send</button>}
+                      {s === "draft" && <button disabled={pending} onClick={() => run(sendInvoice(inv.id))} className="rounded-btn bg-accent px-3 py-1.5 font-semibold text-ink disabled:opacity-60">Send</button>}
                       {s === "sent" && <button disabled={pending} onClick={() => run(sendReminder(inv.id))} className="rounded-btn border border-line px-3 py-1.5 font-medium text-ink hover:border-ink/30">Remind</button>}
                       {s === "overdue" && <button disabled={pending} onClick={() => run(sendReminder(inv.id))} className="rounded-btn bg-ink px-3 py-1.5 font-semibold text-white hover:bg-ink/90">Chase</button>}
                       {s === "paid" && <button onClick={() => viewPdf(inv.id)} disabled={!inv.pdf_url} className="rounded-btn border border-line px-3 py-1.5 font-medium text-ink hover:border-ink/30 disabled:opacity-50">View</button>}

@@ -11,7 +11,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
       <h1 className="font-display text-2xl font-semibold text-ink">Something went wrong</h1>
       <p className="max-w-sm text-muted">A hiccup on our end. Try again, or head back to the homepage.</p>
       <div className="flex gap-3">
-        <button onClick={reset} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-medium text-white">Try again</button>
+        <button onClick={reset} className="rounded-btn bg-accent px-5 py-2.5 text-sm font-medium text-ink">Try again</button>
         <Link href="/" className="rounded-btn border border-line px-5 py-2.5 text-sm font-medium text-ink">Go to Plato</Link>
       </div>
     </main>

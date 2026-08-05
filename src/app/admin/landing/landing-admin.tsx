@@ -39,7 +39,7 @@ export function LandingAdmin({ items }: { items: Item[] }) {
           placeholder="Add a restaurant name"
           className="h-11 flex-1 rounded-btn border border-line bg-surface px-3 text-sm text-ink outline-none focus:border-accent" />
         <button type="submit" disabled={pending || !name.trim()}
-          className="inline-flex h-11 items-center gap-1.5 rounded-btn bg-accent px-4 text-sm font-semibold text-white disabled:opacity-60">
+          className="inline-flex h-11 items-center gap-1.5 rounded-btn bg-accent px-4 text-sm font-semibold text-ink disabled:opacity-60">
           <Plus className="h-4 w-4" /> Add
         </button>
       </form>

@@ -77,7 +77,7 @@ function AddService() {
         <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted">$</span>
         <input value={price} onChange={(e) => setPrice(e.target.value)} inputMode="decimal" aria-label="New unit price" placeholder="0" className={`${field} w-24 pl-5`} />
       </div>
-      <button disabled={pending || !name.trim()} onClick={add} className="rounded-btn bg-accent px-4 py-1.5 text-xs font-semibold text-white disabled:opacity-40">{pending ? "Adding…" : "Add service"}</button>
+      <button disabled={pending || !name.trim()} onClick={add} className="rounded-btn bg-accent px-4 py-1.5 text-xs font-semibold text-ink disabled:opacity-40">{pending ? "Adding…" : "Add service"}</button>
       {err && <p className="w-full text-xs text-accent-deep">{err}</p>}
     </div>
   );

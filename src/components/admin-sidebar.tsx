@@ -39,7 +39,7 @@ export function AdminSidebar({ email, requestCount = 0 }: { email: string; reque
               className={`flex shrink-0 items-center gap-2.5 rounded-btn px-3 py-2 text-sm font-medium ${active ? "bg-white/10 text-white" : "text-white/65 hover:bg-white/5 hover:text-white"}`}>
               <Icon className="h-4 w-4" />{label}
               {href === "/admin/requests" && requestCount > 0 && (
-                <span className="ml-auto grid h-5 min-w-[20px] place-items-center rounded-full bg-accent px-1.5 text-[11px] font-bold text-white">{requestCount}</span>
+                <span className="ml-auto grid h-5 min-w-[20px] place-items-center rounded-full bg-accent px-1.5 text-[11px] font-bold text-ink">{requestCount}</span>
               )}
             </Link>
           );
@@ -48,7 +48,7 @@ export function AdminSidebar({ email, requestCount = 0 }: { email: string; reque
 
       <div className="px-4 pb-4 md:mt-auto">
         <div className="hidden items-center gap-2.5 rounded-card border border-white/10 bg-white/5 p-3 md:flex">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">OP</span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-sm font-bold text-ink">OP</span>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">Plato HQ</p>
             <p className="truncate text-xs text-white/50">{email}</p>

@@ -54,8 +54,8 @@ export default function LoginPage() {
           <span className="text-sm font-medium text-ink">Email</span>
           <span className="relative mt-1 block">
             <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input type="email" required placeholder="you@restaurant.com" value={email} onChange={(e) => setEmail(e.target.value)}
-              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent" />
+            <input type="email" required autoComplete="email" placeholder="you@restaurant.com" value={email} onChange={(e) => setEmail(e.target.value)}
+              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/40" />
           </span>
         </label>
         <label className="block">
@@ -65,11 +65,11 @@ export default function LoginPage() {
           </span>
           <span className="relative mt-1 block">
             <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
-            <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)}
-              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent" />
+            <input type="password" autoComplete="current-password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)}
+              className="h-11 w-full rounded-btn border border-line bg-surface pl-9 pr-3 text-ink outline-none focus:border-accent focus:ring-2 focus:ring-accent/40" />
           </span>
         </label>
-        <button type="submit" disabled={busy} className="h-11 w-full rounded-btn bg-accent font-semibold text-white transition hover:bg-accent-deep disabled:opacity-60">
+        <button type="submit" disabled={busy} className="h-11 w-full rounded-btn bg-accent font-semibold text-ink transition hover:bg-accent-deep disabled:opacity-60">
           {busy ? "…" : "Log in →"}
         </button>
       </form>

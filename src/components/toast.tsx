@@ -25,7 +25,7 @@ export function Toaster() {
   return (
     <div className="pointer-events-none fixed bottom-5 left-1/2 z-[60] flex -translate-x-1/2 flex-col items-center gap-2">
       {list.map((t) => (
-        <div key={t.id} className="flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-white shadow-lg">
+        <div key={t.id} className="toast-in flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-medium text-white shadow-lg">
           <Check className="h-4 w-4 text-accent" /> {t.msg}
         </div>
       ))}

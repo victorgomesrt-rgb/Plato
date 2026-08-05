@@ -10,6 +10,7 @@ import { WhatsAppIcon, InstagramIcon } from "@/components/diner/brand-icons";
 import { PlatoMark } from "@/components/plato-logo";
 import { EmailCapture } from "@/components/email-capture";
 import { TemplateSwitcher } from "@/components/landing/template-switcher";
+import { MobileNav } from "@/components/landing/mobile-nav";
 import { Reveal } from "@/components/reveal";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -106,7 +107,7 @@ function HeroPhone() {
           <div className="flex gap-3.5 px-4 pb-2 pt-3.5">
             {ACTIONS.map((a) => (
               <span key={a.label} className="flex flex-1 flex-col items-center gap-1.5">
-                <span className={`grid h-10 w-10 place-items-center rounded-full ${a.primary ? "bg-accent text-white" : "bg-line"}`} style={a.primary ? undefined : { color: a.color ?? "var(--color-ink)" }}>
+                <span className={`grid h-10 w-10 place-items-center rounded-full ${a.primary ? "bg-accent text-ink" : "bg-line"}`} style={a.primary ? undefined : { color: a.color ?? "var(--color-ink)" }}>
                   <a.icon className="h-[18px] w-[18px]" />
                 </span>
                 <span className="text-[9px] font-medium text-muted">{a.label}</span>
@@ -130,7 +131,7 @@ function HeroPhone() {
                   </span>
                   <div className="absolute inset-x-0 bottom-0 p-2.5">
                     <p className="truncate text-[12px] font-semibold text-white drop-shadow">{d.n}</p>
-                    <span className="mt-0.5 inline-block rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-white">{d.p}</span>
+                    <span className="mt-0.5 inline-block rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold text-ink">{d.p}</span>
                   </div>
                 </div>
               ))}
@@ -139,8 +140,8 @@ function HeroPhone() {
         </div>
       </div>
 
-      {/* Floating "views" chip, top:38 left:-28 w:184 */}
-      <div className="absolute left-[-28px] top-[38px] w-[184px] rounded-2xl bg-white/95 px-[15px] py-[13px] text-ink shadow-[0_22px_44px_-20px_rgba(0,0,0,0.6)]" style={{ animation: "plato-float 5s ease-in-out infinite" }}>
+      {/* Floating "views" chip, lowered so it clears the cover's "Open now" status pill */}
+      <div className="absolute left-[-28px] top-[128px] w-[184px] rounded-2xl bg-white/95 px-[15px] py-[13px] text-ink shadow-[0_22px_44px_-20px_rgba(0,0,0,0.6)]" style={{ animation: "plato-float 5s ease-in-out infinite" }}>
         <p className="text-[11px] font-semibold text-[#9A938A]">This week</p>
         <p className="flex items-baseline gap-1.5"><span className="font-display text-2xl font-extrabold leading-none text-ink">1,284</span><span className="text-xs font-bold text-[#157A48]">▲ 22%</span></p>
         <p className="text-[11px] text-[#9A938A]">menu views</p>
@@ -157,7 +158,7 @@ function HeroPhone() {
 }
 
 function Eyebrow({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
-  return <p className={`text-xs font-bold uppercase tracking-[0.18em] ${dark ? "text-accent" : "text-accent"}`}>{children}</p>;
+  return <p className={`text-xs font-bold uppercase tracking-[0.18em] ${dark ? "text-accent" : "text-accent-strong"}`}>{children}</p>;
 }
 
 export default async function Landing() {
@@ -178,8 +179,9 @@ export default async function Landing() {
             <a href="#pricing" className="hover:text-white">Pricing</a>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Link href="/login" className="px-3 py-1.5 text-sm font-medium text-white/80 hover:text-white">Log in</Link>
-            <a href={WAITLIST} className="rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-deep">Get started</a>
+            <Link href="/login" className="hidden px-3 py-1.5 text-sm font-medium text-white/80 hover:text-white md:block">Log in</Link>
+            <a href={WAITLIST} className="press rounded-btn bg-accent px-4 py-2 text-sm font-semibold text-ink hover:bg-accent-deep">Get started</a>
+            <MobileNav />
           </div>
         </nav>
       </header>
@@ -193,14 +195,14 @@ export default async function Landing() {
               <span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ animation: "plato-blink 1.6s ease-in-out infinite" }} /> Digital menus for Aruba’s restaurants
             </span>
             <h1 className="mt-5 font-display text-hero font-extrabold leading-[0.96] tracking-tight">
-              People eat with their <span className="text-accent">eyes.</span>
+              People eat with their <span className="text-accent-strong">eyes.</span>
             </h1>
             <p className="mt-5 max-w-md text-lg text-white/70">
               We come to your restaurant, film every dish, and build you a beautiful menu page where the
               food actually moves. Diners scan, watch, and decide. You don’t build a thing.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <a href={WAITLIST} className="rounded-btn bg-accent px-5 py-3 font-semibold text-white hover:bg-accent-deep">Get started →</a>
+              <a href={WAITLIST} className="rounded-btn bg-accent px-5 py-3 font-semibold text-ink hover:bg-accent-deep">Get started →</a>
               <Link href="/hungparadise" className="rounded-btn border border-white/20 px-5 py-3 font-semibold text-white hover:bg-white/5">See a live menu</Link>
             </div>
             <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
@@ -267,7 +269,7 @@ export default async function Landing() {
           <div className="mt-10 grid items-stretch gap-5 lg:grid-cols-[1.1fr_1fr]">
             {/* Dashboard preview */}
             <Reveal className="rounded-card bg-ink p-6 text-white shadow-lg">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><BarChart3 className="h-5 w-5" /></span>
+              <span className="grid h-10 w-10 place-items-center rounded-xl bg-accent text-ink"><BarChart3 className="h-5 w-5" /></span>
               <h3 className="mt-4 font-display text-xl font-bold">Know what they crave.</h3>
               <p className="mt-1.5 text-sm text-white/65">Views, top dishes, video plays, QR scans, directions and calls, all in one dashboard. We even email you a monthly recap so the value stays visible.</p>
               <div className="mt-5 rounded-card bg-white p-4 text-ink">
@@ -314,7 +316,7 @@ export default async function Landing() {
           <div className="mt-12 grid gap-5 md:grid-cols-3">
             {steps.map((s) => (
               <Reveal key={s.n} className="relative rounded-card border border-white/10 bg-white/[0.03] p-6">
-                <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-xl bg-accent text-white"><s.icon className="h-5 w-5" /></span>
+                <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-xl bg-accent text-ink"><s.icon className="h-5 w-5" /></span>
                 <span className="font-display text-5xl font-extrabold text-white/10">{s.n}</span>
                 <h3 className="mt-3 font-display text-lg font-bold">{s.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-white/60">{s.body}</p>
@@ -325,12 +327,12 @@ export default async function Landing() {
       </section>
 
       {/* Stat band */}
-      <section className="bg-accent text-white">
+      <section className="bg-accent text-ink">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 py-14 md:grid-cols-4">
           {stats.map(([n, l]) => (
             <div key={l} className="text-center">
               <p className="font-display text-5xl font-extrabold leading-none">{n}</p>
-              <p className="mt-2 text-sm font-medium text-white/85">{l}</p>
+              <p className="mt-2 text-sm font-medium text-ink/70">{l}</p>
             </div>
           ))}
         </div>
@@ -349,11 +351,11 @@ export default async function Landing() {
               <Reveal key={p.name} className={`rounded-card p-6 ${p.dark ? "bg-ink text-white shadow-xl ring-1 ring-accent/40 md:-mt-3 md:pb-9" : "border border-line bg-white"}`}>
                 <div className="flex items-center justify-between">
                   <h3 className="font-display text-xl font-bold">{p.name}</h3>
-                  {p.dark && <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">Most popular</span>}
+                  {p.dark && <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink">Most popular</span>}
                 </div>
                 <p className={`text-sm ${p.dark ? "text-white/60" : "text-muted"}`}>{p.tagline}</p>
                 <p className="mt-4"><span className="font-display text-section font-extrabold">${p.price}</span><span className={p.dark ? "text-white/60" : "text-muted"}>/mo</span></p>
-                <a href={WAITLIST} className={`mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-white hover:bg-accent-deep" : "bg-ink text-white hover:bg-ink/90"}`}>{p.cta}</a>
+                <a href={WAITLIST} className={`mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-ink hover:bg-accent-deep" : "bg-ink text-ink hover:bg-ink/90"}`}>{p.cta}</a>
                 <ul className="mt-5 space-y-2.5 text-sm">
                   {p.items.map((it) => (
                     <li key={it} className="flex gap-2"><Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.dark ? "text-accent" : "text-sea"}`} /><span className={p.dark ? "text-white/85" : ""}>{it}</span></li>
