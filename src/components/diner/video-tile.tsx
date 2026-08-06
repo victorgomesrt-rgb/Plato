@@ -57,22 +57,41 @@ export function VideoTile({
     return () => io.disconnect();
   }, [reduced, mp4Url, onPlay]);
 
+  // Poster + video are both absolutely-positioned object-cover over a dark backing, so the
+  // media always fully covers the tile. Fixes iOS Safari not reliably applying object-fit
+  // to a <video poster>, which left a light strip at the tile's top edge. `relative` only
+  // when the caller didn't already position the wrapper (the reel passes `absolute`).
+  const cls = className ?? "";
+  const posed = /(?:^|\s)(?:absolute|fixed|relative|sticky)(?:\s|$)/.test(cls);
+  const wrap = `${posed ? "" : "relative"} block overflow-hidden bg-ink ${cls}`;
+
   if (reduced || !mp4Url) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={poster ?? ""} alt="" className={className} />;
+    return (
+      <span className={wrap}>
+        {poster && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        )}
+      </span>
+    );
   }
 
   return (
-    <video
-      ref={ref}
-      muted
-      loop
-      playsInline
-      preload="metadata"
-      poster={poster ?? undefined}
-      className={className}
-    >
-      <source src={mp4Url} type="video/mp4" />
-    </video>
+    <span className={wrap}>
+      {poster && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={poster} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+      )}
+      <video
+        ref={ref}
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        className="absolute inset-0 h-full w-full object-cover"
+      >
+        <source src={mp4Url} type="video/mp4" />
+      </video>
+    </span>
   );
 }

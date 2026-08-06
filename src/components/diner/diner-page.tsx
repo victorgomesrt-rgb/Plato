@@ -257,7 +257,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
         </div>
 
         {/* Sticky category nav */}
-        <nav className="sticky top-0 z-30 mt-4 flex gap-2 overflow-x-auto border-b border-line bg-surface/95 px-4 py-2">
+        <nav className="sticky top-0 z-30 mt-4 flex gap-2 overflow-x-auto border-b border-white/40 bg-surface/70 px-4 py-2 backdrop-blur-xl backdrop-saturate-150 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categories.map((c) => (
             <button
               key={c.id}
@@ -393,7 +393,7 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
       {/* Floating glass action bar — frosts over the menu as it scrolls behind */}
       {((tenant.links?.length ?? 0) > 0 || tenant.wallet_partner) && (
         <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-2xl px-3 pb-[max(env(safe-area-inset-bottom),10px)] pt-2">
-          <div className="rounded-2xl border border-white/50 bg-surface/70 px-3 py-2 shadow-[0_10px_34px_-14px_rgba(0,0,0,0.35)] backdrop-blur-xl">
+          <div className="rounded-2xl border border-white/40 bg-surface/55 px-3 py-2 shadow-[0_14px_44px_-12px_rgba(0,0,0,0.45)] backdrop-blur-2xl backdrop-saturate-150">
             <ActionBar
               tenantId={tenant.id}
               links={[

@@ -134,7 +134,7 @@ export function ReelView({
           return (
             <section key={d.id} className="relative h-full w-full snap-start overflow-hidden" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}55 55%, #0E5B5B)` }}>
               {mp4 ? (
-                <VideoTile poster={d.video_thumb_url ?? d.image_url} mp4Url={mp4} className="absolute inset-0 h-full w-full object-cover" onPlay={() => onPlay(d)} />
+                <VideoTile poster={d.video_thumb_url ?? d.image_url} mp4Url={mp4} className="absolute inset-0 h-full w-full" onPlay={() => onPlay(d)} />
               ) : d.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={d.image_url} alt={d.name} className="absolute inset-0 h-full w-full object-cover" />
