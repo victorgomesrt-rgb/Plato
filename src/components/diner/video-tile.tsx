@@ -64,10 +64,11 @@ export function VideoTile({
   const cls = className ?? "";
   const posed = /(?:^|\s)(?:absolute|fixed|relative|sticky)(?:\s|$)/.test(cls);
   const wrap = `${posed ? "" : "relative"} block overflow-hidden bg-ink ${cls}`;
-  // Overscan + own compositing layer: iOS Safari paints a light hairline at the top edge
-  // of a <video> inside an overflow-hidden rounded box (its GPU layer isn't clipped to the
-  // radius). Scaling the media slightly past the clip pushes that edge out of view.
-  const media = "absolute inset-0 h-full w-full object-cover bg-ink [transform:scale(1.03)_translateZ(0)]";
+  // Poster + video absolutely fill the wrapper box (which owns the aspect ratio), so the
+  // media always covers the tile and clips cleanly to the card's rounded corners. No CSS
+  // transform here on purpose: a transform breaks the parent's rounded overflow clipping on
+  // iOS Safari, which made a couple of tiles bleed past the corners.
+  const media = "absolute inset-0 h-full w-full object-cover bg-ink";
 
   if (reduced || !mp4Url) {
     return (
