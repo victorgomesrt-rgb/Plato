@@ -8,30 +8,37 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Plato menu";
 
-// Turn a stored cover/logo into a data URI that next/og's rasterizer (resvg) can embed.
-// resvg decodes PNG/JPEG natively, so those pass straight through; webp is decoded with
-// sharp via a *dynamic* import (a load failure is caught and falls back to the gradient,
-// never a 500). Kept fully defensive so a bad image can never break the OG route.
-async function embed(
-  url: string | null,
-  webpTo: "jpeg" | "png"
-): Promise<string | null> {
+// next/og's rasterizer (resvg) embeds only PNG/JPEG — not webp — and sharp can't be loaded
+// in this metadata route on Vercel (its native binary isn't traced into the function, same
+// as the Route-Handler case). So the cover/logo are stored webp for the diner page AND an
+// OG-safe JPEG/PNG copy (_cover_og.jpg / _logo_og.png) is written at upload time; here we
+// just fetch a PNG/JPEG and inline it. Anything else (missing/webp/failure) → gradient.
+async function embedUrl(url: string | null): Promise<string | null> {
   if (!url) return null;
   try {
     const res = await fetch(url);
     if (!res.ok) return null;
+    const type = (res.headers.get("content-type") ?? "").toLowerCase();
+    const isPng = type.includes("png") || /\.png(\?|$)/i.test(url);
+    const isJpeg = type.includes("jpeg") || type.includes("jpg") || /\.jpe?g(\?|$)/i.test(url);
+    if (!isPng && !isJpeg) return null; // resvg can't embed webp/other
     const buf = Buffer.from(await res.arrayBuffer());
-    // TEMP PROBE: force every cover through sharp (even PNG) to prove whether sharp loads
-    // in this metadata route on Vercel. If the live demo keeps its photo, sharp works here.
-    const sharp = (await import("sharp")).default;
-    const out =
-      webpTo === "png"
-        ? await sharp(buf).png().toBuffer()
-        : await sharp(buf).jpeg({ quality: 82 }).toBuffer();
-    return `data:image/${webpTo};base64,${out.toString("base64")}`;
+    return `data:${isPng ? "image/png" : "image/jpeg"};base64,${buf.toString("base64")}`;
   } catch {
     return null;
   }
+}
+
+// Point a stored webp URL (.../<id>/_cover.webp?v=..) at its OG-safe sibling, preserving the
+// cache-busting query so a re-uploaded image isn't served stale.
+function ogVariant(url: string, name: string): string {
+  return url.replace(/\/_(?:cover|logo)\.[a-z0-9]+(\?[^/]*)?$/i, `/${name}$1`);
+}
+
+async function resolveImage(url: string | null, ogName: string): Promise<string | null> {
+  if (!url) return null;
+  if (/\.webp(\?|$)/i.test(url)) return embedUrl(ogVariant(url, ogName));
+  return embedUrl(url); // already png/jpeg (e.g. the seeded demo cover)
 }
 
 // The Plato mark (white), read from the bundled asset, as a data URI for the attribution.
@@ -56,8 +63,8 @@ export default async function OpengraphImage({
   const accent = (ok && tenant!.accent_color) || "#FB6A1A";
 
   const [cover, logo, mark] = await Promise.all([
-    ok ? embed(tenant!.cover_url, "jpeg") : Promise.resolve(null),
-    ok ? embed(tenant!.logo_url, "png") : Promise.resolve(null),
+    ok ? resolveImage(tenant!.cover_url, "_cover_og.jpg") : Promise.resolve(null),
+    ok ? resolveImage(tenant!.logo_url, "_logo_og.png") : Promise.resolve(null),
     platoMark(),
   ]);
 

@@ -141,6 +141,20 @@ export async function processBrandImage(tenantId: string, kind: "logo" | "cover"
     const { data: pub } = svc.storage.from("item-images").getPublicUrl(path);
     const url = `${pub.publicUrl}?v=${Date.now()}`;
 
+    // OG-safe copy: the opengraph-image route (resvg) can't decode webp and can't load sharp
+    // on Vercel, so it embeds this JPEG/PNG sibling instead. Best-effort, never fails upload.
+    try {
+      if (kind === "cover") {
+        const og = await sharp(input).rotate().resize({ width: 1200, height: 630, fit: "cover" }).jpeg({ quality: 82 }).toBuffer();
+        await svc.storage.from("item-images").upload(`${tenantId}/_cover_og.jpg`, og, { contentType: "image/jpeg", upsert: true });
+      } else {
+        const og = await sharp(input).rotate().resize({ width: 400, height: 400, fit: "inside", withoutEnlargement: true }).png().toBuffer();
+        await svc.storage.from("item-images").upload(`${tenantId}/_logo_og.png`, og, { contentType: "image/png", upsert: true });
+      }
+    } catch {
+      /* OG variant is best-effort; the card falls back to the gradient if it's missing */
+    }
+
     const col = kind === "cover" ? "cover_url" : "logo_url";
     const { error: updErr } = await svc.from("tenants").update({ [col]: url }).eq("id", tenantId);
     if (updErr) return { ok: false, error: updErr.message };
@@ -159,7 +173,9 @@ export async function removeBrandImage(tenantId: string, kind: "logo" | "cover")
   if (!w.ok) return w;
   const slug = await requireMember(tenantId);
   const svc = createAdminClient();
-  await svc.storage.from("item-images").remove([`${tenantId}/_${kind}.webp`]);
+  await svc.storage
+    .from("item-images")
+    .remove([`${tenantId}/_${kind}.webp`, `${tenantId}/_${kind}_og.${kind === "cover" ? "jpg" : "png"}`]);
   const col = kind === "cover" ? "cover_url" : "logo_url";
   await svc.from("tenants").update({ [col]: null }).eq("id", tenantId);
   revalidatePath(`/${slug}`);
