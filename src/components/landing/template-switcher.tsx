@@ -34,9 +34,9 @@ const Reel = () => (
     <span className="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white/20 backdrop-blur"><Play className="h-5 w-5 fill-white text-white" /></span>
     <div className="absolute inset-x-4 bottom-5">
       <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Chef&apos;s pick</p>
-      <p className="font-display text-2xl font-extrabold leading-tight text-white drop-shadow">Caribbean Lobster</p>
-      <p className="text-xs text-white/80">Grilled over coals, lime butter.</p>
-      <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-bold text-ink">$46</span>
+      <p className="font-display text-2xl font-extrabold leading-tight text-white drop-shadow">Black Pepper Beef</p>
+      <p className="text-xs text-white/80">Sizzling tenderloin, cracked black pepper.</p>
+      <span className="mt-2 inline-block rounded-full bg-accent px-3 py-1 text-sm font-bold text-ink">$27</span>
     </div>
   </PhoneFrame>
 );
@@ -46,12 +46,12 @@ const Grid = () => (
     <div className="relative h-[120px]">
       <Image src="/landing/cover-hungparadise.jpg" alt="" fill sizes="272px" className="object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-      <p className="absolute bottom-2 left-3 font-display text-xl font-extrabold text-white drop-shadow">Brisa</p>
+      <p className="absolute bottom-2 left-3 font-display text-xl font-extrabold text-white drop-shadow">Lotus</p>
     </div>
     <div className="p-3">
-      <p className="text-[11px] font-semibold text-ink">From the Sea</p>
+      <p className="text-[11px] font-semibold text-ink">House Specials</p>
       <div className="mt-2 grid grid-cols-2 gap-2">
-        {[["Garlic Shrimp", "$24", 7], ["Conch Ceviche", "$14", 6], ["Coconut Shrimp", "$22", 1], ["Red Snapper", "$27", 8]].map(([n, p, d]) => (
+        {[["Sweet & Sour Chicken", "$19", 7], ["Hunan Beef", "$24", 6], ["Salt & Pepper Squid", "$13", 1], ["Spring Rolls", "$9", 8]].map(([n, p, d]) => (
           <div key={n as string} className="overflow-hidden rounded-lg border border-line">
             <div className="relative h-[68px]"><Image src={img(d as number)} alt="" fill sizes="120px" className="object-cover" /></div>
             <div className="p-1.5"><p className="truncate text-[10px] font-semibold text-ink">{n}</p><p className="text-[10px] font-bold text-accent">{p}</p></div>
@@ -65,10 +65,10 @@ const Grid = () => (
 const Classic = () => (
   <PhoneFrame>
     <div className="px-4 pt-7">
-      <p className="font-display text-xl font-extrabold text-ink">Brisa</p>
-      <p className="mt-2 text-[11px] font-semibold text-muted">Starters</p>
+      <p className="font-display text-xl font-extrabold text-ink">Lotus</p>
+      <p className="mt-2 text-[11px] font-semibold text-muted">House Favorites</p>
       <div className="mt-2 divide-y divide-line">
-        {[["Pastechi", "$9", "Flaky turnovers, gouda or beef.", 10], ["Conch Ceviche", "$14", "Lime, scotch bonnet, cilantro.", 6], ["Pan Bati & Dips", "$7", "Sweet cornmeal flatbread.", 2], ["Keshi Yena", "$21", "Stuffed gouda, spiced chicken.", 1]].map(([n, p, d, im]) => (
+        {[["Yang Chow Fried Rice", "$16", "Shrimp, char siu, egg, peas.", 10], ["Hunan Beef", "$24", "Fresh chili, scallion, bold sauce.", 6], ["Hot & Sour Soup", "$8", "Tofu, mushroom, egg ribbons.", 2], ["Salt & Pepper Squid", "$13", "Wok-crisped, chili and garlic.", 1]].map(([n, p, d, im]) => (
           <div key={n as string} className="flex items-center gap-2.5 py-2.5">
             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md"><Image src={img(im as number)} alt="" fill sizes="36px" className="object-cover" /></span>
             <div className="min-w-0 flex-1"><p className="truncate text-[12px] font-semibold text-ink">{n}</p><p className="truncate text-[10px] text-muted">{d}</p></div>
@@ -83,15 +83,15 @@ const Classic = () => (
 const Spotlight = () => (
   <PhoneFrame>
     <div className="px-4 pt-7">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-accent">From the Sea</p>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-accent">House Specials</p>
       <div className="relative mt-2 h-[150px] overflow-hidden rounded-2xl">
         <Image src={img(9)} alt="" fill sizes="240px" className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-        <div className="absolute bottom-2.5 left-3"><p className="font-display text-lg font-extrabold text-white drop-shadow">Catch of the Day</p></div>
-        <span className="absolute bottom-3 right-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-ink">$29</span>
+        <div className="absolute bottom-2.5 left-3"><p className="font-display text-lg font-extrabold text-white drop-shadow">Black Pepper Beef</p></div>
+        <span className="absolute bottom-3 right-3 rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-ink">$27</span>
       </div>
       <div className="mt-3 divide-y divide-line">
-        {[["Garlic Shrimp", "$24", "Garlic butter, white wine.", 7], ["Caribbean Lobster", "$46", "Grilled, lime butter.", 8]].map(([n, p, d, im]) => (
+        {[["Sweet & Sour Chicken", "$19", "Crispy, peppers, pineapple.", 7], ["Spring Rolls", "$9", "Golden, crisp, sweet chili.", 8]].map(([n, p, d, im]) => (
           <div key={n as string} className="flex items-center gap-2.5 py-2.5">
             <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-md"><Image src={img(im as number)} alt="" fill sizes="36px" className="object-cover" /></span>
             <div className="min-w-0 flex-1"><p className="truncate text-[12px] font-semibold text-ink">{n}</p><p className="truncate text-[10px] text-muted">{d}</p></div>

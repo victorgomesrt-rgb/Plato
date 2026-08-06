@@ -99,8 +99,8 @@ function HeroPhone() {
               <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-ink">USD</span>
             </div>
             <div className="absolute bottom-3.5 left-4">
-              <p className="font-display text-[26px] font-extrabold leading-none text-white drop-shadow">Brisa</p>
-              <p className="mt-1 text-[11px] text-white/85">Lotus Kitchen · Oranjestad</p>
+              <p className="font-display text-[26px] font-extrabold leading-none text-white drop-shadow">Lotus</p>
+              <p className="mt-1 text-[11px] text-white/85">Cantonese kitchen · Oranjestad</p>
             </div>
           </div>
 
@@ -281,7 +281,7 @@ export default async function Landing() {
                 <p className="font-display text-3xl font-extrabold">8,420</p>
                 <Sparkline className="mt-1 h-10 w-full" />
                 <div className="mt-3 space-y-2 border-t border-line pt-3">
-                  {[["Garlic Shrimp", "1,204", "/landing/dish-7.jpg", 100], ["Catch of the Day", "986", "/landing/dish-2.jpg", 82], ["Mango Colada", "742", "/landing/dish-4.jpg", 62]].map(([n, plays, img, w]) => (
+                  {[["Sweet & Sour Chicken", "1,204", "/landing/dish-7.jpg", 100], ["Hot & Sour Soup", "986", "/landing/dish-2.jpg", 82], ["Mango Pudding", "742", "/landing/dish-4.jpg", 62]].map(([n, plays, img, w]) => (
                     <div key={n as string} className="flex items-center gap-2.5">
                       <span className="relative h-7 w-7 overflow-hidden rounded-md"><Image src={img as string} alt="" fill sizes="28px" className="object-cover" /></span>
                       <span className="flex-1 text-xs font-medium">{n}</span>
