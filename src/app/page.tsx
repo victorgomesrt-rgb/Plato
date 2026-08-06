@@ -426,7 +426,7 @@ export default async function Landing() {
           </div>
           <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
             <p>© {year} Plato. All rights reserved.</p>
-            <p>Operated by GMS Innovations, Oranjestad, Aruba.</p>
+            <p>Operated by Vadria Innovation Lab, Oranjestad, Aruba.</p>
           </div>
         </div>
       </footer>

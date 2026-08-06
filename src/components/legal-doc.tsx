@@ -38,7 +38,7 @@ export async function LegalDoc({ file }: { file: string }) {
       <main className="mx-auto max-w-3xl px-5 py-10">
         <article><ReactMarkdown components={C}>{md}</ReactMarkdown></article>
         <p className="mt-10 border-t border-line pt-4 text-xs text-muted">
-          Plato is operated by GMS Innovations, Aruba. Questions: adrian@platodigital.online
+          Plato is operated by Vadria Innovation Lab, Aruba. Questions: adrian@platodigital.online
         </p>
       </main>
     </div>

@@ -1,12 +1,8 @@
 # Client Service Agreement, Plato
 
-> ⚠️ **DRAFT, NOT LEGAL ADVICE.** Generated from the project specs (finance.md, operations.md,
-> architecture.md) as a starting point for your attorney. **Must be reviewed and approved by
-> a qualified attorney (Aruba law) before signing.** Fill every `[bracket]`.
-
-This Agreement is between **Plato**, a service of **GMS Innovations** ("Plato"), a sole
-proprietorship registered in Aruba, and **[Restaurant legal name]** of **[address]**
-("Client"), effective **[DATE]**.
+This Agreement is between **Plato**, a service of **Vadria Innovation Lab** ("Plato"), a sole
+proprietorship registered in Aruba, and the **Client** named in the signature block below,
+effective on the date of signature.
 
 ## 1. Services
 Plato provides a done-for-you video-menu service:
@@ -24,15 +20,18 @@ Plato provides a done-for-you video-menu service:
   quarterly re-shoot.
 
 ## 3. Term and renewal
-- Initial term: **[monthly / 12 months]**, starting on the publish date.
-- Auto-renews for successive periods unless either party gives **[30] days'** written
+- Initial term: **monthly** (or a **12-month** term if agreed in the Client's order),
+  starting on the publish date.
+- Auto-renews for successive periods unless either party gives **30 days'** written
   notice before renewal.
 
 ## 4. Fees and payment
-- **Monthly fee:** $[ ] · **One-time setup fee:** $[ ] · **Add-ons:** [ ].
-- **Optional rented tablet:** $[ ]/month, refundable deposit $[ ], minimum term
-  **[6-12] months**; the device remains Plato's property (kiosk-locked to the Client's menu).
-- Billed in **USD** by invoice (bank transfer or in person); due within **[14] days**.
+- **Monthly fee, one-time setup fee, and add-ons** are as set out in the Client's order /
+  current price list.
+- **Optional rented tablet:** monthly rental and refundable deposit per the price list,
+  minimum term **6–12 months**; the device remains Plato's property (kiosk-locked to the
+  Client's menu).
+- Billed in **USD** by invoice (bank transfer or in person); due within **14 days**.
 - Late payment may lead to a short grace period and then **suspension** of the page.
 - Client is responsible for applicable taxes (incl. Aruba BBO/turnover tax).
 
@@ -65,7 +64,7 @@ period and then deleted.
 ## 10. Warranties, liability, and indemnity
 The service is provided with reasonable skill and care but without further warranty. To the
 extent permitted by law, neither party is liable for indirect or consequential loss, and
-Plato's aggregate liability is limited to fees paid in the prior **[3]** months. Each party
+Plato's aggregate liability is limited to fees paid in the prior **3 months**. Each party
 indemnifies the other for claims arising from its own breach or unlawful content.
 
 ## 11. Confidentiality
@@ -79,7 +78,7 @@ Aruba.
 ## 13. Signatures
 | Plato | Client |
 |---|---|
-| Name: ________________ | Name: ________________ |
+| Name: Vadria Innovation Lab | Name: ________________ |
 | Title: _______________ | Title: _______________ |
 | Date: ________________ | Date: ________________ |
 | Signature: ___________ | Signature: ___________ |

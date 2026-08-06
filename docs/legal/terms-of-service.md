@@ -1,10 +1,6 @@
 # Terms of Service, Plato
 
-> ⚠️ **DRAFT, NOT LEGAL ADVICE.** Generated from the project specs as a starting point.
-> **Must be reviewed and approved by a qualified attorney (Aruba law) before use.**
-> Replace every `[bracketed]` placeholder. Legal sign-off is a pre-launch blocker (qa.md §13).
-
-**Effective date:** [DATE] · **Provider:** Plato, a service of GMS Innovations (a sole proprietorship registered in Aruba).
+**Effective date:** 28 July 2026 · **Provider:** Plato, a service of Vadria Innovation Lab (a sole proprietorship registered in Aruba).
 
 ## 1. Agreement
 These Terms govern use of the Plato platform and dashboard by restaurant owners and their
@@ -39,8 +35,7 @@ activity under your account. Notify us of any unauthorized use.
   grant Plato a license to host, display, translate, and distribute that content to operate
   your menu.
 - **Photos and videos** we capture are produced by Plato; we grant you a license to use
-  them on your Plato menu for the duration of your subscription. [Specify any broader usage
-  rights with counsel.]
+  them on your Plato menu for the duration of your subscription.
 - You warrant that your content is accurate, lawful, and does not infringe others' rights.
 
 ## 6. Acceptable use
@@ -63,7 +58,7 @@ Agreement / operations runbook).
 
 ## 10. Liability and indemnity
 To the maximum extent permitted by law, Plato is not liable for indirect or consequential
-losses, and our total liability is limited to the fees you paid in the [3] months before
+losses, and our total liability is limited to the fees you paid in the 3 months before
 the claim. You agree to indemnify Plato against claims arising from your content or misuse.
 
 ## 11. Governing law
@@ -72,4 +67,4 @@ of Aruba, unless otherwise agreed in writing.
 
 ## 12. Changes and contact
 We may update these Terms and will post the new effective date. Questions:
-[support@platodigital.io].
+adrian@platodigital.online.

@@ -1,14 +1,8 @@
 # Privacy Policy, Plato
 
-> ⚠️ **DRAFT, NOT LEGAL ADVICE.** This document was generated from the project's own
-> specs as a starting point. It **must be reviewed and approved by a qualified attorney**
-> (familiar with Aruba law and, for EU visitors, the GDPR) before it is published or
-> relied upon. Replace every `[bracketed]` placeholder. See qa.md §13, legal sign-off is
-> a pre-launch blocker.
-
-**Effective date:** [DATE]
-**Operated by:** Plato, a service of GMS Innovations (a sole proprietorship registered in Aruba), [address], Aruba.
-**Contact:** [privacy@platodigital.io]
+**Effective date:** 28 July 2026
+**Operated by:** Plato, a service of Vadria Innovation Lab (a sole proprietorship registered in Aruba), Oranjestad, Aruba.
+**Contact:** adrian@platodigital.online
 
 ## 1. Who this policy is for
 Plato provides hosted, mobile-first video menus for restaurants at `platodigital.io/<name>`
@@ -47,21 +41,18 @@ The public menu pages are **analytics-light and privacy-first**:
 - To provide support and improve the service.
 
 ## 5. Service providers (sub-processors)
-We share the minimum data necessary with vendors that process it on our behalf:
+We share the minimum data necessary with vendors that process personal data on our behalf:
 
 | Provider | Purpose |
 |---|---|
-| Supabase | Database, authentication, and file storage |
-| Bunny.net | Video encoding and delivery (CDN) |
-| Vercel | Application hosting |
-| Resend | Transactional email delivery |
-| Cloudflare | DNS and email routing |
-| Anthropic (Claude API) | Menu text translation (EN→ES drafts) |
-| [Stripe, if/when the card path is enabled] | Card payments (via GMS Innovations or an appointed payment entity) |
-| [Sentoo, once added] | Local Aruba card/bank payments |
+| Supabase | Account authentication, database, and file storage |
+| Resend | Transactional email delivery to Owners |
+| Payment processor (when card or local payments are enabled) | Processing Owner payments; we do not store full card numbers |
 
-A current list of sub-processors is available on request. Data may be processed in the
-United States and the European Union depending on provider region.
+We also use hosting and content-delivery providers to run and serve the menu pages; these
+handle little or no personal data. A current list of all sub-processors is available on
+request at adrian@platodigital.online. Data may be processed in the United States and the
+European Union depending on provider region.
 
 ## 6. Cookies and similar technologies
 - **Owners:** a strictly-necessary cookie maintains the dashboard login session. No
@@ -78,7 +69,7 @@ United States and the European Union depending on provider region.
 ## 8. Your rights
 Depending on your location, you may have rights to access, correct, delete, or export your
 personal data, and to object to or restrict certain processing. To exercise these rights,
-contact [privacy@platodigital.io]. EU/EEA visitors have rights under the GDPR; we do not
+contact adrian@platodigital.online. EU/EEA visitors have rights under the GDPR; we do not
 require a cookie-consent banner because diner analytics use no cookies and no personal data.
 
 ## 9. Security
@@ -87,9 +78,9 @@ controls that isolate each restaurant's data, and server-only handling of privil
 No method of transmission or storage is 100% secure.
 
 ## 10. Children
-The service is intended for businesses and is not directed at children under [13/16].
+The service is intended for businesses and is not directed at children under 16.
 
 ## 11. International transfers, changes, and contact
 Plato operates from Aruba (America/Aruba time) and uses providers in multiple regions.
 We may update this policy and will post the new effective date. Questions:
-[privacy@platodigital.io].
+adrian@platodigital.online.

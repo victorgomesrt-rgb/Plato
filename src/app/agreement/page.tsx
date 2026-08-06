@@ -4,7 +4,7 @@ import { LegalDoc } from "@/components/legal-doc";
 export const dynamic = "force-static";
 export const metadata: Metadata = {
   title: "Client Service Agreement",
-  description: "The service agreement between Plato (GMS Innovations) and restaurant clients.",
+  description: "The service agreement between Plato (Vadria Innovation Lab) and restaurant clients.",
   alternates: { canonical: "/agreement" },
 };
 
