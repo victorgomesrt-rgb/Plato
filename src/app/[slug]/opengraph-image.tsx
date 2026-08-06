@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import sharp from "sharp";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { getTenantBySlug, publicState } from "@/lib/tenant";
 
 export const runtime = "nodejs";
@@ -7,24 +8,41 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Plato menu";
 
-// Covers and logos are stored as webp, which next/og's rasterizer (resvg) can't decode.
-// The route runs on the nodejs runtime, so we transcode with sharp to a JPEG/PNG data URI
-// that resvg CAN embed. Any failure returns null so the card falls back to the gradient.
-async function toDataUri(
+// Turn a stored cover/logo into a data URI that next/og's rasterizer (resvg) can embed.
+// resvg decodes PNG/JPEG natively, so those pass straight through; webp is decoded with
+// sharp via a *dynamic* import (a load failure is caught and falls back to the gradient,
+// never a 500). Kept fully defensive so a bad image can never break the OG route.
+async function embed(
   url: string | null,
-  opts: { w: number; h: number; fit: "cover" | "inside"; format: "jpeg" | "png" }
+  webpTo: "jpeg" | "png"
 ): Promise<string | null> {
   if (!url) return null;
   try {
     const res = await fetch(url);
     if (!res.ok) return null;
-    const input = Buffer.from(await res.arrayBuffer());
-    const pipeline = sharp(input).resize({ width: opts.w, height: opts.h, fit: opts.fit });
-    const buf =
-      opts.format === "png"
-        ? await pipeline.png().toBuffer()
-        : await pipeline.jpeg({ quality: 82 }).toBuffer();
-    return `data:image/${opts.format};base64,${buf.toString("base64")}`;
+    const type = (res.headers.get("content-type") ?? "").toLowerCase();
+    const buf = Buffer.from(await res.arrayBuffer());
+    const isWebp = type.includes("webp") || /\.webp(\?|$)/i.test(url);
+    if (!isWebp) {
+      const mime = type.includes("png") || /\.png(\?|$)/i.test(url) ? "image/png" : "image/jpeg";
+      return `data:${mime};base64,${buf.toString("base64")}`;
+    }
+    const sharp = (await import("sharp")).default;
+    const out =
+      webpTo === "png"
+        ? await sharp(buf).png().toBuffer()
+        : await sharp(buf).jpeg({ quality: 82 }).toBuffer();
+    return `data:image/${webpTo};base64,${out.toString("base64")}`;
+  } catch {
+    return null;
+  }
+}
+
+// The Plato mark (white), read from the bundled asset, as a data URI for the attribution.
+async function platoMark(): Promise<string | null> {
+  try {
+    const buf = await readFile(join(process.cwd(), "public/brand/plato-mark-white.png"));
+    return `data:image/png;base64,${buf.toString("base64")}`;
   } catch {
     return null;
   }
@@ -41,12 +59,11 @@ export default async function OpengraphImage({
   const name = ok ? tenant!.name : "Plato";
   const accent = (ok && tenant!.accent_color) || "#FB6A1A";
 
-  const [cover, logo] = ok
-    ? await Promise.all([
-        toDataUri(tenant!.cover_url, { w: 1200, h: 630, fit: "cover", format: "jpeg" }),
-        toDataUri(tenant!.logo_url, { w: 200, h: 200, fit: "inside", format: "png" }),
-      ])
-    : [null, null];
+  const [cover, logo, mark] = await Promise.all([
+    ok ? embed(tenant!.cover_url, "jpeg") : Promise.resolve(null),
+    ok ? embed(tenant!.logo_url, "png") : Promise.resolve(null),
+    platoMark(),
+  ]);
 
   return new ImageResponse(
     (
@@ -125,34 +142,30 @@ export default async function OpengraphImage({
             <div style={{ display: "flex", fontSize: 32, opacity: 0.9, marginBottom: 12 }}>
               platodigital.io/{ok ? tenant!.slug : ""}
             </div>
-            <div
-              style={{
-                display: "flex",
-                fontSize: 88,
-                fontWeight: 700,
-                lineHeight: 1.05,
-                marginBottom: 20,
-                textShadow: cover ? "0 2px 18px rgba(0,0,0,0.45)" : "none",
-              }}
-            >
+            <div style={{ display: "flex", fontSize: 88, fontWeight: 700, lineHeight: 1.05, marginBottom: 22 }}>
               {name}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 30, opacity: 0.92 }}>
-              <div
-                style={{
-                  display: "flex",
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: cover ? accent : "white",
-                  color: cover ? "white" : accent,
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 800,
-                }}
-              >
-                P
-              </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 30, opacity: 0.95 }}>
+              {mark ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={mark} width={40} height={40} style={{ width: 40, height: 40, objectFit: "contain" }} />
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: cover ? accent : "white",
+                    color: cover ? "white" : accent,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontWeight: 800,
+                  }}
+                >
+                  P
+                </div>
+              )}
               <div style={{ display: "flex" }}>Video menu · Plato</div>
             </div>
           </div>
