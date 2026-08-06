@@ -33,7 +33,7 @@ function Tags({ tags, locale }: { tags: string[] | null; locale: string }) {
 /* ---------- Grid: two-column cards ---------- */
 export function GridList({ items, v }: { items: Item[]; v: SectionView }) {
   return (
-    <div className="mt-3 grid grid-cols-2 gap-3">
+    <div className="mt-3 grid grid-cols-2 items-start gap-3">
       {items.map((it) => (
         <button
           key={it.id}
