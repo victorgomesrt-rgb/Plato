@@ -215,7 +215,7 @@ export default async function Landing() {
           <HeroPhone />
         </div>
         {/* Ticker, label centered above, names scroll cleanly on their own line (exact mockup) */}
-        <div className="overflow-hidden pb-7 pt-1">
+        <div className="overflow-hidden pb-7 pt-1 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
           <p className="mb-3 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">Now serving the island</p>
           <div className="flex w-max" style={{ animation: "plato-marquee 32s linear infinite" }}>
             {[...ticker, ...ticker].map((n, i) => (
@@ -281,7 +281,7 @@ export default async function Landing() {
                 <p className="font-display text-3xl font-extrabold">8,420</p>
                 <Sparkline className="mt-1 h-10 w-full" />
                 <div className="mt-3 space-y-2 border-t border-line pt-3">
-                  {[["Sweet & Sour Chicken", "1,204", "/landing/dish-7.jpg", 100], ["Hot & Sour Soup", "986", "/landing/dish-2.jpg", 82], ["Mango Pudding", "742", "/landing/dish-4.jpg", 62]].map(([n, plays, img, w]) => (
+                  {[["Sweet & Sour Chicken", "1,204", "/landing/menu-7.jpg", 100], ["Hot & Sour Soup", "986", "/landing/menu-2.jpg", 82], ["Mango Pudding", "742", "/landing/menu-4.jpg", 62]].map(([n, plays, img, w]) => (
                     <div key={n as string} className="flex items-center gap-2.5">
                       <span className="relative h-7 w-7 overflow-hidden rounded-md"><Image src={img as string} alt="" fill sizes="28px" className="object-cover" /></span>
                       <span className="flex-1 text-xs font-medium">{n}</span>
@@ -356,7 +356,7 @@ export default async function Landing() {
                 </div>
                 <p className={`text-sm ${p.dark ? "text-white/60" : "text-muted"}`}>{p.tagline}</p>
                 <p className="mt-4"><span className="font-display text-section font-extrabold">${p.price}</span><span className={p.dark ? "text-white/60" : "text-muted"}>/mo</span></p>
-                <a href={WAITLIST} className={`mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-ink hover:bg-accent-deep" : "bg-ink text-ink hover:bg-ink/90"}`}>{p.cta}</a>
+                <a href={WAITLIST} className={`press mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-ink hover:bg-accent-deep" : "bg-ink text-white hover:bg-ink/90"}`}>{p.cta}</a>
                 <ul className="mt-5 space-y-2.5 text-sm">
                   {p.items.map((it) => (
                     <li key={it} className="flex gap-2"><Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.dark ? "text-accent" : "text-sea"}`} /><span className={p.dark ? "text-white/85" : ""}>{it}</span></li>

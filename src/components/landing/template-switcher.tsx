@@ -13,7 +13,7 @@ const OPTIONS: { key: Key; name: string; body: string; icon: typeof Play }[] = [
   { key: "spotlight", name: "Spotlight", body: "Magazine hero per category. Editorial feel.", icon: Sparkles },
 ];
 
-const img = (n: number) => `/landing/dish-${n}.jpg`;
+const img = (n: number) => `/landing/menu-${n}.jpg`;
 
 function PhoneFrame({ children, dark = false }: { children: React.ReactNode; dark?: boolean }) {
   return (
@@ -44,7 +44,7 @@ const Reel = () => (
 const Grid = () => (
   <PhoneFrame>
     <div className="relative h-[120px]">
-      <Image src="/landing/cover-hungparadise.jpg" alt="" fill sizes="272px" className="object-cover" />
+      <Image src="/landing/cover-lotus.jpg" alt="" fill sizes="272px" className="object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
       <p className="absolute bottom-2 left-3 font-display text-xl font-extrabold text-white drop-shadow">Lotus</p>
     </div>
