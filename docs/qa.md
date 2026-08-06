@@ -160,7 +160,7 @@ Full spec: [plato-card.md](plato-card.md). v1 = one shared pass + member discoun
 - [x] Terms, Privacy, and the client agreement published and linked.
 - [x] Pre-launch bug hunt complete — 2 high / 6 med / 7 low, all fixed & shipped (`docs/prelaunch-bugs.md`, commit 2ec175b + migration 20260806140000). 0 critical.
 - [x] Resend domain verified with SPF and DKIM. Invite and receipt emails land. (Resend verified; Supabase Auth + transactional both via Resend, verified)
-- [ ] Error monitoring set up. (ops)
+- [ ] Error monitoring set up. (Sentry WIRED in code — `@sentry/nextjs`, commit f3589bd; activate by setting `NEXT_PUBLIC_SENTRY_DSN` in Vercel + `.env.local`, and `SENTRY_ORG`/`SENTRY_PROJECT`/`SENTRY_AUTH_TOKEN` in Vercel for source-map upload.)
 - [ ] Flagship restaurant live and filmed. (ops)
 - [ ] Sales one pager, price sheet, and demo link ready. (ops)
 - [ ] Hardware stock on hand to place within a week of closing. (ops)
@@ -187,4 +187,4 @@ Review Cards (payment-gated Google-review redirect — finance §11, operations 
 - [x] Service-role key server-only (`admin.ts`), not in any client component, never `NEXT_PUBLIC`.
 - Terms/Privacy/Agreement **finalized + owner-approved (2026-07-28, effective date), operated by Vadria Innovation Lab (sole proprietorship, Aruba)** — DRAFT banners removed, placeholders filled, sub-processor list trimmed to personal-data processors only. Optional future step: independent Aruba-attorney review.
 - **Pre-launch bug hunt (2026-08-06, Fable 5 + Opus in parallel): 0 critical / 2 high / 6 med / 7 low — ALL FIXED + shipped** (commit 2ec175b; migration `20260806140000_prelaunch_guard_hardening.sql` applied to prod & verified; live smoke-tested; lint clean). Full report: `docs/prelaunch-bugs.md`. Crown-jewel security (tenant isolation, privileged-column guards, impersonation, service-role handling) held up under adversarial review.
-- Remaining launch blockers are OPS / manual / device only (no open code blockers; the 2-tenant RLS isolation test passes and is re-runnable via `scripts/qa-rls-isolation.mjs`): error monitoring (Sentry), Supabase backups, Bunny prod limits + the **`video_status`→ready webhook is untested** (no flagship filmed yet), flagship restaurant filmed + a real-owner full-flow walkthrough, a real-iPhone device pass, custom domains (deferred), Stripe (deferred, invoice-only).
+- Remaining launch blockers are OPS / manual / device only (no open code blockers; the 2-tenant RLS isolation test passes and is re-runnable via `scripts/qa-rls-isolation.mjs`): Sentry env vars set in Vercel to activate (code wired, commit f3589bd), Supabase backups, Bunny prod limits + the **`video_status`→ready webhook is untested** (no flagship filmed yet), flagship restaurant filmed + a real-owner full-flow walkthrough, a real-iPhone device pass, custom domains (deferred), Stripe (deferred, invoice-only).
