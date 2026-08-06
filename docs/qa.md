@@ -158,6 +158,7 @@ Full spec: [plato-card.md](plato-card.md). v1 = one shared pass + member discoun
 - [ ] Backups enabled on Supabase. (ops)
 - [x] First platform admin flag set. No tenant can self-grant admin.
 - [x] Terms, Privacy, and the client agreement published and linked.
+- [x] Pre-launch bug hunt complete — 2 high / 6 med / 7 low, all fixed & shipped (`docs/prelaunch-bugs.md`, commit 2ec175b + migration 20260806140000). 0 critical.
 - [x] Resend domain verified with SPF and DKIM. Invite and receipt emails land. (Resend verified; Supabase Auth + transactional both via Resend, verified)
 - [ ] Error monitoring set up. (ops)
 - [ ] Flagship restaurant live and filmed. (ops)
@@ -185,4 +186,5 @@ Review Cards (payment-gated Google-review redirect — finance §11, operations 
 - [x] RLS enabled on all 21 public tables (incl. new `billing_services`, `invoice_line_items`).
 - [x] Service-role key server-only (`admin.ts`), not in any client component, never `NEXT_PUBLIC`.
 - Terms/Privacy/Agreement **finalized + owner-approved (2026-07-28, effective date), operated by Vadria Innovation Lab (sole proprietorship, Aruba)** — DRAFT banners removed, placeholders filled, sub-processor list trimmed to personal-data processors only. Optional future step: independent Aruba-attorney review.
-- Remaining launch blockers are OPS / manual / device only (no open code blockers): error monitoring (Sentry), Supabase backups, Bunny prod limits + the **`video_status`→ready webhook is untested** (no flagship filmed yet), real-owner + live 2-tenant RLS tests, real-iPhone device pass, custom domains (deferred), Stripe (deferred, invoice-only).
+- **Pre-launch bug hunt (2026-08-06, Fable 5 + Opus in parallel): 0 critical / 2 high / 6 med / 7 low — ALL FIXED + shipped** (commit 2ec175b; migration `20260806140000_prelaunch_guard_hardening.sql` applied to prod & verified; live smoke-tested; lint clean). Full report: `docs/prelaunch-bugs.md`. Crown-jewel security (tenant isolation, privileged-column guards, impersonation, service-role handling) held up under adversarial review.
+- Remaining launch blockers are OPS / manual / device only (no open code blockers; the 2-tenant RLS isolation test passes and is re-runnable via `scripts/qa-rls-isolation.mjs`): error monitoring (Sentry), Supabase backups, Bunny prod limits + the **`video_status`→ready webhook is untested** (no flagship filmed yet), flagship restaurant filmed + a real-owner full-flow walkthrough, a real-iPhone device pass, custom domains (deferred), Stripe (deferred, invoice-only).
