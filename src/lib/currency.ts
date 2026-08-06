@@ -14,6 +14,9 @@ export function convertPrice(
   to: DisplayCurrency,
   fxRate: number
 ): number {
+  // No conversion when the display currency IS the base currency — show the real stored
+  // price untouched (rounding here would misstate the restaurant's own price, e.g. 9.99→10).
+  if (to === baseCurrency) return base;
   // Guard a bad/zero rate so an AWG-base item can't render $Infinity/$NaN; fall back to
   // the documented default peg (1.80).
   const rate = fxRate > 0 && Number.isFinite(fxRate) ? fxRate : 1.8;

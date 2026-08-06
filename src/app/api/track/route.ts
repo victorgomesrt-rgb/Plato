@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import crypto from "node:crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isAppHost } from "@/lib/reserved-slugs";
 
 // Public-page events insert here via the service role (architecture §17). Cookieless,
 // no personal data stored, obvious bots filtered. qr_scan/nfc_tap are NOT accepted here
@@ -67,6 +68,35 @@ export async function POST(req: NextRequest) {
   if (overLimit(sessionHits, session_id, SESSION_LIMIT)) return new NextResponse(null, { status: 204 });
 
   const svc = createAdminClient();
+
+  // The tenant must be a real, live, public menu tenant — drops events posted with a bogus
+  // or unpublished/suspended/review-only tenant_id.
+  const { data: tRow } = await svc
+    .from("tenants")
+    .select("slug, custom_domain, published_at, status, review_only")
+    .eq("id", tenant_id)
+    .maybeSingle();
+  if (!tRow || tRow.review_only || !tRow.published_at || tRow.status === "suspended" || tRow.status === "canceled") {
+    return new NextResponse(null, { status: 204 });
+  }
+
+  // When the browser sends a referer (same-origin fetch/beacon from the menu always does),
+  // it must be THIS tenant's page — stops a script attributing events to a competitor's
+  // tenant_id from another page. A missing referer is allowed (privacy setups strip it);
+  // that residual is bounded by the rate limits above.
+  const ref = req.headers.get("referer");
+  if (ref) {
+    try {
+      const u = new URL(ref);
+      const host = u.host.toLowerCase();
+      const firstSeg = u.pathname.replace(/^\/+/, "").split("/")[0].toLowerCase();
+      const okApp = isAppHost(host) && firstSeg === tRow.slug.toLowerCase();
+      const okDomain = !!tRow.custom_domain && host === tRow.custom_domain.toLowerCase();
+      if (!okApp && !okDomain) return new NextResponse(null, { status: 204 });
+    } catch {
+      return new NextResponse(null, { status: 204 });
+    }
+  }
 
   // If an item is named, it must belong to this tenant — otherwise drop the event so a
   // script can't attribute another tenant's item (or a bogus id) to this tenant's stats.

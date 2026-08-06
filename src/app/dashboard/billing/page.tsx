@@ -131,7 +131,7 @@ export default async function OwnerBillingPage() {
             </span>
             <span className="text-right">
               {inv.pdf_url ? (
-                <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-btn border border-line px-2.5 py-1.5 text-xs font-medium text-ink hover:border-ink/20"><FileText className="h-3.5 w-3.5" />PDF</a>
+                <a href={`/dashboard/billing/invoice/${inv.id}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-btn border border-line px-2.5 py-1.5 text-xs font-medium text-ink hover:border-ink/20"><FileText className="h-3.5 w-3.5" />PDF</a>
               ) : (
                 <span className="inline-flex items-center gap-1 rounded-btn border border-line px-2.5 py-1.5 text-xs font-medium text-muted opacity-60" title="Available once issued"><FileText className="h-3.5 w-3.5" />PDF</span>
               )}

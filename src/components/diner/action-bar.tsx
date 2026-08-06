@@ -55,6 +55,9 @@ function hrefFor(link: TenantLink, tn: TenantBits): string | null {
       return tn.whatsapp ? `https://wa.me/${tn.whatsapp.replace(/\D/g, "")}` : null;
     case "email":
       return link.url ? `mailto:${link.url}` : null;
+    case "plato_card":
+      // System-injected internal link; safeUrl only passes absolute http(s)/tel/mailto.
+      return link.url && link.url.startsWith("/") ? link.url : "/card";
     default:
       return safeUrl(link.url);
   }

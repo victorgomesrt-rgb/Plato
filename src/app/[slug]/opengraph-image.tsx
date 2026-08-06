@@ -82,9 +82,9 @@ export default async function OpengraphImage({
       >
         {/* Full-bleed food photo */}
         {cover && (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={cover}
+            alt=""
             width={1200}
             height={630}
             style={{ position: "absolute", top: 0, left: 0, width: 1200, height: 630, objectFit: "cover" }}
@@ -134,8 +134,7 @@ export default async function OpengraphImage({
                   padding: 10,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={logo} width={76} height={76} style={{ width: 76, height: 76, objectFit: "contain" }} />
+                <img src={logo} alt="" width={76} height={76} style={{ width: 76, height: 76, objectFit: "contain" }} />
               </div>
             )}
           </div>
@@ -150,8 +149,7 @@ export default async function OpengraphImage({
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 30, opacity: 0.95 }}>
               {mark ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={mark} width={40} height={40} style={{ width: 40, height: 40, objectFit: "contain" }} />
+                <img src={mark} alt="" width={40} height={40} style={{ width: 40, height: 40, objectFit: "contain" }} />
               ) : (
                 <div
                   style={{

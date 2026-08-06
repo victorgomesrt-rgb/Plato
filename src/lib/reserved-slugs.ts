@@ -19,6 +19,11 @@ export const RESERVED_SLUGS = new Set<string>([
   "help",
   "support",
   "discover",
+  "book", // booking / waitlist page
+  "card", // Plato Card page
+  "agreement", // client service agreement
+  "forgot", // password-reset request
+  "reset-password", // password-reset form
   "app",
   "www",
   "static",

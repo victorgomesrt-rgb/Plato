@@ -2,10 +2,16 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { createAdminClient } from "./supabase/admin";
 
+// Link-preview unfurlers and crawlers fetch these URLs when a diner shares a /q or /r link;
+// counting them inflates the scan totals owners pay attention to. Skip the count for obvious
+// bots — but still redirect, so a human clicking through the preview lands correctly.
+const BOT =
+  /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|pinterest|telegrambot|whatsapp|headless|lighthouse|inspectiontool|preview|curl|wget/i;
+
 // Tracked redirect for QR/NFC (architecture §13). Logs the scan/tap via the service
 // role, increments the counter, then 302s to the tenant's menu. Never points QR/NFC
 // straight at the menu, so counts stay reliable and targets can change without reprinting.
-export async function trackRedirect(code: string, eventType: "qr_scan" | "nfc_tap") {
+export async function trackRedirect(code: string, eventType: "qr_scan" | "nfc_tap", userAgent = "") {
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io";
   const svc = createAdminClient();
 
@@ -18,10 +24,12 @@ export async function trackRedirect(code: string, eventType: "qr_scan" | "nfc_ta
   const tenant = (link?.tenants ?? null) as { slug: string } | null;
   if (!link || !tenant) return NextResponse.redirect(site, { status: 302 });
 
-  await Promise.all([
-    svc.rpc("bump_scan", { p_id: link.id }),
-    svc.from("analytics_events").insert({ tenant_id: link.tenant_id, event_type: eventType }),
-  ]);
+  if (!BOT.test(userAgent)) {
+    await Promise.all([
+      svc.rpc("bump_scan", { p_id: link.id }),
+      svc.from("analytics_events").insert({ tenant_id: link.tenant_id, event_type: eventType }),
+    ]);
+  }
 
   return NextResponse.redirect(`${site}/${tenant.slug}`, { status: 302 });
 }
@@ -30,7 +38,7 @@ export async function trackRedirect(code: string, eventType: "qr_scan" | "nfc_ta
 // Google review URL, but only while the card is active and paid through today (AST).
 // Otherwise it 302s to the neutral paused page. The printed card never changes — only this
 // gate decides, so Plato can switch it off the moment payment lapses, no reprint.
-export async function reviewRedirect(code: string) {
+export async function reviewRedirect(code: string, userAgent = "") {
   const site = process.env.NEXT_PUBLIC_SITE_URL ?? "https://platodigital.io";
   const paused = `${site}/review-unavailable`;
   const svc = createAdminClient();
@@ -59,10 +67,12 @@ export async function reviewRedirect(code: string) {
     tenant.review_paid_through >= today;
   if (!live) return NextResponse.redirect(paused, { status: 302 });
 
-  await Promise.all([
-    svc.rpc("bump_scan", { p_id: link.id }),
-    svc.from("analytics_events").insert({ tenant_id: link.tenant_id, event_type: "review_scan" }),
-  ]);
+  if (!BOT.test(userAgent)) {
+    await Promise.all([
+      svc.rpc("bump_scan", { p_id: link.id }),
+      svc.from("analytics_events").insert({ tenant_id: link.tenant_id, event_type: "review_scan" }),
+    ]);
+  }
 
   return NextResponse.redirect(tenant.review_url as string, { status: 302 });
 }

@@ -62,10 +62,14 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
   const defaultLocale = tenant.default_locale;
   const activeLocales = tenant.locales?.length ? tenant.locales : [defaultLocale];
 
-  const [locale, setLocale] = useSessionState("plato:locale", defaultLocale);
+  // Namespace per tenant so one restaurant's currency/language choice doesn't bleed into
+  // the next restaurant opened in the same tab session.
+  const [locale, setLocale] = useSessionState(`plato:locale:${tenant.slug}`, defaultLocale);
   const initialCurrency: DisplayCurrency = tenant.base_currency === "AWG" ? "AWG" : "USD";
-  const [currency, setCurrency] = useSessionState("plato:currency", initialCurrency);
-  const cur = (currency === "AWG" ? "AWG" : "USD") as DisplayCurrency;
+  const [currency, setCurrency] = useSessionState(`plato:currency:${tenant.slug}`, initialCurrency);
+  // Only honor a stored currency when the tenant actually offers the toggle; otherwise always
+  // show the base currency (a single-currency tenant must never render converted prices).
+  const cur: DisplayCurrency = tenant.dual_currency ? (currency === "AWG" ? "AWG" : "USD") : initialCurrency;
 
   const [active, setActive] = useState<string | null>(categories[0]?.id ?? null);
   const [selected, setSelected] = useState<Item | null>(null);
@@ -137,7 +141,15 @@ export function DinerPage({ tenant, categories, items, cdnHost, shareUrl, todayK
 
   // Reel is a full-screen feed, not the scrollable shell, featured dishes lead.
   if (template === "reel") {
-    const reelDishes = [...featured, ...items.filter((i) => !featured.some((f) => f.id === i.id))];
+    // Match the other templates: only items in a VISIBLE category (categories is already
+    // filtered to is_visible) appear; featured lead. Sold-out items still show, badged.
+    const visibleCatIds = new Set(categories.map((c) => c.id));
+    const reelDishes = [
+      ...featured,
+      ...items.filter(
+        (i) => !featured.some((f) => f.id === i.id) && i.category_id != null && visibleCatIds.has(i.category_id)
+      ),
+    ];
     return (
       <ReelView
         dishes={reelDishes}

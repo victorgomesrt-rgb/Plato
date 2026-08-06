@@ -29,12 +29,25 @@ function toMinutes(hhmm: string): number {
   return h * 60 + (m || 0);
 }
 
-export function isOpenNow(hours: Hours): boolean {
+export function isOpenNow(hours: Hours, now: { day: DayKey; minutes: number } = arubaNow()): boolean {
   if (!hours) return false;
-  const { day, minutes } = arubaNow();
+  const { day, minutes } = now;
+  // Today's own range. For a wrap (e.g. 20:00-02:00, close<=open) only the EVENING part
+  // [open..24:00) belongs to today — the after-midnight tail belongs to the next calendar
+  // day (handled by the previous-day branch below), so we must NOT count `minutes < close`
+  // here or an early-morning time would look open before today's opening.
   const range = hours[day];
-  if (!range) return false;
-  const [open, close] = range.map(toMinutes);
-  // Handle ranges that cross midnight (e.g. 11:00-00:00).
-  return close <= open ? minutes >= open || minutes < close : minutes >= open && minutes < close;
+  if (range) {
+    const [open, close] = range.map(toMinutes);
+    if (close <= open ? minutes >= open : minutes >= open && minutes < close) return true;
+  }
+  // A wrap that opened YESTERDAY and runs past midnight into now (e.g. Fri 20:00-02:00 is
+  // still open at Sat 01:00, where today's own entry may be null or a later range).
+  const prev = DAY_KEYS[(DAY_KEYS.indexOf(day) + 6) % 7];
+  const prevRange = hours[prev];
+  if (prevRange) {
+    const [open, close] = prevRange.map(toMinutes);
+    if (close <= open && minutes < close) return true;
+  }
+  return false;
 }

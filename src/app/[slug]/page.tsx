@@ -65,6 +65,10 @@ export default async function TenantPage({ params }: Props) {
   // taken offline just like a menu tenant.
   if (tenant?.review_only) {
     if (tenant.status === "suspended" || tenant.status === "canceled") return <Unavailable />;
+    // A freshly provisioned review client (never set up: no review card configured) must
+    // 404, not expose a public page for an unlaunched customer. review_only tenants stay
+    // status='building' for life, so gate on setup existing — not on status.
+    if (!tenant.review_active && !tenant.review_url) notFound();
     return <ReviewLanding tenant={tenant} />;
   }
 

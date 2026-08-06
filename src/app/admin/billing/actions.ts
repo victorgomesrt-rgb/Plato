@@ -47,6 +47,18 @@ async function ownerEmail(svc: ReturnType<typeof createAdminClient>, tenantId: s
 type LineInput = { serviceId: string | null; description: string; quantity: number; unitPrice: number };
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
+// Add one calendar month, clamping the day so end-of-month dates don't overflow
+// (Jan 31 + 1mo → Feb 28/29, NOT Mar 3). UTC-based for timezone-stable billing math.
+function addOneMonthUTC(d: Date): Date {
+  const day = d.getUTCDate();
+  const r = new Date(d);
+  r.setUTCDate(1);
+  r.setUTCMonth(r.getUTCMonth() + 1);
+  const daysInTarget = new Date(Date.UTC(r.getUTCFullYear(), r.getUTCMonth() + 1, 0)).getUTCDate();
+  r.setUTCDate(Math.min(day, daysInTarget));
+  return r;
+}
+
 export async function createInvoice(input: {
   tenantId: string;
   periodStart: string;
@@ -173,7 +185,11 @@ export async function sendInvoice(invoiceId: string): Promise<Result> {
     .eq("id", invoiceId)
     .maybeSingle();
   if (!inv) return { ok: false, error: "Invoice not found" };
-  if (inv.status === "paid") return { ok: false, error: "This invoice is already paid." };
+  // Only a draft or an already-sent invoice may be (re)sent. Sending a `void` invoice would
+  // re-enter dunning/reminders (a voided-and-replaced invoice becoming a second charge); a
+  // `paid` one is done.
+  if (inv.status !== "draft" && inv.status !== "sent")
+    return { ok: false, error: `Cannot send a ${inv.status} invoice.` };
   const tenant = inv.tenants as unknown as { name: string; slug: string; plan: string };
 
   const to = await ownerEmail(svc, inv.tenant_id);
@@ -291,13 +307,13 @@ export async function markPaid(invoiceId: string): Promise<Result> {
     const base = sub?.current_period_end && new Date(sub.current_period_end) > now
       ? new Date(sub.current_period_end)
       : now;
-    base.setMonth(base.getMonth() + 1);
+    const periodEnd = addOneMonthUTC(base);
     await svc.from("subscriptions").upsert({
       tenant_id: inv.tenant_id,
       plan: tenant.plan,
       status: "active",
       interval: "month",
-      current_period_end: base.toISOString(),
+      current_period_end: periodEnd.toISOString(),
     });
   }
 
@@ -308,8 +324,8 @@ export async function markPaid(invoiceId: string): Promise<Result> {
     const { data: tt } = await svc.from("tenants").select("review_paid_through, slug").eq("id", inv.tenant_id).maybeSingle();
     const baseStr = tt?.review_paid_through && tt.review_paid_through >= today ? tt.review_paid_through : today;
     const base = new Date(`${baseStr}T12:00:00Z`);
-    base.setUTCMonth(base.getUTCMonth() + 1);
-    await svc.from("tenants").update({ review_paid_through: base.toISOString().slice(0, 10) }).eq("id", inv.tenant_id);
+    const paidThrough = addOneMonthUTC(base);
+    await svc.from("tenants").update({ review_paid_through: paidThrough.toISOString().slice(0, 10) }).eq("id", inv.tenant_id);
     if (tt?.slug) revalidatePath(`/admin/tenants/${tt.slug}`);
   }
 
@@ -341,6 +357,10 @@ export async function sendReminder(invoiceId: string): Promise<Result> {
 export async function voidInvoice(invoiceId: string): Promise<Result> {
   if (!(await currentAdmin())) return { ok: false, error: "Not authorized" };
   const svc = createAdminClient();
+  const { data: inv } = await svc.from("invoices").select("status").eq("id", invoiceId).maybeSingle();
+  if (!inv) return { ok: false, error: "Invoice not found" };
+  // Never void a paid invoice — that would erase a real payment record.
+  if (inv.status === "paid") return { ok: false, error: "Cannot void a paid invoice." };
   const { error } = await svc.from("invoices").update({ status: "void" }).eq("id", invoiceId);
   if (error) return { ok: false, error: error.message };
   revalidatePath("/admin/billing");
