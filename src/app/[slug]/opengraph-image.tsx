@@ -20,13 +20,9 @@ async function embed(
   try {
     const res = await fetch(url);
     if (!res.ok) return null;
-    const type = (res.headers.get("content-type") ?? "").toLowerCase();
     const buf = Buffer.from(await res.arrayBuffer());
-    const isWebp = type.includes("webp") || /\.webp(\?|$)/i.test(url);
-    if (!isWebp) {
-      const mime = type.includes("png") || /\.png(\?|$)/i.test(url) ? "image/png" : "image/jpeg";
-      return `data:${mime};base64,${buf.toString("base64")}`;
-    }
+    // TEMP PROBE: force every cover through sharp (even PNG) to prove whether sharp loads
+    // in this metadata route on Vercel. If the live demo keeps its photo, sharp works here.
     const sharp = (await import("sharp")).default;
     const out =
       webpTo === "png"
