@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import path from "node:path";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   // Pin the workspace root — a stray lockfile in the home dir otherwise confuses detection.
@@ -17,4 +18,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Wrap with Sentry: uploads source maps at build time when SENTRY_AUTH_TOKEN / SENTRY_ORG /
+// SENTRY_PROJECT are set (read from env by the plugin), and no-ops gracefully without them.
+export default withSentryConfig(nextConfig, {
+  silent: !process.env.CI, // only log during CI builds
+  widenClientFileUpload: true, // better stack traces for bundled client code
+  telemetry: false,
+});
