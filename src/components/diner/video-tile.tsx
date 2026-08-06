@@ -64,13 +64,17 @@ export function VideoTile({
   const cls = className ?? "";
   const posed = /(?:^|\s)(?:absolute|fixed|relative|sticky)(?:\s|$)/.test(cls);
   const wrap = `${posed ? "" : "relative"} block overflow-hidden bg-ink ${cls}`;
+  // Overscan + own compositing layer: iOS Safari paints a light hairline at the top edge
+  // of a <video> inside an overflow-hidden rounded box (its GPU layer isn't clipped to the
+  // radius). Scaling the media slightly past the clip pushes that edge out of view.
+  const media = "absolute inset-0 h-full w-full object-cover bg-ink [transform:scale(1.03)_translateZ(0)]";
 
   if (reduced || !mp4Url) {
     return (
       <span className={wrap}>
         {poster && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          <img src={poster} alt="" className={media} />
         )}
       </span>
     );
@@ -80,16 +84,9 @@ export function VideoTile({
     <span className={wrap}>
       {poster && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={poster} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+        <img src={poster} alt="" aria-hidden className={media} />
       )}
-      <video
-        ref={ref}
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        className="absolute inset-0 h-full w-full object-cover"
-      >
+      <video ref={ref} muted loop playsInline preload="metadata" className={media}>
         <source src={mp4Url} type="video/mp4" />
       </video>
     </span>
