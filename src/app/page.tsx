@@ -214,15 +214,25 @@ export default async function Landing() {
           </div>
           <HeroPhone />
         </div>
-        {/* Ticker, label centered above, names scroll cleanly on their own line (exact mockup) */}
-        <div className="overflow-hidden pb-7 pt-1 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+        {/* Ticker, label centered above, names scroll cleanly on their own line (exact mockup).
+            Fixed-px edge fade (not %) so names stay fully readable and only soften right at the
+            edges on every screen width; the label sits outside the mask so it never fades. */}
+        <div className="overflow-hidden pb-7 pt-1">
           <p className="mb-3 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-white/40">Now serving the island</p>
-          <div className="flex w-max" style={{ animation: "plato-marquee 32s linear infinite" }}>
-            {[...ticker, ...ticker].map((n, i) => (
-              <span key={i} className="flex items-center gap-9 whitespace-nowrap px-[18px] text-[20px] font-bold text-white/[0.62]">
-                {n}<span className="h-1.5 w-1.5 rounded-full bg-accent" />
-              </span>
-            ))}
+          <div
+            className="overflow-hidden"
+            style={{
+              maskImage: "linear-gradient(to right, transparent, #000 44px, #000 calc(100% - 44px), transparent)",
+              WebkitMaskImage: "linear-gradient(to right, transparent, #000 44px, #000 calc(100% - 44px), transparent)",
+            }}
+          >
+            <div className="flex w-max" style={{ animation: "plato-marquee 32s linear infinite" }}>
+              {[...ticker, ...ticker].map((n, i) => (
+                <span key={i} className="flex items-center gap-9 whitespace-nowrap px-[18px] text-[20px] font-bold text-white/[0.62]">
+                  {n}<span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
