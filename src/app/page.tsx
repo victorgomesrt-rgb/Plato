@@ -349,17 +349,20 @@ export default async function Landing() {
           </Reveal>
           <div className="mt-12 grid items-start gap-5 md:grid-cols-3">
             {plans.map((p) => (
-              <Reveal key={p.name} className={`rounded-card p-6 ${p.dark ? "bg-ink text-white shadow-xl ring-1 ring-accent/40 md:-mt-3 md:pb-9" : "border border-line bg-white"}`}>
-                <div className="flex items-center justify-between">
-                  <h3 className="font-display text-xl font-bold">{p.name}</h3>
+              <Reveal key={p.name} className={`rounded-card p-7 ${p.dark ? "bg-ink text-white shadow-xl ring-1 ring-accent/40 md:-mt-3 md:pb-10" : "border border-line bg-white"}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="font-display text-lg font-bold">{p.name}</h3>
                   {p.dark && <span className="rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink">Most popular</span>}
                 </div>
-                <p className={`text-sm ${p.dark ? "text-white/60" : "text-muted"}`}>{p.tagline}</p>
-                <p className="mt-4"><span className="font-display text-section font-extrabold">${p.price}</span><span className={p.dark ? "text-white/60" : "text-muted"}>/mo</span></p>
-                <a href={WAITLIST} className={`press mt-5 block rounded-btn px-4 py-2.5 text-center text-sm font-semibold ${p.dark ? "bg-accent text-ink hover:bg-accent-deep" : "bg-ink text-white hover:bg-ink/90"}`}>{p.cta}</a>
-                <ul className="mt-5 space-y-2.5 text-sm">
+                <p className={`mt-1 text-sm ${p.dark ? "text-white/60" : "text-muted"}`}>{p.tagline}</p>
+                <div className="mt-5 flex items-baseline gap-1.5">
+                  <span className="font-display text-[2.75rem] font-bold leading-none tracking-tight">${p.price}</span>
+                  <span className={`text-sm font-medium ${p.dark ? "text-white/50" : "text-muted"}`}>/mo</span>
+                </div>
+                <a href={WAITLIST} className={`press mt-6 block rounded-btn px-4 py-3 text-center text-sm font-semibold ${p.dark ? "bg-accent text-ink hover:bg-accent-deep" : "bg-ink text-white hover:bg-ink/90"}`}>{p.cta}</a>
+                <ul className={`mt-6 space-y-3 border-t pt-5 text-sm ${p.dark ? "border-white/10" : "border-line"}`}>
                   {p.items.map((it) => (
-                    <li key={it} className="flex gap-2"><Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.dark ? "text-accent" : "text-sea"}`} /><span className={p.dark ? "text-white/85" : ""}>{it}</span></li>
+                    <li key={it} className="flex gap-2.5"><Check className={`mt-0.5 h-4 w-4 shrink-0 ${p.dark ? "text-accent" : "text-sea"}`} /><span className={p.dark ? "text-white/85" : "text-ink/85"}>{it}</span></li>
                   ))}
                 </ul>
               </Reveal>
@@ -381,21 +384,50 @@ export default async function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-white/55 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <PlatoMark className="h-6 w-auto" onDark />
-            <span className="font-display font-extrabold text-white">Plato</span>
-            <span className="ml-2 hidden text-white/40 sm:inline">Digital menus · Oranjestad, Aruba</span>
+      <footer className="border-t border-white/10 bg-ink">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+            <div className="sm:col-span-2 lg:col-span-1">
+              <Link href="/" className="flex items-center gap-2">
+                <PlatoMark className="h-7 w-auto" onDark />
+                <span className="font-display text-lg font-extrabold text-white">Plato</span>
+              </Link>
+              <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/55">
+                Video menus for Aruba’s restaurants. We film every dish, build the page, and publish it, so diners see the food before they order.
+              </p>
+              <span className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/50">
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" /> Now serving the island
+              </span>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/50">Product</p>
+              <ul className="mt-4 space-y-2.5 text-sm text-white/65">
+                <li><a href="#how" className="hover:text-white">How it works</a></li>
+                <li><a href="#templates" className="hover:text-white">Templates</a></li>
+                <li><a href="#features" className="hover:text-white">Features</a></li>
+                <li><a href="#pricing" className="hover:text-white">Pricing</a></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/50">Company</p>
+              <ul className="mt-4 space-y-2.5 text-sm text-white/65">
+                <li><Link href="/discover" className="hover:text-white">Discover</Link></li>
+                <li><Link href="/login" className="hover:text-white">Log in</Link></li>
+                <li><a href="mailto:adrian@platodigital.online" className="hover:text-white">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/50">Legal</p>
+              <ul className="mt-4 space-y-2.5 text-sm text-white/65">
+                <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
+                <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
+              </ul>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-5">
-            <a href="#how" className="hover:text-white">How it works</a>
-            <a href="#templates" className="hover:text-white">Templates</a>
-            <a href="#pricing" className="hover:text-white">Pricing</a>
-            <Link href="/terms" className="hover:text-white">Terms</Link>
-            <Link href="/privacy" className="hover:text-white">Privacy</Link>
+          <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
+            <p>© {year} Plato. All rights reserved.</p>
+            <p>Operated by GMS Innovations, Oranjestad, Aruba.</p>
           </div>
-          <p>© {year} Plato</p>
         </div>
       </footer>
     </div>
